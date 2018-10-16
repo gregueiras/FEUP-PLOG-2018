@@ -22,6 +22,21 @@ inter_tab([
   [buffrCell, buffrCell, invalCell, whiteCell, blackCell, emptyCell, emptyCell, emptyCell, invalCell, invalCell, invalCell]
 ]).
 
+final_tab([
+  [buffrCell, buffrCell, invalCell, emptyCell, emptyCell, whiteCell, blackCell, whiteCell, invalCell, invalCell, invalCell],
+  [buffrCell, invalCell, emptyCell, emptyCell, blackCell, whiteCell, blackCell, whiteCell, invalCell, invalCell, invalCell],
+  [buffrCell, buffrCell, blackCell, blackCell, blackCell, blackCell, emptyCell, emptyCell, blackCell, invalCell, invalCell],
+  [buffrCell, emptyCell, emptyCell, emptyCell, whiteCell, whiteCell, blackCell, whiteCell, blackCell, invalCell, invalCell],
+  [whiteCell, emptyCell, blackCell, emptyCell, whiteCell, blackCell, whiteCell, whiteCell, whiteCell, invalCell, invalCell],
+  [buffrCell, blackCell, emptyCell, blackCell, emptyCell, blackCell, emptyCell, blackCell, blackCell, invalCell, invalCell],
+  [buffrCell, buffrCell, blackCell, whiteCell, blackCell, whiteCell, whiteCell, whiteCell, blackCell, invalCell, invalCell],
+  [buffrCell, invalCell, blackCell, whiteCell, emptyCell, blackCell, blackCell, emptyCell, invalCell, invalCell, invalCell],
+  [buffrCell, buffrCell, invalCell, whiteCell, blackCell, emptyCell, emptyCell, emptyCell, invalCell, invalCell, invalCell]
+]).
+
+
+
+
 
 print_tab([]).
 
