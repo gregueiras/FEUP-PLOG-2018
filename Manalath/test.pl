@@ -1,68 +1,68 @@
 :- use_module(library(lists)).
 
-board([
-cell(0, 0, emptyCell),
-cell(2, 0, emptyCell),
-cell(4, 0, emptyCell),
-cell(6, 0, emptyCell),
-cell(8, 0, emptyCell),
-cell(0, 1, emptyCell),
-cell(2, 1, emptyCell),
-cell(4, 1, emptyCell),
-cell(6, 1, emptyCell),
-cell(8, 1, emptyCell),
-cell(10, 1, emptyCell),
-cell(0, 2, emptyCell),
-cell(2, 2, emptyCell),
-cell(4, 2, blackPiece),
-cell(6, 2, whitePiece),
-cell(8, 2, emptyCell),
-cell(10, 2, emptyCell),
-cell(12, 2, emptyCell),
-cell(0, 3, emptyCell),
-cell(2, 3, emptyCell),
-cell(4, 3, blackPiece),
-cell(6, 3, emptyCell),
-cell(8, 3, blackPiece),
-cell(10, 3, emptyCell),
-cell(12, 3, emptyCell),
-cell(14, 3, emptyCell),
-cell(0, 4, emptyCell),
-cell(2, 4, emptyCell),
-cell(4, 4, emptyCell),
-cell(6, 4, whitePiece),
-cell(8, 4, whitePiece),
-cell(10, 4, emptyCell),
-cell(12, 4, emptyCell),
-cell(14, 4, emptyCell),
-cell(16, 4, emptyCell),
-cell(2, 5, emptyCell),
-cell(4, 5, whitePiece),
-cell(6, 5, emptyCell),
-cell(8, 5, emptyCell),
-cell(10, 5, emptyCell),
-cell(12, 5, emptyCell),
-cell(14, 5, emptyCell),
-cell(16, 5, emptyCell),
-cell(4, 6, emptyCell),
-cell(6, 6, blackPiece),
-cell(8, 6, emptyCell),
-cell(10, 6, emptyCell),
-cell(12, 6, emptyCell),
-cell(14, 6, emptyCell),
-cell(16, 6, emptyCell),
-cell(6, 7, emptyCell),
-cell(8, 7, blackPiece),
-cell(10, 7, blackPiece),
-cell(12, 7, whitePiece),
-cell(14, 7, emptyCell),
-cell(16, 7, emptyCell),
-cell(8, 8, emptyCell),
-cell(10, 8, emptyCell),
-cell(12, 8, emptyCell),
-cell(14, 8, emptyCell),
-cell(16, 8, emptyCell)
-  
+initial_board([
+  cell(0,  0, emptyCell),
+  cell(2,  0, emptyCell),
+  cell(4,  0, emptyCell),
+  cell(6,  0, emptyCell),
+  cell(8,  0, emptyCell),
+  cell(0,  1, emptyCell),
+  cell(2,  1, emptyCell),
+  cell(4,  1, emptyCell),
+  cell(6,  1, emptyCell),
+  cell(8,  1, emptyCell),
+  cell(10, 1, emptyCell),
+  cell(0,  2, emptyCell),
+  cell(2,  2, emptyCell),
+  cell(4,  2, emptyCell),
+  cell(6,  2, emptyCell),
+  cell(8,  2, emptyCell),
+  cell(10, 2, emptyCell),
+  cell(12, 2, emptyCell),
+  cell(0,  3, emptyCell),
+  cell(2,  3, emptyCell),
+  cell(4,  3, emptyCell),
+  cell(6,  3, emptyCell),
+  cell(8,  3, emptyCell),
+  cell(10, 3, emptyCell),
+  cell(12, 3, emptyCell),
+  cell(14, 3, emptyCell),
+  cell(0,  4, emptyCell),
+  cell(2,  4, emptyCell),
+  cell(4,  4, emptyCell),
+  cell(6,  4, emptyCell),
+  cell(8,  4, emptyCell),
+  cell(10, 4, emptyCell),
+  cell(12, 4, emptyCell),
+  cell(14, 4, emptyCell),
+  cell(16, 4, emptyCell),
+  cell(2,  5, emptyCell),
+  cell(4,  5, emptyCell),
+  cell(6,  5, emptyCell),
+  cell(8,  5, emptyCell),
+  cell(10, 5, emptyCell),
+  cell(12, 5, emptyCell),
+  cell(14, 5, emptyCell),
+  cell(16, 5, emptyCell),
+  cell(4,  6, emptyCell),
+  cell(6,  6, emptyCell),
+  cell(8,  6, emptyCell),
+  cell(10, 6, emptyCell),
+  cell(12, 6, emptyCell),
+  cell(14, 6, emptyCell),
+  cell(16, 6, emptyCell),
+  cell(6,  7, emptyCell),
+  cell(8,  7, emptyCell),
+  cell(10, 7, emptyCell),
+  cell(12, 7, emptyCell),
+  cell(14, 7, emptyCell),
+  cell(16, 7, emptyCell),
+  cell(8,  8, emptyCell),
+  cell(10, 8, emptyCell),
+  cell(12, 8, emptyCell),
+  cell(14, 8, emptyCell),
+  cell(16, 8, emptyCell)
+
 ]).
 
 mini([
@@ -157,23 +157,49 @@ print_lines(Board, LineNum, NL) :-
   length(Line, LineLength),
   BufSize is NL - LineLength,
   print_buffer(BufSize),
-  print_line(Line),
-  nl,
+  print_line(Line), 
+  write('|'), nl,
+  print_buffer(BufSize), 
+  write('|'),
+  print_coords(Line),  nl,
   L is LineNum + 1,
   print_lines(Board, L, NL).
 
 print_buffer(0.0).
+print_buffer(-1.0).
 print_buffer(N) :-
-  write(' '),
+  write('    '),
   L is N - 1,
   print_buffer(L).
 
 print_line([]).
 print_line([L | T]) :-
+  write('|   '),
   print_cell(L),
-  write(' '),
+  write('   '),
   print_line(T).
-  
+
+print_top([]).
+print_top([_ | T]) :-
+  write('\\  /'),
+  write(' '),
+  print_top(T).
+
+print_coords([]).
+print_coords([ cell(X, Y, _) | T]) :-
+  write_coord(X),
+  write(' -'),
+  write_coord(Y),
+  write(' |'),
+  print_coords(T).
+
+write_coord(X) :-
+  X < 10, 
+  format(' ~d', [X]).
+write_coord(X) :-
+  X >= 10,
+  format('~d', [X]).
+
 print_cell(cell(_, _, blackPiece)) :-
     write('1').
 
@@ -183,3 +209,5 @@ print_cell(cell(_, _, whitePiece)) :-
 print_cell(cell(_, _, emptyCell)) :-
     write('O').
 
+tp :-
+  initial_board(_B), print_board(_B).
