@@ -211,3 +211,6 @@ print_cell(cell(_, _, emptyCell)) :-
 
 tp :-
   initial_board(_B), print_board(_B).
+
+display_game(Board, Player) :-
+  print_board(Board).
