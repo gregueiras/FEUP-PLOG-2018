@@ -65,41 +65,76 @@ mini([
   cell(4, 2, whitePiece)
 ]).
 
-neighbor(Board, X, Y, _P, F) :-
+neighbor(Board, X, Y, _P, F, FX, FY) :-
   getPiece(Board, X, Y, _P),
-  X1 is X - 2,
-  Y1 is Y,
-  getPiece(Board, X1, Y1, F).
+  FX is X - 2,
+  FY is Y,
+  getPiece(Board, FX, FY, F).
 
-neighbor(Board, X, Y, _P, F) :-
+neighbor(Board, X, Y, _P, F, FX, FY) :-
   getPiece(Board, X, Y, _P),
-  X1 is X - 2,
-  Y1 is Y - 1,
-  getPiece(Board, X1, Y1, F).
+  FX is X - 2,
+  FY is Y - 1,
+  getPiece(Board, FX, FY, F).
 
-neighbor(Board, X, Y, _P, F) :-
+neighbor(Board, X, Y, _P, F, FX, FY) :-
   getPiece(Board, X, Y, _P),
-  X1 is X,
-  Y1 is Y - 1,
-  getPiece(Board, X1, Y1, F).
+  FX is X,
+  FY is Y - 1,
+  getPiece(Board, FX, FY, F).
 
-neighbor(Board, X, Y, _P, F) :-
+neighbor(Board, X, Y, _P, F, FX, FY) :-
   getPiece(Board, X, Y, _P),
-  X1 is X + 2,
-  Y1 is Y,
-  getPiece(Board, X1, Y1, F).
+  FX is X + 2,
+  FY is Y,
+  getPiece(Board, FX, FY, F).
 
-neighbor(Board, X, Y, _P, F) :-
+neighbor(Board, X, Y, _P, F, FX, FY) :-
   getPiece(Board, X, Y, _P),
-  X1 is X + 2,
-  Y1 is Y + 1,
-  getPiece(Board, X1, Y1, F).
+  FX is X + 2,
+  FY is Y + 1,
+  getPiece(Board, FX, FY, F).
 
-neighbor(Board, X, Y, _P, F) :-
+neighbor(Board, X, Y, _P, F, FX, FY) :-
   getPiece(Board, X, Y, _P),
-  X1 is X,
-  Y1 is Y + 1,
-  getPiece(Board, X1, Y1, F).
+  FX is X,
+  FY is Y + 1,
+  getPiece(Board, FX, FY, F).
+
+findAllNeighbors(Board, X, Y, Color, Res) :-
+  findNeighbors(Board, X, Y, Color, [], Res).
+
+%findNeighbors(Board, X, Y, Color, Res, Res) :-
+%  length(Res, N),
+%  N > 3.9.
+ %:-
+ % \+ neighbor(Board, X, Y, _P, RColor, RX, RY).
+
+findNeighbors(Board, X, Y, Color, Old, Res) :-
+  findall((RX, RY), 
+  (
+    neighbor(Board, X, Y, _P, RColor, RX, RY),
+    RColor == Color,
+    \+ member( (RX, RY), Old)
+  ),
+  R),
+ % neighbor(Board, X, Y, _P, RColor, RX, RY),
+ % RColor == Color,
+ % \+ member( (RX, RY), Old),
+ % append(Old, [(RX, RY)], Temp),
+  append(Old, R, Temp),
+ % findNeighbors(Board, RX, RY, Color, Temp, Res).
+  findListNeighbors(Board, R, Color, Temp, Res).
+
+
+findListNeighbors(Board, [], Color, Res, Res).
+
+findListNeighbors(Board, [(X, Y) | TT], Color, Old, Res) :-
+  findNeighbors(Board, X, Y, Color, Old, Temp),
+  append(Old, Temp, NewL),
+  findListNeighbors(Board, TT, Color, NewL, Res).
+
+findNeighbors(_Board, _X, _Y, Color, Res, Res).
 
 getPiece(Board, X, Y, Pout) :-
   member(cell(X, Y, Pout), Board).
@@ -132,6 +167,7 @@ getLine(Board, LineNumber, List) :-
 
 %numberTiles = 3 * Math.pow(n, 2) - 3 * n + 1;
 
+%Counts number of columns in the bigger row 
 numLines(Board, NumLines) :-
   length(Board, NumTiles),
   Temp is (sqrt(3) * sqrt(4 * NumTiles - 1) + 3)/6,
