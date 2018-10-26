@@ -121,11 +121,11 @@ findAllNeighbors(Board,Color,ToProcess,ProcessedCells,Res) :-
 %processa o primeiro elemento da lista ToProcess ((SX,SY))
 %guarda (SX,SY) nos Processed
 %guarda o resto no ToProcess
-%Funciona? nao....
+%Funciona? acho que sim....
 findAllNeighbors(Board,Color,[(SX,SY)|T],ProcessedCells,Res) :-
   findFirstNeighbors(Board,SX,SY,_S,Color,ProcessedCells,Tmp),
   append(T,Tmp,ToProcess),
-  sort(ToProcess,TP),
+  sort(ToProcess,TP), %remove os duplicados
   append(ProcessedCells,[(SX,SY)], PC),
   findAllNeighbors(Board,Color,TP, PC,Res).
 
@@ -145,32 +145,6 @@ printLongList([L|T]) :-
 
 %guardar os ja processados noutra lista e comparar
 %no findFirstNeighbors
-
-findNeighbors(Board,X,Y,_P,Color,OldRes,FirstN,Res) :-
-  findFirstNeighbors(Board,X,Y,_P,Color,OldRes, FirstN),
-  append(OldRes,FirstN,Tmp),
-  member((SX,SY), FirstN),
-  findFirstNeighbors(Board,SX,SY,_S,Color,Tmp,T1),
-  append(T1,Tmp,Res).
-
-  %findNeighbors(Board,SX,SY,_S,Color,T1,Tmp,Res).
-
-
-
-  %findNeighbors(Board,SX,SY,_S,Color,OldRes,Res).
-
-%findAllNeighbors(Board,FirstNeighbors,Color,Res) :-
-%  length(Res,N),
-%  N > 2.9.
-
-%findAllNeighbors(Board,FirstNeighbors,Color,Res) :-
-%    findall((SX,SY),
-%    (
-%      member((SX,SY), FirstNeighbors),
-%      findFirstNeighbors(Board,SX,SY,_S,Color,FirstNeighbors,Res).
-%    ),
-%  Tmp),
-%  findAllNeighbors(Board,Tmp,Color,Res).
 
 
 getPiece(Board, X, Y, Pout) :-
