@@ -65,8 +65,8 @@ findAllNeighbors(Board,Color,[(SX,SY)|T],ProcessedCells,Res) :-
   findAllNeighbors(Board,Color,TP, PC,Res).
 
 findCellNeighbors(Board,X,Y,Color) :-
-  findAllNeighbors(Board,Color,[(X,Y)],[],Res),
-  printLongList(Res).
+  findAllNeighbors(Board,Color,[(X,Y)],[],Neighbors),
+  printLongList(Neighbors).
 
 printLongList(List) :-
   length(List,N),
@@ -78,5 +78,6 @@ printLongList([L|T]) :-
   write(' '),
   printLongList(T).
 
-%guardar os ja processados noutra lista e comparar
-%no findFirstNeighbors
+countCellNeighbors(Board,X,Y,Color,Count):-
+  findAllNeighbors(Board,Color,[(X,Y)],[],Neighbors),
+  length(Neighbors,Count).
