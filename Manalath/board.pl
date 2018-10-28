@@ -69,7 +69,8 @@ getPiece(Board, X, Y, Pout) :-
 
 setPiece(Board, X, Y, Pin, NewBoard) :-
   select(cell(X, Y, _), Board, B1),
-  append([cell(X, Y, Pin)], B1, NewBoard).
+  append([cell(X, Y, Pin)], B1, NB),
+  sort(NB,NewBoard). %keeps the initial order of the list
 
 indices(List, E, Is) :-
     findall(N, nth0(N, List, E), Is).
@@ -151,5 +152,5 @@ print_cell(cell(_, _, whitePiece)) :-
     write('2').
 
 print_cell(cell(_, _, emptyCell)) :-
-    write('O').
+    write(' ').
 

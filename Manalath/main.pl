@@ -61,7 +61,6 @@ setPlay(Board, Player, X, Y, Color, NewBoard, NewPlayer) :-
   NewPlayer = Player,
   printInvalidPlay.
 
-%o setPiece nao funciona acho, apaga a celula...so as vezes, estou confusa
 play(Board, Player, X, Y, Color, NewBoard, NewPlayer) :-
   setPlay(Board, Player, X,Y,Color, NewBoard, NewPlayer),
   display_game(NewBoard,NewPlayer), %prints the new board
