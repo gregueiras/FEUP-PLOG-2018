@@ -26,4 +26,15 @@ switchCurrentPlayer(CurrentPlayer,NextPlayer,ValidPlay) :-
     NextPlayer = CurrentPlayer.
 
 switchCurrentPlayer(CurrentPlayer,NextPlayer,ValidPlay) :-
-    ValidPlay = 0; ValidPlay = 1.  %nothing happens, the game ends
+    ValidPlay = 0,
+    NextPlayer = CurrentPlayer.  %nothing happens, the game ends
+
+switchCurrentPlayer(CurrentPlayer,NextPlayer,ValidPlay) :-
+    ValidPlay = 1,
+    NextPlayer = CurrentPlayer.  %nothing happens, the game ends
+
+
+print_player(Player) :-
+    write('Player : '),
+    write(Player),
+    nl.
