@@ -1,5 +1,5 @@
 
-:- ensure_loaded(main).
+:- ensure_loaded(game).
 
 print_InvalidOption :-
     write('Invalid option! Please try again...').
@@ -7,10 +7,10 @@ print_InvalidOption :-
 
 firstMenu :-
     print_FirstMenu,
-    get_char(Option),
+    read(Option),
     (
-        Option = '1' -> playMenu;
-        Option = '2';
+        Option = 1 -> playMenu;
+        Option = 2;
         print_InvalidOption
     ).
 
@@ -28,10 +28,10 @@ print_FirstMenu :-
 
 playMenu :-
     print_playMenu,
-    get_char(Option),
+    read(Option),
     (
-        Option = '1' -> play_game;
-        Option = '2';
+        Option = 1 -> play_game;
+        Option = 2;
         print_InvalidOption
     ).
 
