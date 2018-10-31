@@ -33,7 +33,6 @@ switchCurrentPlayer(CurrentPlayer,NextPlayer,ValidPlay) :-
     ValidPlay = 1,
     NextPlayer = CurrentPlayer.  %nothing happens, the game ends
 
-
 print_player(Player) :-
     write('Player : '),
     write(Player),

@@ -32,6 +32,8 @@ playMenu :-
     (
         Option = 1 -> play_game;
         Option = 2;
+        Option = 3;
+        Option = 4 ->firstMenu;
         print_InvalidOption
     ).
 
@@ -42,7 +44,9 @@ print_playMenu :-
     write('******************************'),nl,
     write('**                          **'),nl,
     write('** 1- PLAYER VS PLAYER      **'),nl,
-    write('** 2- EXIT                  **'),nl,
+    write('** 2- PLAYER VS COMPUTER    **'),nl,
+    write('** 3- COMPUTER VS COMPUTER  **'),nl,
+    write('** 4- GO BACK               **'),nl,
     write('**                          **'),nl,
     write('******************************'),nl,
     write('Choose : '), nl.
