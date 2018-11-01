@@ -69,40 +69,62 @@ checkPlay(Player,Color,Count, ValidPlay) :-
   %Count < 3,
   ValidPlay = 2. %jogada valida, arranjar uma cena mais bonitinha maybe
 
+
 validatePlay(Board,Player,Color, Count, ValidPlay) :-
   checkPlay(Player,Color,Count,VP),
-  (VP = 0; VP = 1; VP = 2) -> ValidPlay = VP;
-   VP = -1 -> (
-              countValidPlays(Board,Color, NrValidPlays),
-              NrValidPlays = 0 -> ValidPlay = -2;
-              ValidPlay = -1
-  ).
+  VP = -1 ,
+  checkInvalidPlay(Board,Color,ValidPlay).
+
+validatePlay(Board,Player,Color, Count, ValidPlay) :-
+  checkPlay(Player,Color,Count,VP),
+  ValidPlay = VP.
+
+checkInvalidPlay(Board,Color,ValidPlay) :-
+  countValidPlays(Board,Color, NrValidPlays),
+  setNrValidPlays(NrValidPlays,ValidPlay).
+
+setNrValidPlays(NrValidPlays,ValidPlay) :-
+  NrValidPlays = 0 ,
+  ValidPlay = -2.
+
+setNrValidPlays(NrValidPlays,ValidPlay) :-
+  NrValidPlays > 0 ,
+  ValidPlay = -1.
 
 
-checkEndGame(ValidPlay,End):-
+checkEndGame(OldValidPlay,ValidPlay,End):-
   ValidPlay = 0;
   ValidPlay = 1,
-  End = 1.
+  End = 1. %acaba normalmente
 
-checkEndGame(ValidPlay,End):-
+checkEndGame(OldValidPlay,ValidPlay,End):-
+  OldValidPlay = -2,
+  ValidPlay = -2,
+  End = 2. %acaba em empate
+
+checkEndGame(OldValidPlay,ValidPlay,End):-
   End = 0.
 
-play(Board, Player, X, Y, Color, NewBoard, NewPlayer,End) :-
+setPlay(Board, Player, X, Y, Color, NewBoard, NewPlayer,ValidPlay) :-
   playPiece(Board, X, Y, Color, TmpBoard),
   countCellNeighbors(TmpBoard,X,Y,Color,NrNeighbors), 
   validatePlay(Board,Player,Color,NrNeighbors,ValidPlay),
+  %write(ValidPlay), nl,
   switchCurrentPlayer(Player,NewPlayer,ValidPlay),
   updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
-  printPlay(ValidPlay),
-  checkEndGame(ValidPlay,End).
+  printPlay(ValidPlay).
+  %checkEndGame(ValidPlay,End).
 
-play(Board, Player, X, Y, Color, NewBoard, NewPlayer,End) :-
+setPlay(Board, Player, X, Y, Color, NewBoard, NewPlayer,ValidPlay) :-
   \+ playPiece(Board, X, Y, Color, TmpBoard),
   NewBoard = Board,
   NewPlayer = Player,
   End = 0,
   printInvalidPlay.
 
+play(Board, Player, X, Y, Color, NewBoard, NewPlayer, OldValidPlay, ValidPlay,End) :-
+  setPlay(Board, Player, X, Y, Color, NewBoard, NewPlayer, ValidPlay),
+  checkEndGame(OldValidPlay,ValidPlay,End).
 
 %to be improved
 read_info(X,Y, Color) :-
@@ -139,16 +161,16 @@ read_validate_info(Board,X,Y,Color) :-
       (printInvalidInformation, read_validate_info(Board,X,Y,Color))  
   ).
 
-play_game_loop(Board,Player,End) :-
-   End = 1,
+play_game_loop(Board,Player, OldValidPlay, End) :-
+   (End = 1; End = 2),
    display_game(Board,Player), !.
 
-play_game_loop(Board, Player, End) :-
+play_game_loop(Board, Player, OldValidPlay,End) :-
   display_game(Board,Player), !,
   read_validate_info(Board,X,Y,Color),
-  play(Board,Player,X,Y,Color,NewBoard,NewPlayer, New_End),
-  play_game_loop(NewBoard,NewPlayer,New_End).
+  play(Board,Player,X,Y,Color,NewBoard,NewPlayer, OldValidPlay,ValidPlay, New_End),
+  play_game_loop(NewBoard,NewPlayer,ValidPlay,New_End).
 
 play_game :-
   initial_board(Board),
-  play_game_loop(Board,1,0).
+  play_game_loop(Board,1,2,0).
