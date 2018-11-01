@@ -16,35 +16,35 @@ printLoserPlay :-
 printInvalidInformation :-
   write('Invalid information! Please try again...'), nl.
 
+printPlay(Play) :-
+  Play = -1 -> printInvalidPlay;
+  Play = 0  -> printWinnerPlay;
+  Play = 1  -> printLoserPlay;
+  Play = 2.
+
+
 playPiece(Board, X, Y, Color, NewBoard) :-
   getPiece(Board,X,Y,_S),
   _S = emptyCell,
   setPiece(Board, X, Y, Color, NewBoard). 
 
-checkPlay(Board,Player,Color,Count, ValidPlay,OldBoard,NewBoard) :-
+checkPlay(Player,Color,Count, ValidPlay) :-
   Count >= 6,
-  ValidPlay = -1, %jogada invalida, arranjar uma cena mais bonitinha maybe
-  NewBoard = OldBoard, %if the play is not a valid one then the board is not updated
-  printInvalidPlay.
+  ValidPlay = -1. %jogada invalida, arranjar uma cena mais bonitinha maybe
 
-checkPlay(Board,Player,Color,Count, ValidPlay,OldBoard,NewBoard) :-
+checkPlay(Player,Color,Count, ValidPlay) :-
   checkColorPlayer(Player,Color),
   Count == 5,
-  ValidPlay = 0, %ganhou, arranjar uma cena mais bonitinha maybe
-  NewBoard = Board, %updates the board
-  printWinnerPlay.
+  ValidPlay = 0. %ganhou, arranjar uma cena mais bonitinha maybe
 
-checkPlay(Board,Player,Color,Count, ValidPlay,OldBoard,NewBoard) :-
+checkPlay(Player,Color,Count, ValidPlay) :-
   checkColorPlayer(Player,Color),
   Count == 4,
-  ValidPlay = 1, %perdeu, arranjar uma cena mais bonitinha maybe
-  NewBoard = Board, %updates the board
-  printLoserPlay.
+  ValidPlay = 1. %perdeu, arranjar uma cena mais bonitinha maybe
 
-checkPlay(Board,Player,Color,Count, ValidPlay,OldBoard,NewBoard) :-
+checkPlay(Player,Color,Count, ValidPlay) :-
   %Count < 4,
-  ValidPlay = 2, %jogada valida, arranjar uma cena mais bonitinha maybe
-  NewBoard = Board.  %updates the board
+  ValidPlay = 2. %jogada valida, arranjar uma cena mais bonitinha maybe
 
 checkValidPlay(ValidPlay,End):-
   ValidPlay = 0;
@@ -54,23 +54,22 @@ checkValidPlay(ValidPlay,End):-
 checkValidPlay(ValidPlay,End):-
   End = 0.
 
-setPlay(Board, Player, X, Y, Color, NewBoard, NewPlayer,End) :-
+play(Board, Player, X, Y, Color, NewBoard, NewPlayer,End) :-
   playPiece(Board, X, Y, Color, TmpBoard),
   countCellNeighbors(TmpBoard,X,Y,Color,NrNeighbors), 
-  checkPlay(TmpBoard,Player,Color,NrNeighbors,ValidPlay,Board,NewBoard),
+  checkPlay(Player,Color,NrNeighbors,ValidPlay),
   switchCurrentPlayer(Player,NewPlayer,ValidPlay),
+  updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
+  printPlay(ValidPlay),
   checkValidPlay(ValidPlay,End).
 
-setPlay(Board, Player, X, Y, Color, NewBoard, NewPlayer,End) :-
+play(Board, Player, X, Y, Color, NewBoard, NewPlayer,End) :-
   \+ playPiece(Board, X, Y, Color, TmpBoard),
   NewBoard = Board,
   NewPlayer = Player,
   End = 0,
   printInvalidPlay.
 
-play(Board, Player, X, Y, Color, NewBoard, NewPlayer,End) :-
-  setPlay(Board, Player, X,Y,Color, NewBoard, NewPlayer, End).
-  %display_game(NewBoard,NewPlayer), !. %prints the new board
 
 %to be improved
 read_info(X,Y, Color) :-

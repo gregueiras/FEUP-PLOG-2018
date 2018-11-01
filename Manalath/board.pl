@@ -154,3 +154,20 @@ print_cell(cell(_, _, whitePiece)) :-
 print_cell(cell(_, _, emptyCell)) :-
     write(' ').
 
+updateBoard(Board,OldBoard,ValidPlay,NewBoard) :-
+  ValidPlay = -1, %jogada invalida, arranjar uma cena mais bonitinha maybe
+  NewBoard = OldBoard. %if the play is not a valid one then the board is not updated
+
+updateBoard(Board,OldBoard,ValidPlay,NewBoard) :-
+  ValidPlay = 0, %ganhou, arranjar uma cena mais bonitinha maybe
+  NewBoard = Board. %updates the board
+
+updateBoard(Board,OldBoard,ValidPlay,NewBoard) :-
+  ValidPlay = 1, %perdeu, arranjar uma cena mais bonitinha maybe
+  NewBoard = Board. %updates the board
+
+updateBoard(Board,OldBoard,ValidPlay,NewBoard) :-
+  ValidPlay = 2, %jogada valida, arranjar uma cena mais bonitinha maybe
+  NewBoard = Board.  %updates the board
+
+
