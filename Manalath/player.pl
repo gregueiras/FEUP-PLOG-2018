@@ -26,6 +26,10 @@ switchCurrentPlayer(CurrentPlayer,NextPlayer,ValidPlay) :-
     NextPlayer = CurrentPlayer.
 
 switchCurrentPlayer(CurrentPlayer,NextPlayer,ValidPlay) :-
+    ValidPlay = -2,  
+    switchPlayer(CurrentPlayer,NextPlayer).
+
+switchCurrentPlayer(CurrentPlayer,NextPlayer,ValidPlay) :-
     ValidPlay = 0,
     NextPlayer = CurrentPlayer.  %nothing happens, the game ends
 

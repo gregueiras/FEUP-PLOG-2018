@@ -13,15 +13,18 @@ printWinnerPlay :-
 printLoserPlay :-
   write('Loser Play!!!'),nl.
 
+printIsImpossiblePlay :-
+  write('It is impossible for you to play, you must pass your turn....'), nl.
+
 printInvalidInformation :-
   write('Invalid information! Please try again...'), nl.
 
 printPlay(Play) :-
+  Play = -2 ->printIsImpossiblePlay;
   Play = -1 -> printInvalidPlay;
-  Play = 0  -> printWinnerPlay;
-  Play = 1  -> printLoserPlay;
-  Play = 2.
-
+  Play =  0 -> printWinnerPlay;
+  Play =  1 -> printLoserPlay;
+  Play =  2.
 
 isValidPlay(Board,X,Y,Color) :-
   getPiece(Board,X,Y,_S),
@@ -29,6 +32,7 @@ isValidPlay(Board,X,Y,Color) :-
   countCellNeighbors(Board,X,Y,Color,Count),
   Count < 6.
 
+%podemos usar na parte da AI
 getValidPlays(Board,Color,ValidPlays) :-
   findall((FX,FY),
   (
@@ -65,22 +69,32 @@ checkPlay(Player,Color,Count, ValidPlay) :-
   %Count < 3,
   ValidPlay = 2. %jogada valida, arranjar uma cena mais bonitinha maybe
 
-checkValidPlay(ValidPlay,End):-
+validatePlay(Board,Player,Color, Count, ValidPlay) :-
+  checkPlay(Player,Color,Count,VP),
+  (VP = 0; VP = 1; VP = 2) -> ValidPlay = VP;
+   VP = -1 -> (
+              countValidPlays(Board,Color, NrValidPlays),
+              NrValidPlays = 0 -> ValidPlay = -2;
+              ValidPlay = -1
+  ).
+
+
+checkEndGame(ValidPlay,End):-
   ValidPlay = 0;
   ValidPlay = 1,
   End = 1.
 
-checkValidPlay(ValidPlay,End):-
+checkEndGame(ValidPlay,End):-
   End = 0.
 
 play(Board, Player, X, Y, Color, NewBoard, NewPlayer,End) :-
   playPiece(Board, X, Y, Color, TmpBoard),
   countCellNeighbors(TmpBoard,X,Y,Color,NrNeighbors), 
-  checkPlay(Player,Color,NrNeighbors,ValidPlay),
+  validatePlay(Board,Player,Color,NrNeighbors,ValidPlay),
   switchCurrentPlayer(Player,NewPlayer,ValidPlay),
   updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
   printPlay(ValidPlay),
-  checkValidPlay(ValidPlay,End).
+  checkEndGame(ValidPlay,End).
 
 play(Board, Player, X, Y, Color, NewBoard, NewPlayer,End) :-
   \+ playPiece(Board, X, Y, Color, TmpBoard),
@@ -99,16 +113,10 @@ read_info(X,Y, Color) :-
   write('color: '),
   read(Color).
 
-validate_info_Color(Color, Valid) :-
-  Color = blackPiece,
-  Valid = 1. %is valid
-
-validate_info_Color(Color, Valid) :-
-  Color = whitePiece,
-  Valid = 1. %is valid
-
-validate_info_Color(Color, Valid) :-
-  Valid = 0. %is not valid
+validate_info_Color(Color,Valid) :-
+  Color = blackPiece -> Valid = 1;
+  Color = whitePiece -> Valid = 1;
+  Valid = 0.
 
 validate_info_coords(Board,X,Y, Valid) :-
   getPiece(Board,X,Y,_C),

@@ -159,6 +159,10 @@ updateBoard(Board,OldBoard,ValidPlay,NewBoard) :-
   NewBoard = OldBoard. %if the play is not a valid one then the board is not updated
 
 updateBoard(Board,OldBoard,ValidPlay,NewBoard) :-
+  ValidPlay = -2, 
+  NewBoard = OldBoard. 
+
+updateBoard(Board,OldBoard,ValidPlay,NewBoard) :-
   ValidPlay = 0, %ganhou, arranjar uma cena mais bonitinha maybe
   NewBoard = Board. %updates the board
 
