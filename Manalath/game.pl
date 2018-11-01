@@ -23,27 +23,46 @@ printPlay(Play) :-
   Play = 2.
 
 
+isValidPlay(Board,X,Y,Color) :-
+  getPiece(Board,X,Y,_S),
+  _S = emptyCell,
+  countCellNeighbors(Board,X,Y,Color,Count),
+  Count < 6.
+
+getValidPlays(Board,Color,ValidPlays) :-
+  findall((FX,FY),
+  (
+  !,
+  isValidPlay(Board,FX,FY,Color)
+  ),
+  ValidPlays).
+
+countValidPlays(Board,Color,NrValidPlays) :-
+  getValidPlays(Board,Color,VP),
+  length(VP, NrValidPlays).
+
+
 playPiece(Board, X, Y, Color, NewBoard) :-
   getPiece(Board,X,Y,_S),
   _S = emptyCell,
   setPiece(Board, X, Y, Color, NewBoard). 
 
 checkPlay(Player,Color,Count, ValidPlay) :-
-  Count >= 6,
+  Count >= 5,
   ValidPlay = -1. %jogada invalida, arranjar uma cena mais bonitinha maybe
 
 checkPlay(Player,Color,Count, ValidPlay) :-
   checkColorPlayer(Player,Color),
-  Count == 5,
+  Count == 4,
   ValidPlay = 0. %ganhou, arranjar uma cena mais bonitinha maybe
 
 checkPlay(Player,Color,Count, ValidPlay) :-
   checkColorPlayer(Player,Color),
-  Count == 4,
+  Count == 3,
   ValidPlay = 1. %perdeu, arranjar uma cena mais bonitinha maybe
 
 checkPlay(Player,Color,Count, ValidPlay) :-
-  %Count < 4,
+  %Count < 3,
   ValidPlay = 2. %jogada valida, arranjar uma cena mais bonitinha maybe
 
 checkValidPlay(ValidPlay,End):-
