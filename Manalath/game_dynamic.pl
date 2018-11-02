@@ -110,23 +110,23 @@ checkEndGame(OldValidPlay,ValidPlay,End):-
 checkEndGame(OldValidPlay,ValidPlay,End):-
   End = 0.
 
-setPlay(Board, Player, X, Y, Color, NewBoard, NewPlayer,ValidPlay) :-
+setPlay(Board, X, Y, Color, NewBoard,ValidPlay) :-
   playPiece(Board, X, Y, Color, TmpBoard),
   countCellNeighbors(TmpBoard,X,Y,Color,NrNeighbors), 
+  getCurrentPlayer(Player),
   validatePlay(Board,Player,Color,NrNeighbors,ValidPlay),
-  switchCurrentPlayer(Player,NewPlayer,ValidPlay),
+  switchCurrentPlayer(ValidPlay),
   updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
   printPlay(ValidPlay).
 
-setPlay(Board, Player, X, Y, Color, NewBoard, NewPlayer,ValidPlay) :-
+setPlay(Board, X, Y, Color, NewBoard,ValidPlay) :-
   \+ playPiece(Board, X, Y, Color, TmpBoard),
   NewBoard = Board,
-  NewPlayer = Player,
   ValidPlay = -1,
   printInvalidPlay.
 
-play_PvP(Board, Player, X, Y, Color, NewBoard, NewPlayer, OldValidPlay, ValidPlay,End) :-
-  setPlay(Board, Player, X, Y, Color, NewBoard, NewPlayer, ValidPlay),
+play_PvP(Board, X, Y, Color, NewBoard, OldValidPlay, ValidPlay,End) :-
+  setPlay(Board, X, Y, Color, NewBoard, ValidPlay),
   checkEndGame(OldValidPlay,ValidPlay,End).
 
 %to be improved
@@ -164,16 +164,19 @@ read_validate_info(Board,X,Y,Color) :-
       (printInvalidInformation, read_validate_info(Board,X,Y,Color))  
   ).
 
-play_game_loop_PvP(Board,Player, OldValidPlay, End) :-
+play_game_loop_PvP(Board, OldValidPlay, End) :-
    (End = 1; End = 2),
+   getCurrentPlayer(Player),
    display_game(Board,Player), !.
 
-play_game_loop_PvP(Board, Player, OldValidPlay,End) :-
+play_game_loop_PvP(Board, OldValidPlay,End) :-
+  getCurrentPlayer(Player),
   display_game(Board,Player), !,
   read_validate_info(Board,X,Y,Color),
-  play_PvP(Board,Player,X,Y,Color,NewBoard,NewPlayer, OldValidPlay,ValidPlay, New_End),
-  play_game_loop_PvP(NewBoard,NewPlayer,ValidPlay,New_End).
+  play_PvP(Board,X,Y,Color,NewBoard, OldValidPlay,ValidPlay, New_End),
+  play_game_loop_PvP(NewBoard,ValidPlay,New_End).
 
 play_game_PvP :-
   initial_board(Board),
-  play_game_loop_PvP(Board,1,2,0).
+  assertPlayer, %initializes de players
+  play_game_loop_PvP(Board,2,0).

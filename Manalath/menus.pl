@@ -1,5 +1,5 @@
 
-:- ensure_loaded(game).
+:- ensure_loaded(game_dynamic).
 
 print_InvalidOption :-
     write('Invalid option! Please try again...').
@@ -30,7 +30,7 @@ playMenu :-
     print_playMenu,
     read(Option),
     (
-        Option = 1 -> play_game;
+        Option = 1 -> play_game_PvP;
         Option = 2;
         Option = 3;
         Option = 4 ->firstMenu;

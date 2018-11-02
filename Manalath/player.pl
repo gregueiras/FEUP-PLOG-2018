@@ -1,7 +1,6 @@
 player(1,blackPiece).
 player(2,whitePiece).
 
-
 getPlayer(PlayerId, PlayerColor) :-
     player(PlayerId, PlayerColor).
 

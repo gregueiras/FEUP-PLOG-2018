@@ -1,4 +1,4 @@
 :- ensure_loaded(menus).
 
-manalath :-
+play :-
   firstMenu.
