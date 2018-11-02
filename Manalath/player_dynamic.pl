@@ -1,34 +1,42 @@
-:-dynamic player/3.
+:-dynamic player/4.
 
-player(1,blackPiece,1).
-player(2,whitePiece,0).
+%player(PlayerId, PlayerColor, CurrentlyPlaying, CurrentColor)
+player(1,blackPiece,1, blackPiece).
+player(2,whitePiece,0, whitePiece).
 
 
 assertPlayer :-
-    retractall(player(_,_,_)),
-    asserta(player(1, blackPiece,1)),
-    asserta(player(2, whitePiece,0)).
+    retractall(player(_,_,_,_)),
+    asserta(player(1, blackPiece,1,blackPiece)),
+    asserta(player(2, whitePiece,0, whitePiece)).
     
-
 getCurrentPlayer(Player) :-
-    player(Player, _C,1).
+    player(Player, _C,1, _P).
 
-getPlayer(PlayerId,Color, Current) :-
-    player(PlayerId, Color,Current).
+getPlayer(PlayerId,Color, Current,CurrentColor) :-
+    player(PlayerId, Color,Current, CurrentColor).
 
-checkColorPlayer(PlayerId, Color):-
-    getPlayer(PlayerId,PlayerColor,_C),
-    Color = PlayerColor.
+checkCurrentColorPlayer(PlayerId):-
+    getPlayer(PlayerId,PlayerColor,_C,CurrentColor ),
+    CurrentColor = PlayerColor.
+
+getCurrentPlayerCurrentColor(CurrentColor):-
+    getPlayer(_,_,_,CurrentColor ).
+
+setCurrentColor(Player, CurrentColor) :-
+    getPlayer(Player, Color,Current, _P),
+    retract(player(Player,Color,Current, _)),
+    asserta(player(Player, Color,Current, CurrentColor)).
 
 setCurrentPlayer(Player) :-
-    getPlayer(Player, Color,_C),
-    retract(player(Player,Color,0)),
-    asserta(player(Player, Color,1)).
+    getPlayer(Player, Color,_C, CurrentColor),
+    retract(player(Player,Color,0, _)),
+    asserta(player(Player, Color,1, CurrentColor)).
 
 removeCurrentPlayer(Player) :-
-    getPlayer(Player, Color,_C),
-    retract(player(Player,Color,1)),
-    asserta(player(Player, Color,0)).
+    getPlayer(Player, Color,_C,CurrentColor),
+    retract(player(Player,Color,1,_)),
+    asserta(player(Player, Color,0, CurrentColor)).
 
 getNewCurrentPlayer(CurrentPlayer, NewCurrentPlayer) :-
     CurrentPlayer = 1,

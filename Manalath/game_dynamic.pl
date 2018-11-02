@@ -45,7 +45,6 @@ countValidPlays(Board,Color,NrValidPlays) :-
   getValidPlays(Board,Color,VP),
   length(VP, NrValidPlays).
 
-%inutil........
 valid_moves(Board,Player,ListOfMoves) :-
   getValidPlays(Board, blackPiece, VP_BP),
   getValidPlays(Board,whitePiece,VP_WP),
@@ -57,33 +56,37 @@ playPiece(Board, X, Y, Color, NewBoard) :-
   _S = emptyCell,
   setPiece(Board, X, Y, Color, NewBoard). 
 
-checkPlay(Player,Color,Count, ValidPlay) :-
-  Count >= 5,
-  ValidPlay = -1. %jogada invalida, arranjar uma cena mais bonitinha maybe
 
-checkPlay(Player,Color,Count, ValidPlay) :-
-  checkColorPlayer(Player,Color),
+
+%estas vao sair daqui
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+checkPlay(Player,Count, ValidPlay) :-
+  checkCurrentColorPlayer(Player),
   Count == 4,
   ValidPlay = 0. %ganhou, arranjar uma cena mais bonitinha maybe
 
-checkPlay(Player,Color,Count, ValidPlay) :-
-  checkColorPlayer(Player,Color),
+checkPlay(Player,Count, ValidPlay) :-
+  checkCurrentColorPlayer(Player),
   Count == 3,
   ValidPlay = 1. %perdeu, arranjar uma cena mais bonitinha maybe
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-checkPlay(Player,Color,Count, ValidPlay) :-
+checkPlay(Player,Count, ValidPlay) :-
+  Count >= 5,
+  ValidPlay = -1. %jogada invalida, arranjar uma cena mais bonitinha maybe
+
+checkPlay(Player,Count, ValidPlay) :-
   %Count < 3,
   ValidPlay = 2. %jogada valida, arranjar uma cena mais bonitinha maybe
 
-
-validatePlay(Board,Player,Color, Count, ValidPlay) :-
-  checkPlay(Player,Color,Count,VP),
+value(Board,Player, Color,Count, Value) :-
+  checkPlay(Player,Count,VP),
   VP = -1 ,
-  checkInvalidPlay(Board,Color,ValidPlay).
+  checkInvalidPlay(Board,Color, Value).
 
-validatePlay(Board,Player,Color, Count, ValidPlay) :-
-  checkPlay(Player,Color,Count,VP),
-  ValidPlay = VP.
+value(Board,Player,Color, Count, Value) :-
+  checkPlay(Player,Count,VP),
+  Value = VP.
 
 checkInvalidPlay(Board,Color,ValidPlay) :-
   countValidPlays(Board,Color, NrValidPlays),
@@ -110,23 +113,26 @@ checkEndGame(OldValidPlay,ValidPlay,End):-
 checkEndGame(OldValidPlay,ValidPlay,End):-
   End = 0.
 
-setPlay(Board, X, Y, Color, NewBoard,ValidPlay) :-
-  playPiece(Board, X, Y, Color, TmpBoard),
+
+setPlay(Board, X, Y, NewBoard,ValidPlay) :-
+  getCurrentPlayerCurrentColor(Color),
+  playPiece(Board, X, Y, Color,TmpBoard),
   countCellNeighbors(TmpBoard,X,Y,Color,NrNeighbors), 
   getCurrentPlayer(Player),
-  validatePlay(Board,Player,Color,NrNeighbors,ValidPlay),
+  value(TmpBoard,Player,Color,NrNeighbors,ValidPlay),
   switchCurrentPlayer(ValidPlay),
   updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
   printPlay(ValidPlay).
 
-setPlay(Board, X, Y, Color, NewBoard,ValidPlay) :-
-  \+ playPiece(Board, X, Y, Color, TmpBoard),
+setPlay(Board, X, Y, NewBoard,ValidPlay) :-
+  getCurrentPlayerCurrentColor(Color),
+  \+ playPiece(Board, X, Y, Color,TmpBoard),
   NewBoard = Board,
   ValidPlay = -1,
   printInvalidPlay.
 
-play_PvP(Board, X, Y, Color, NewBoard, OldValidPlay, ValidPlay,End) :-
-  setPlay(Board, X, Y, Color, NewBoard, ValidPlay),
+play_PvP(Board, X, Y, NewBoard, OldValidPlay, ValidPlay,End) :-
+  setPlay(Board, X, Y, NewBoard, ValidPlay),
   checkEndGame(OldValidPlay,ValidPlay,End).
 
 %to be improved
@@ -173,10 +179,14 @@ play_game_loop_PvP(Board, OldValidPlay,End) :-
   getCurrentPlayer(Player),
   display_game(Board,Player), !,
   read_validate_info(Board,X,Y,Color),
-  play_PvP(Board,X,Y,Color,NewBoard, OldValidPlay,ValidPlay, New_End),
+  setCurrentColor(Player, Color),
+  play_PvP(Board,X,Y,NewBoard, OldValidPlay,ValidPlay, New_End),
   play_game_loop_PvP(NewBoard,ValidPlay,New_End).
 
 play_game_PvP :-
   initial_board(Board),
-  assertPlayer, %initializes de players
+  assertPlayer, %initializes the players
   play_game_loop_PvP(Board,2,0).
+
+%WIP
+%game_over(Board, Winner) :-
