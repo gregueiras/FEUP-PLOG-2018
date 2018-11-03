@@ -1,4 +1,4 @@
-:- ensure_loaded(game_dynamic).
+:- ensure_loaded(gamePvP).
 
 print_InvalidOption :-
     write('Invalid option! Please try again...').

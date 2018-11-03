@@ -103,7 +103,7 @@ setNrValidPlays(NrValidPlays,ValidPlay) :-
   NrValidPlays > 0 ,
   ValidPlay = -1.
 
-setPlay(Board, X, Y, NewBoard) :-
+move(X, Y, Board, NewBoard) :-
   getCurrentPlayerCurrentColor(Color),
   playPiece(Board, X, Y, Color,TmpBoard),
   countCellNeighbors(TmpBoard,X,Y,Color,NrNeighbors), 
@@ -113,7 +113,7 @@ setPlay(Board, X, Y, NewBoard) :-
   updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
   printPlay(ValidPlay).
 
-setPlay(Board, X, Y, NewBoard) :-
+move(X, Y,Board, NewBoard) :-
   getCurrentPlayerCurrentColor(Color),
   \+ playPiece(Board, X, Y, Color,TmpBoard),
   NewBoard = Board,
@@ -121,7 +121,7 @@ setPlay(Board, X, Y, NewBoard) :-
   printInvalidPlay.
 
 play_PvP(Board, X, Y, NewBoard) :-
-  setPlay(Board, X, Y, NewBoard).
+  move( X, Y, Board,NewBoard).
 
 %to be improved
 read_info(X,Y, Color) :-
