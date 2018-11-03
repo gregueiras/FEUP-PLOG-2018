@@ -4,6 +4,10 @@ display_game(Board, Player) :-
   print_player(Player),
   print_board(Board).
 
+display_game_winner(Board,Winner) :-
+  printWinner(Winner),
+  print_board(Board).
+  
 printInvalidPlay :-
   write('Invalid Play!!!'),nl.
 
@@ -18,6 +22,10 @@ printIsImpossiblePlay :-
 
 printInvalidInformation :-
   write('Invalid information! Please try again...'), nl.
+
+printWinner(Winner) :-
+  write('Winner : '),
+  print_player(Winner), nl.
 
 printPlay(Play) :-
   Play = -2 ->printIsImpossiblePlay;
@@ -60,15 +68,15 @@ playPiece(Board, X, Y, Color, NewBoard) :-
 
 %estas vao sair daqui
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-checkPlay(Player,Count, ValidPlay) :-
-  checkCurrentColorPlayer(Player),
-  Count == 4,
-  ValidPlay = 0. %ganhou, arranjar uma cena mais bonitinha maybe
+%checkPlay(Player,Count, ValidPlay) :-
+%  checkCurrentColorPlayer(Player),
+%  Count == 4,
+%  ValidPlay = 0. %ganhou, arranjar uma cena mais bonitinha maybe
 
-checkPlay(Player,Count, ValidPlay) :-
-  checkCurrentColorPlayer(Player),
-  Count == 3,
-  ValidPlay = 1. %perdeu, arranjar uma cena mais bonitinha maybe
+%checkPlay(Player,Count, ValidPlay) :-
+%  checkCurrentColorPlayer(Player),
+%  Count == 3,
+%  ValidPlay = 1. %perdeu, arranjar uma cena mais bonitinha maybe
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 checkPlay(Player,Count, ValidPlay) :-
@@ -172,7 +180,7 @@ read_validate_info(Board,X,Y,Color) :-
 
 play_game_loop_PvP(Board,Winner, OldValidPlay) :-
   (Winner = 1; Winner = 2),
-  display_game(Board,Winner), !.
+  display_game_winner(Board,Winner), !.
 
 
 play_game_loop_PvP(Board,Winner, OldValidPlay) :-
@@ -200,49 +208,46 @@ checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
 checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
   Res = [].
 
-check_game_neighbors_value(Board,L,Value ,Cells, C) :-
+check_game_neighbors_value(Board,L,Player_Color,Value ,Cells, C) :-
   length(Cells,N),
   N == 1,
   C = Cells, !.
 
-check_game_neighbors_value(Board,L,Value ,Cells, C) :-
+check_game_neighbors_value(Board,L,Player_Color,Value ,Cells, C) :-
   length(L,N),
   N == 0,
   C = [], !.
 
-check_game_neighbors_value(Board,[cell(X,Y,Color)| T], Value, Cells, C) :- 
-  Color = emptyCell,
-  check_game_neighbors_value(Board,T, Value, Cells, C).
 
-check_game_neighbors_value(Board,[cell(X,Y,Color)| T], Value, Cells, C) :- 
-  (Color = blackPiece; Color = whitePiece),
+check_game_neighbors_value(Board,[cell(X,Y,Color)| T],Player_Color, Value, Cells, C) :- 
+  Color = Player_Color,
   checkCellNeighborsCount(Board,X,Y,Color,Value,Res),
-  check_game_neighbors_value(Board,T, Value, Res, C).
+  check_game_neighbors_value(Board,T, Player_Color,Value, Res, C).
+
+check_game_neighbors_value(Board,[cell(X,Y,Color)| T], Player_Color,Value, Cells, C) :- 
+  check_game_neighbors_value(Board,T,Player_Color, Value, Cells, C).
 
 
-get_Winner([(X,Y, Color)|T],WinnerOrLoser, Winner) :-
-  WinnerOrLoser = 0, %winner
-  getPlayer(PlayerId, Color, Current, _C),
-  Current = 1 -> (Winner = PlayerId);
-  Winner  = 0.
+%get_Winner([(X,Y, Color)|T],WinnerOrLoser, Winner) :-
+%  WinnerOrLoser = 0, %winner
+%  getPlayer(PlayerId, Color, Current, _C),
+%  Current = 1 -> (Winner = PlayerId);
+%  Winner  = 0.
 
-get_Winner([(X,Y, Color)|T],WinnerOrLoser, Winner) :-
-  WinnerOrLoser = 1, %loser
-  getPlayer(PlayerId, Color, Current, _C),!,
-  Current = 1 -> getOppositePlayer(PlayerId, Winner);
-  Winner = 0.
 
 game_over(Board, Winner) :-
-  check_game_neighbors_value(Board, Board, 4, [], WinnerList),
+  getPlayer(PlayerId, Color, 1, _C),
+  check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
   length(WinnerList,N),
   N == 1,
-  get_Winner(WinnerList, 0 , Winner).
+  Winner = PlayerId.
 
 game_over(Board, Winner) :-
-  check_game_neighbors_value(Board, Board, 3, [], LoserList),
+  getPlayer(PlayerId, Color, 1, _C),
+  check_game_neighbors_value(Board, Board, Color, 3, [], LoserList),
   length(LoserList,N),
   N == 1,
-  get_Winner(LoserList, 1 , Winner).
+  getOppositePlayer(PlayerId,Winner).
 
 game_over(Board, Winner) :-
   Winner = 0.

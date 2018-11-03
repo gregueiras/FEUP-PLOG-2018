@@ -13,6 +13,9 @@ assertPlayer :-
 getCurrentPlayer(Player) :-
     player(Player, _C,1, _P).
 
+getCurrentPlayerColor(Color) :-
+    player(_P,Color,1, _P).
+
 getPlayer(PlayerId,Color, Current,CurrentColor) :-
     player(PlayerId, Color,Current, CurrentColor).
 
@@ -64,12 +67,12 @@ switchCurrentPlayer(ValidPlay) :-
     ValidPlay = -2,  
     switchPlayer.
 
-switchCurrentPlayer(ValidPlay) :-
-    ValidPlay = 0.
+%switchCurrentPlayer(ValidPlay) :-
+%    ValidPlay = 0.
    %nothing happens, the game ends
 
-switchCurrentPlayer(CurrentPlayer,NextPlayer,ValidPlay) :-
-    ValidPlay = 1. %nothing happens, the game ends
+%%switchCurrentPlayer(CurrentPlayer,NextPlayer,ValidPlay) :-
+ %   ValidPlay = 1. %nothing happens, the game ends
 
 
 getOppositePlayer(PlayerId, OpPlayerId) :-

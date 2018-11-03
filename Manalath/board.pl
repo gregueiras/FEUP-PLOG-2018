@@ -65,7 +65,7 @@ mini([
 
 
 test_board([
-  cell( 0, 0,blackPiece),cell( 2, 0,blackPiece),cell( 4, 0,blackPiece),cell( 6, 0,blackPiece),cell( 8, 0,blackPiece),
+  cell( 0, 0,emptyCell),cell( 2, 0,whitePiece),cell( 4, 0,whitePiece),cell( 6, 0,whitePiece),cell( 8, 0,whitePiece),
   cell( 0, 1,emptyCell),cell( 2, 1,emptyCell),cell( 4, 1,emptyCell),cell( 6, 1,emptyCell),cell( 8, 1,emptyCell),
   cell(10, 1,emptyCell),
   cell( 0, 2,emptyCell),cell( 2, 2,emptyCell),cell( 4, 2,emptyCell),cell( 6, 2,emptyCell),cell( 8, 2,emptyCell),
