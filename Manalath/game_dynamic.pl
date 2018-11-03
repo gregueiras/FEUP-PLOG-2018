@@ -65,20 +65,6 @@ playPiece(Board, X, Y, Color, NewBoard) :-
   setPiece(Board, X, Y, Color, NewBoard). 
 
 
-
-%estas vao sair daqui
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%checkPlay(Player,Count, ValidPlay) :-
-%  checkCurrentColorPlayer(Player),
-%  Count == 4,
-%  ValidPlay = 0. %ganhou, arranjar uma cena mais bonitinha maybe
-
-%checkPlay(Player,Count, ValidPlay) :-
-%  checkCurrentColorPlayer(Player),
-%  Count == 3,
-%  ValidPlay = 1. %perdeu, arranjar uma cena mais bonitinha maybe
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 checkPlay(Player,Count, ValidPlay) :-
   Count >= 5,
   ValidPlay = -1. %jogada invalida, arranjar uma cena mais bonitinha maybe
@@ -108,19 +94,6 @@ setNrValidPlays(NrValidPlays,ValidPlay) :-
   NrValidPlays > 0 ,
   ValidPlay = -1.
 
-checkEndGame(OldValidPlay,ValidPlay,End):-
-  ValidPlay = 0;
-  ValidPlay = 1,
-  End = 1. %acaba normalmente
-
-checkEndGame(OldValidPlay,ValidPlay,End):-
-  OldValidPlay = -2,
-  ValidPlay = -2,
-  End = 2. %acaba em empate
-
-checkEndGame(OldValidPlay,ValidPlay,End):-
-  End = 0.
-
 
 setPlay(Board, X, Y, NewBoard,ValidPlay) :-
   getCurrentPlayerCurrentColor(Color),
@@ -138,9 +111,8 @@ setPlay(Board, X, Y, NewBoard,ValidPlay) :-
   ValidPlay = -1,
   printInvalidPlay.
 
-play_PvP(Board, X, Y, NewBoard, OldValidPlay, ValidPlay,End) :-
-  setPlay(Board, X, Y, NewBoard, ValidPlay),
-  checkEndGame(OldValidPlay,ValidPlay,End).
+play_PvP(Board, X, Y, NewBoard, OldValidPlay, ValidPlay) :-
+  setPlay(Board, X, Y, NewBoard, ValidPlay).
 
 %to be improved
 read_info(X,Y, Color) :-
@@ -188,7 +160,7 @@ play_game_loop_PvP(Board,Winner, OldValidPlay) :-
  display_game(Board,Player), !,
  read_validate_info(Board,X,Y,Color),
  setCurrentColor(Player, Color),
- play_PvP(Board,X,Y,NewBoard, OldValidPlay,ValidPlay, New_End),
+ play_PvP(Board,X,Y,NewBoard, OldValidPlay,ValidPlay),
  game_over(NewBoard, New_Winner),
  switchCurrentPlayer(ValidPlay),
  play_game_loop_PvP(NewBoard, New_Winner,ValidPlay).
@@ -228,22 +200,15 @@ check_game_neighbors_value(Board,[cell(X,Y,Color)| T], Player_Color,Value, Cells
   check_game_neighbors_value(Board,T,Player_Color, Value, Cells, C).
 
 
-%get_Winner([(X,Y, Color)|T],WinnerOrLoser, Winner) :-
-%  WinnerOrLoser = 0, %winner
-%  getPlayer(PlayerId, Color, Current, _C),
-%  Current = 1 -> (Winner = PlayerId);
-%  Winner  = 0.
-
-
 game_over(Board, Winner) :-
-  getPlayer(PlayerId, Color, 1, _C),
+  getPlayer(PlayerId, Color, 1, _,_),
   check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
   length(WinnerList,N),
   N == 1,
   Winner = PlayerId.
 
 game_over(Board, Winner) :-
-  getPlayer(PlayerId, Color, 1, _C),
+  getPlayer(PlayerId, Color, 1, _,_),
   check_game_neighbors_value(Board, Board, Color, 3, [], LoserList),
   length(LoserList,N),
   N == 1,
