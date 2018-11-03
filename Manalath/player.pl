@@ -15,7 +15,6 @@ assertPlayers_PvC :-
     asserta(player(1, blackPiece,1,blackPiece,0,0)),
     asserta(player(2, whitePiece,0, whitePiece,0,1)). %player 2 is a bot
 
-
 getPlayer(PlayerId,Color, Current,CurrentColor,Value, Bot) :-
     player(PlayerId, Color,Current, CurrentColor, Value, Bot).
 
@@ -72,6 +71,9 @@ switchPlayer :-
     removeCurrentPlayer(CurrentPlayer),
     setCurrentPlayer(NewCurrentPlayer).
 
+switchCurrentPlayer :-
+    getCurrentPlayerValue(ValidPlay),
+    switchCurrentPlayer(ValidPlay).
 
 switchCurrentPlayer(ValidPlay) :-
     ValidPlay = 2, %if it is a valid play the current player switches
@@ -87,6 +89,10 @@ switchCurrentPlayer(ValidPlay) :-
 getOppositePlayer(PlayerId, OpPlayerId) :-
     PlayerId = 1 -> OpPlayerId = 2;
     PlayerId = 2 -> OpPlayerId = 1.
+
+getOppositeColor(Color, OpColor) :-
+    Color = whitePiece -> OpColor = blackPiece;
+    Color = blackPiece -> OpColor = whitePiece.
 
 print_player(Player) :-
     write('Player : '),

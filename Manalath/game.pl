@@ -228,6 +228,5 @@ play_game_loop(Board,Winner) :-
  setCurrentColor(Player, Color),
  move(X,Y, Board,NewBoard),
  game_over(NewBoard, New_Winner),
- getCurrentPlayerValue(ValidPlay),
- switchCurrentPlayer(ValidPlay),
+ switchCurrentPlayer,
  play_game_loop(NewBoard, New_Winner).
