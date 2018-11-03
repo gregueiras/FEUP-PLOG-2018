@@ -48,7 +48,7 @@ choose_move_Lvl1(Board,X,Y,Color) :-
     getCurrentPlayer(Player),
     getCurrentPlayerColor(Player_Color),
     valid_moves(Board,Player,ListOfMoves),
-    choose_from_validMoves(Board,PLayer_Color,ListOfMoves,[],Cells),
+    choose_from_validMoves(Board,Player_Color,ListOfMoves,[],Cells),
     random_member(Move,Cells),
     getMove(Move,X,Y,Color).
 
