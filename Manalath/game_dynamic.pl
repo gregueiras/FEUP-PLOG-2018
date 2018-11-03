@@ -189,6 +189,7 @@ play_game_PvP :-
   play_game_loop_PvP(Board,2,0).
 
 
+
 checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
   countCellNeighbors(Board,X,Y,Color,Count),
   Count == Value,
@@ -197,23 +198,25 @@ checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
 checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
   Res = [].
 
-
-chack_game_neighbors_value(Board,L,Value ,Cells, C) :-
+check_game_neighbors_value(Board,L,Value ,Cells, C) :-
   length(Cells,N),
   N == 1,
   C = Cells, !.
 
-chack_game_neighbors_value(Board,L,Value ,Cells, C) :-
+check_game_neighbors_value(Board,L,Value ,Cells, C) :-
   length(L,N),
   N == 0,
   C = [], !.
 
-chack_game_neighbors_value(Board,[cell(X,Y,Color)| T], Value, Cells, C) :- 
+check_game_neighbors_value(Board,[cell(X,Y,Color)| T], Value, Cells, C) :- 
   Color = emptyCell,
-  chack_game_neighbors_value(Board,T, Value, Cells, C).
+  check_game_neighbors_value(Board,T, Value, Cells, C).
 
-chack_game_neighbors_value(Board,[cell(X,Y,Color)| T], Value, Cells, C) :- 
+check_game_neighbors_value(Board,[cell(X,Y,Color)| T], Value, Cells, C) :- 
   (Color = blackPiece; Color = whitePiece),
   checkCellNeighborsCount(Board,X,Y,Color,Value,Res),
-  chack_game_neighbors_value(Board,T, Value, Res, C).
+  check_game_neighbors_value(Board,T, Value, Res, C).
+
+
+
 
