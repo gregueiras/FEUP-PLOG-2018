@@ -183,14 +183,6 @@ updateBoard(Board,OldBoard,ValidPlay,NewBoard) :-
   NewBoard = OldBoard. 
 
 updateBoard(Board,OldBoard,ValidPlay,NewBoard) :-
-  ValidPlay = 0, %ganhou, arranjar uma cena mais bonitinha maybe
-  NewBoard = Board. %updates the board
-
-updateBoard(Board,OldBoard,ValidPlay,NewBoard) :-
-  ValidPlay = 1, %perdeu, arranjar uma cena mais bonitinha maybe
-  NewBoard = Board. %updates the board
-
-updateBoard(Board,OldBoard,ValidPlay,NewBoard) :-
   ValidPlay = 2, %jogada valida, arranjar uma cena mais bonitinha maybe
   NewBoard = Board.  %updates the board
 

@@ -24,14 +24,16 @@ printInvalidInformation :-
   write('Invalid information! Please try again...'), nl.
 
 printWinner(Winner) :-
+  Winner = -1.
+  write('the game ended in draw').
+
+printWinner(Winner) :-
   write('Winner : '),
   print_player(Winner), nl.
 
 printPlay(Play) :-
   Play = -2 ->printIsImpossiblePlay;
   Play = -1 -> printInvalidPlay;
-  Play =  0 -> printWinnerPlay;
-  Play =  1 -> printLoserPlay;
   Play =  2.
 
 isValidPlay(Board,X,Y,Color) :-
@@ -76,14 +78,21 @@ checkPlay(Player,Count, ValidPlay) :-
 value(Board,Player, Color,Count, Value) :-
   checkPlay(Player,Count,VP),
   VP = -1 ,
-  checkInvalidPlay(Board,Color, Value).
+  checkInvalidPlay(Board,Color, Value),
+  Value = -1.
+
+value(Board,Player, Color,Count, Value) :-
+  checkPlay(Player,Count,VP),
+  VP = -1 ,
+  checkInvalidPlay(Board,Color, Value),
+  Value = -2.
 
 value(Board,Player,Color, Count, Value) :-
   checkPlay(Player,Count,VP),
   Value = VP.
 
 checkInvalidPlay(Board,Color,ValidPlay) :-
-  countValidPlays(Board,Color, NrValidPlays),
+  countValidPlays(Board,Color, NrValidPlays), %ve quantas valid plays existem
   setNrValidPlays(NrValidPlays,ValidPlay).
 
 setNrValidPlays(NrValidPlays,ValidPlay) :-
@@ -94,25 +103,25 @@ setNrValidPlays(NrValidPlays,ValidPlay) :-
   NrValidPlays > 0 ,
   ValidPlay = -1.
 
-
-setPlay(Board, X, Y, NewBoard,ValidPlay) :-
+setPlay(Board, X, Y, NewBoard) :-
   getCurrentPlayerCurrentColor(Color),
   playPiece(Board, X, Y, Color,TmpBoard),
   countCellNeighbors(TmpBoard,X,Y,Color,NrNeighbors), 
   getCurrentPlayer(Player),
   value(TmpBoard,Player,Color,NrNeighbors,ValidPlay),
+  setValue(Player,ValidPlay),
   updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
   printPlay(ValidPlay).
 
-setPlay(Board, X, Y, NewBoard,ValidPlay) :-
+setPlay(Board, X, Y, NewBoard) :-
   getCurrentPlayerCurrentColor(Color),
   \+ playPiece(Board, X, Y, Color,TmpBoard),
   NewBoard = Board,
   ValidPlay = -1,
   printInvalidPlay.
 
-play_PvP(Board, X, Y, NewBoard, OldValidPlay, ValidPlay) :-
-  setPlay(Board, X, Y, NewBoard, ValidPlay).
+play_PvP(Board, X, Y, NewBoard) :-
+  setPlay(Board, X, Y, NewBoard).
 
 %to be improved
 read_info(X,Y, Color) :-
@@ -150,27 +159,26 @@ read_validate_info(Board,X,Y,Color) :-
   ).
 
 
-play_game_loop_PvP(Board,Winner, OldValidPlay) :-
-  (Winner = 1; Winner = 2),
+play_game_loop_PvP(Board,Winner) :-
+  (Winner = 1; Winner = 2; Winner = -1),
   display_game_winner(Board,Winner), !.
 
 
-play_game_loop_PvP(Board,Winner, OldValidPlay) :-
+play_game_loop_PvP(Board,Winner) :-
  getCurrentPlayer(Player),
  display_game(Board,Player), !,
  read_validate_info(Board,X,Y,Color),
  setCurrentColor(Player, Color),
- play_PvP(Board,X,Y,NewBoard, OldValidPlay,ValidPlay),
+ play_PvP(Board,X,Y,NewBoard),
  game_over(NewBoard, New_Winner),
+ getCurrentPlayerValue(ValidPlay),
  switchCurrentPlayer(ValidPlay),
- play_game_loop_PvP(NewBoard, New_Winner,ValidPlay).
+ play_game_loop_PvP(NewBoard, New_Winner).
 
 play_game_PvP :-
   initial_board(Board),
   assertPlayer, %initializes the players
-  play_game_loop_PvP(Board,0,0).
-
-
+  play_game_loop_PvP(Board,0).
 
 checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
   countCellNeighbors(Board,X,Y,Color,Count),
@@ -199,16 +207,24 @@ check_game_neighbors_value(Board,[cell(X,Y,Color)| T],Player_Color, Value, Cells
 check_game_neighbors_value(Board,[cell(X,Y,Color)| T], Player_Color,Value, Cells, C) :- 
   check_game_neighbors_value(Board,T,Player_Color, Value, Cells, C).
 
+game_over(Board,Winner) :-
+  getPlayer(Player1,_,_,_,Value1),
+  Value1 = -2,
+  getPlayer(Player2,_,_,_,Value2),
+  Value2 = -2,
+  Winner = -1.
 
 game_over(Board, Winner) :-
-  getPlayer(PlayerId, Color, 1, _,_),
+  getPlayer(PlayerId, Color, 1, _,Value),
+  Value = 2,
   check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
   length(WinnerList,N),
   N == 1,
   Winner = PlayerId.
 
 game_over(Board, Winner) :-
-  getPlayer(PlayerId, Color, 1, _,_),
+  getPlayer(PlayerId, Color, 1, _,Value),
+  Value = 2,
   check_game_neighbors_value(Board, Board, Color, 3, [], LoserList),
   length(LoserList,N),
   N == 1,

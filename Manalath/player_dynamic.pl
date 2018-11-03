@@ -1,6 +1,6 @@
 :-dynamic player/5.
 
-%player(PlayerId, PlayerColor, CurrentlyPlaying, CurrentColor, HasPassed)
+%player(PlayerId, PlayerColor, CurrentlyPlaying, CurrentColor, Value)
 player(1,blackPiece,1, blackPiece,0).
 player(2,whitePiece,0, whitePiece,0).
 
@@ -10,8 +10,8 @@ assertPlayer :-
     asserta(player(1, blackPiece,1,blackPiece,0)),
     asserta(player(2, whitePiece,0, whitePiece,0)).
 
-getPlayer(PlayerId,Color, Current,CurrentColor,HasPassed) :-
-    player(PlayerId, Color,Current, CurrentColor, HasPassed).
+getPlayer(PlayerId,Color, Current,CurrentColor,Value) :-
+    player(PlayerId, Color,Current, CurrentColor, Value).
 
 getCurrentPlayer(Player) :-
     getPlayer(Player, _,1, _,_).
@@ -24,22 +24,30 @@ checkCurrentColorPlayer(PlayerId):-
     CurrentColor = PlayerColor.
 
 getCurrentPlayerCurrentColor(CurrentColor):-
-    getPlayer(_,_,_,CurrentColor,_).
+    getPlayer(_,_,1,CurrentColor,_).
+
+getCurrentPlayerValue(Value):-
+    getPlayer(_,_,1,_,Value).
 
 setCurrentColor(Player, CurrentColor) :-
-    getPlayer(Player, Color,Current, _,HasPassed),
-    retract(player(Player,Color,Current, _,HasPassed)),
-    asserta(player(Player, Color,Current, CurrentColor,HasPassed)).
+    getPlayer(Player, Color,Current, _,Value),
+    retract(player(Player,Color,Current, _,Value)),
+    asserta(player(Player, Color,Current, CurrentColor,Value)).
+
+setValue(Player, Value) :-
+    getPlayer(Player, Color,Current, CurrentColor,_),
+    retract(player(Player,Color,Current,CurrentColor,_)),
+    asserta(player(Player, Color,Current, CurrentColor,Value)).
 
 setCurrentPlayer(Player) :-
-    getPlayer(Player, Color,_, CurrentColor, HasPassed),
-    retract(player(Player,Color,0, _, HasPassed)),
-    asserta(player(Player, Color,1, CurrentColor, HasPassed)).
+    getPlayer(Player, Color,_, CurrentColor, Value),
+    retract(player(Player,Color,0, _, Value)),
+    asserta(player(Player, Color,1, CurrentColor, Value)).
 
 removeCurrentPlayer(Player) :-
-    getPlayer(Player, Color,_,CurrentColor, HasPassed),
-    retract(player(Player,Color,1,_, HasPassed)),
-    asserta(player(Player, Color,0, CurrentColor, HasPassed)).
+    getPlayer(Player, Color,_,CurrentColor, Value),
+    retract(player(Player,Color,1,_, Value)),
+    asserta(player(Player, Color,0, CurrentColor, Value)).
 
 getNewCurrentPlayer(CurrentPlayer, NewCurrentPlayer) :-
     CurrentPlayer = 1,
