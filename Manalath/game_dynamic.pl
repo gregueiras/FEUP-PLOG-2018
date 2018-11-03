@@ -120,7 +120,6 @@ setPlay(Board, X, Y, NewBoard,ValidPlay) :-
   countCellNeighbors(TmpBoard,X,Y,Color,NrNeighbors), 
   getCurrentPlayer(Player),
   value(TmpBoard,Player,Color,NrNeighbors,ValidPlay),
-  switchCurrentPlayer(ValidPlay),
   updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
   printPlay(ValidPlay).
 
@@ -170,30 +169,33 @@ read_validate_info(Board,X,Y,Color) :-
       (printInvalidInformation, read_validate_info(Board,X,Y,Color))  
   ).
 
-play_game_loop_PvP(Board, OldValidPlay, End) :-
-   (End = 1; End = 2),
-   getCurrentPlayer(Player),
-   display_game(Board,Player), !.
 
-play_game_loop_PvP(Board, OldValidPlay,End) :-
-  getCurrentPlayer(Player),
-  display_game(Board,Player), !,
-  read_validate_info(Board,X,Y,Color),
-  setCurrentColor(Player, Color),
-  play_PvP(Board,X,Y,NewBoard, OldValidPlay,ValidPlay, New_End),
-  play_game_loop_PvP(NewBoard,ValidPlay,New_End).
+play_game_loop_PvP(Board,Winner, OldValidPlay) :-
+  (Winner = 1; Winner = 2),
+  display_game(Board,Winner), !.
+
+
+play_game_loop_PvP(Board,Winner, OldValidPlay) :-
+ getCurrentPlayer(Player),
+ display_game(Board,Player), !,
+ read_validate_info(Board,X,Y,Color),
+ setCurrentColor(Player, Color),
+ play_PvP(Board,X,Y,NewBoard, OldValidPlay,ValidPlay, New_End),
+ game_over(NewBoard, New_Winner),
+ switchCurrentPlayer(ValidPlay),
+ play_game_loop_PvP(NewBoard, New_Winner,ValidPlay).
 
 play_game_PvP :-
   initial_board(Board),
   assertPlayer, %initializes the players
-  play_game_loop_PvP(Board,2,0).
+  play_game_loop_PvP(Board,0,0).
 
 
 
 checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
   countCellNeighbors(Board,X,Y,Color,Count),
   Count == Value,
-  Res = [(X,Y)], !.
+  Res = [(X,Y, Color)], !.
 
 checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
   Res = [].
@@ -217,6 +219,33 @@ check_game_neighbors_value(Board,[cell(X,Y,Color)| T], Value, Cells, C) :-
   checkCellNeighborsCount(Board,X,Y,Color,Value,Res),
   check_game_neighbors_value(Board,T, Value, Res, C).
 
+
+get_Winner([(X,Y, Color)|T],WinnerOrLoser, Winner) :-
+  WinnerOrLoser = 0, %winner
+  getPlayer(PlayerId, Color, Current, _C),
+  Current = 1 -> (Winner = PlayerId);
+  Winner  = 0.
+
+get_Winner([(X,Y, Color)|T],WinnerOrLoser, Winner) :-
+  WinnerOrLoser = 1, %loser
+  getPlayer(PlayerId, Color, Current, _C),!,
+  Current = 1 -> getOppositePlayer(PlayerId, Winner);
+  Winner = 0.
+
+game_over(Board, Winner) :-
+  check_game_neighbors_value(Board, Board, 4, [], WinnerList),
+  length(WinnerList,N),
+  N == 1,
+  get_Winner(WinnerList, 0 , Winner).
+
+game_over(Board, Winner) :-
+  check_game_neighbors_value(Board, Board, 3, [], LoserList),
+  length(LoserList,N),
+  N == 1,
+  get_Winner(LoserList, 1 , Winner).
+
+game_over(Board, Winner) :-
+  Winner = 0.
 
 
 

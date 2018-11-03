@@ -71,6 +71,11 @@ switchCurrentPlayer(ValidPlay) :-
 switchCurrentPlayer(CurrentPlayer,NextPlayer,ValidPlay) :-
     ValidPlay = 1. %nothing happens, the game ends
 
+
+getOppositePlayer(PlayerId, OpPlayerId) :-
+    PlayerId = 1 -> OpPlayerId = 2;
+    PlayerId = 2 -> OpPlayerId = 1.
+
 print_player(Player) :-
     write('Player : '),
     write(Player),
