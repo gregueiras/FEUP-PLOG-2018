@@ -188,5 +188,32 @@ play_game_PvP :-
   assertPlayer, %initializes the players
   play_game_loop_PvP(Board,2,0).
 
-%WIP
-%game_over(Board, Winner) :-
+
+checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
+  countCellNeighbors(Board,X,Y,Color,Count),
+  Count == Value,
+  Res = [(X,Y)], !.
+
+checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
+  Res = [].
+
+
+chack_game_neighbors_value(Board,L,Value ,Cells, C) :-
+  length(Cells,N),
+  N == 1,
+  C = Cells, !.
+
+chack_game_neighbors_value(Board,L,Value ,Cells, C) :-
+  length(L,N),
+  N == 0,
+  C = [], !.
+
+chack_game_neighbors_value(Board,[cell(X,Y,Color)| T], Value, Cells, C) :- 
+  Color = emptyCell,
+  chack_game_neighbors_value(Board,T, Value, Cells, C).
+
+chack_game_neighbors_value(Board,[cell(X,Y,Color)| T], Value, Cells, C) :- 
+  (Color = blackPiece; Color = whitePiece),
+  checkCellNeighborsCount(Board,X,Y,Color,Value,Res),
+  chack_game_neighbors_value(Board,T, Value, Res, C).
+

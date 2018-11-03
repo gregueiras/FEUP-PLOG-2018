@@ -1,4 +1,3 @@
-
 :- ensure_loaded(game_dynamic).
 
 print_InvalidOption :-
