@@ -1,4 +1,5 @@
-:- ensure_loaded(game).
+
+:- ensure_loaded(includes).
 
 %se jogar aqui ganho? -> conta os vizinhos da minha cor, se forem 4 jogo
 %se jogar aqui perco? -> conta os vizinhos da minha cor, se forem 3 nao jogo
@@ -41,7 +42,7 @@ choose_from_validMoves(Board,Player_Color,[(X,Y,Color)|T],Tmp,Cells) :-
     choose_from_validMoves(Board, Player_Color,T,Tmp, Cells).
 
 choose_from_validMoves(Board,Player_Color,[(X,Y,Color)|T],Tmp,Cells) :-
-    append(Tmp,[(X,Y,Player_Color)], New_Tmp),
+    append(Tmp,[(X,Y,Color)], New_Tmp),
     choose_from_validMoves(Board, Player_Color,T,New_Tmp,Cells).
 
 choose_move_Lvl1(Board,X,Y,Color) :-
@@ -64,12 +65,15 @@ choose_move_Lvl2(Board,X,Y,Color).
 choose_move_Lvl3(Board,X,Y,Color).
 
 choose_move(Board,Level,X,Y,Color) :-
-    Level = 1 -> choose_move_Lvl1(Board,X,Y,Color);
+    (Level = 1 -> choose_move_Lvl1(Board,X,Y,Color);
     Level = 2 -> choose_move_Lvl2(Board,X,Y,Color);
-    Level = 3 -> choose_move_Lvl3(Board,X,Y,Color).
-  
-play_game_PvC :-
-    initial_board(Board),
-    assertPlayers_PvC, %initializes the players
-    play_game_loop(Board,0). %passar o lvl aqui
+    Level = 3 -> choose_move_Lvl3(Board,X,Y,Color)),
+    print_move(X,Y,Color).
 
+print_move(X,Y,Color) :-
+    write('x-coordinate: '),
+    write(X), nl,
+    write('y-coordinate: '),
+    write(Y), nl,
+    write('color: '),
+    write(Color), nl.

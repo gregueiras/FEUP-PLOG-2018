@@ -1,4 +1,5 @@
 :- ensure_loaded(includes).
+:- ensure_loaded(bot).
 
 display_game(Board, Player) :-
     print_player(Player),
@@ -60,6 +61,9 @@ valid_moves(Board,Player,ListOfMoves) :-
   getValidPlays(Board,whitePiece,VP_WP),
   append(VP_BP,VP_WP,ListOfMoves).
 
+countValidMoves(Board, Player, Count) :-
+  valid_moves(Board, Player, ListOfMoves),
+  length(ListOfMoves, Count).
 
 playPiece(Board, X, Y, Color, NewBoard) :-
   getPiece(Board,X,Y,_S),
@@ -75,41 +79,41 @@ checkPlay(Player,Count, ValidPlay) :-
   %Count < 3,
   ValidPlay = 2. %jogada valida, arranjar uma cena mais bonitinha maybe
 
-value(Board,Player, Color,Count, Value) :-
-  checkPlay(Player,Count,VP),
-  VP = -1 ,
-  checkInvalidPlay(Board,Color, Value),
-  Value = -1.
+%value(Board,Player, Color,Count, Value) :-
+%  checkPlay(Player,Count,VP),
+%  VP = -1 ,
+%  checkInvalidPlay(Board,Color, Value),
+%  Value = -1.
 
-value(Board,Player, Color,Count, Value) :-
-  checkPlay(Player,Count,VP),
-  VP = -1 ,
-  checkInvalidPlay(Board,Color, Value),
-  Value = -2.
+%value(Board,Player, Color,Count, Value) :-
+%  checkPlay(Player,Count,VP),
+%  VP = -1 ,
+%  checkInvalidPlay(Board,Color, Value),
+%  Value = -2.
 
-value(Board,Player,Color, Count, Value) :-
+value(Player, Count, Value) :-
   checkPlay(Player,Count,VP),
   Value = VP.
 
-checkInvalidPlay(Board,Color,ValidPlay) :-
-  countValidPlays(Board,Color, NrValidPlays), %ve quantas valid plays existem
-  setNrValidPlays(NrValidPlays,ValidPlay).
+%checkInvalidPlay(Board,Color,ValidPlay) :-
+%  countValidPlays(Board,Color, NrValidPlays), %ve quantas valid plays existem
+%  setNrValidPlays(NrValidPlays,ValidPlay).
 
-setNrValidPlays(NrValidPlays,ValidPlay) :-
-  NrValidPlays = 0 ,
-  ValidPlay = -2.
+%setNrValidPlays(NrValidPlays,ValidPlay) :-
+%  NrValidPlays = 0 ,
+%  ValidPlay = -2.
 
-setNrValidPlays(NrValidPlays,ValidPlay) :-
-  NrValidPlays > 0 ,
-  ValidPlay = -1.
+%setNrValidPlays(NrValidPlays,ValidPlay) :-
+%  NrValidPlays > 0 ,
+%  ValidPlay = -1.
 
 move(X, Y, Board, NewBoard) :-
   getCurrentPlayerCurrentColor(Color),
   playPiece(Board, X, Y, Color,TmpBoard),
   countCellNeighbors(TmpBoard,X,Y,Color,NrNeighbors), 
   getCurrentPlayer(Player),
-  value(TmpBoard,Player,Color,NrNeighbors,ValidPlay),
-  setValue(Player,ValidPlay),
+  value(Player,NrNeighbors,ValidPlay),
+  setPlayerValue(Player,ValidPlay),
   updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
   printPlay(ValidPlay).
 
@@ -118,7 +122,7 @@ move(X, Y,Board, NewBoard) :-
   \+ playPiece(Board, X, Y, Color,TmpBoard),
   NewBoard = Board,
   ValidPlay = -1,
-  setValue(Player,ValidPlay),
+  setPlayerValue(Player,ValidPlay),
   printInvalidPlay.
 
 %to be improved
@@ -216,10 +220,19 @@ getInfo(Board, X,Y,Color) :-
   Bot = 0 -> read_validate_info(Board,X,Y,Color);
   Bot = 1 -> choose_move(Board, 1, X, Y, Color).
 
+
 play_game_loop(Board,Winner) :-
   (Winner = 1; Winner = 2; Winner = -1),
   display_game_winner(Board,Winner), !.
 
+%needs testing
+play_game_loop(Board,Winner) :-
+  getCurrentPlayer(Player),
+  countValidMoves(Board, Player, Count),
+  Count = 0,
+  setPlayerValue(Player, -2),
+  switchCurrentPlayer,
+  play_game_loop(Board, Winner).
 
 play_game_loop(Board,Winner) :-
  getCurrentPlayer(Player),
@@ -230,3 +243,23 @@ play_game_loop(Board,Winner) :-
  game_over(NewBoard, New_Winner),
  switchCurrentPlayer,
  play_game_loop(NewBoard, New_Winner).
+
+
+%%%%%%%%%%%%%
+
+play_game_PvP :-
+  initial_board(Board),
+  assertPlayers_PvP, %initializes the players
+  play_game_loop(Board,0).
+
+  
+play_game_PvC :-
+  initial_board(Board),
+  assertPlayers_PvC, %initializes the players
+  play_game_loop(Board,0). %passar o lvl aqui
+
+
+play_game_CvC :-
+  initial_board(Board),
+  assertPlayers_CvC, %initializes the players
+  play_game_loop(Board,0). %passar o lvl aqui

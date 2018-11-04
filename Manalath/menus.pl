@@ -1,5 +1,4 @@
-:- ensure_loaded(gamePvP).
-:- ensure_loaded(gamePvC).
+:- ensure_loaded(game).
 
 print_InvalidOption :-
     write('Invalid option! Please try again...').
@@ -32,7 +31,7 @@ playMenu :-
     (
         Option = 1 -> play_game_PvP;
         Option = 2 -> playPvCMenu;
-        Option = 3;
+        Option = 3 -> play_game_CvC;
         Option = 4 ->firstMenu;
         print_InvalidOption
     ).

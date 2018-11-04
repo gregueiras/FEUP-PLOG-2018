@@ -15,6 +15,11 @@ assertPlayers_PvC :-
     asserta(player(1, blackPiece,1,blackPiece,0,0)),
     asserta(player(2, whitePiece,0, whitePiece,0,1)). %player 2 is a bot
 
+assertPlayers_CvC :-
+    retractall(player(_,_,_,_,_,_)),
+    asserta(player(1, blackPiece,1,blackPiece,0,1)), %player 1 is a bot
+    asserta(player(2, whitePiece,0, whitePiece,0,1)). %player 2 is a bot
+
 getPlayer(PlayerId,Color, Current,CurrentColor,Value, Bot) :-
     player(PlayerId, Color,Current, CurrentColor, Value, Bot).
 
@@ -42,7 +47,7 @@ setCurrentColor(Player, CurrentColor) :-
     retract(player(Player,Color,Current, _,Value,Bot)),
     asserta(player(Player, Color,Current, CurrentColor,Value,Bot)).
 
-setValue(Player, Value) :-
+setPlayerValue(Player, Value) :-
     getPlayer(Player, Color,Current, CurrentColor,_,Bot),
     retract(player(Player,Color,Current,CurrentColor,_,Bot)),
     asserta(player(Player, Color,Current, CurrentColor,Value,Bot)).
