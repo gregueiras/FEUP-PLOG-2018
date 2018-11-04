@@ -231,6 +231,7 @@ play_game_loop(Board,Winner) :-
   countValidMoves(Board, Player, Count),
   Count = 0,
   setPlayerValue(Player, -2),
+  printIsImpossiblePlay,
   switchCurrentPlayer,
   play_game_loop(Board, Winner).
 
