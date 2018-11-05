@@ -165,11 +165,15 @@ write_coord(X) :-
   X >= 10,
   format('~d', [X]).
 
+write_unicode(p1) :- char_code(_Char,128153), write(_Char).
+write_unicode(p2) :- char_code(_Char,128154), write(_Char).
+
+
 print_cell(cell(_, _, blackPiece)) :-
-    write('1').
+    write_unicode(p1).
 
 print_cell(cell(_, _, whitePiece)) :-
-    write('2').
+    write_unicode(p2).
 
 print_cell(cell(_, _, emptyCell)) :-
     write(' ').
