@@ -79,36 +79,12 @@ checkPlay(Player,Count, ValidPlay) :-
   %Count < 3,
   ValidPlay = 2. %jogada valida, arranjar uma cena mais bonitinha maybe
 
-%value(Board,Player, Color,Count, Value) :-
-%  checkPlay(Player,Count,VP),
-%  VP = -1 ,
-%  checkInvalidPlay(Board,Color, Value),
-%  Value = -1.
-
-%value(Board,Player, Color,Count, Value) :-
-%  checkPlay(Player,Count,VP),
-%  VP = -1 ,
-%  checkInvalidPlay(Board,Color, Value),
-%  Value = -2.
-
 value(Player, Count, Value) :-
   checkPlay(Player,Count,VP),
   Value = VP.
 
-%checkInvalidPlay(Board,Color,ValidPlay) :-
-%  countValidPlays(Board,Color, NrValidPlays), %ve quantas valid plays existem
-%  setNrValidPlays(NrValidPlays,ValidPlay).
-
-%setNrValidPlays(NrValidPlays,ValidPlay) :-
-%  NrValidPlays = 0 ,
-%  ValidPlay = -2.
-
-%setNrValidPlays(NrValidPlays,ValidPlay) :-
-%  NrValidPlays > 0 ,
-%  ValidPlay = -1.
-
-move(X, Y, Board, NewBoard) :-
-  getCurrentPlayerCurrentColor(Color),
+move(Move, Board, NewBoard) :-
+  read_move(Move, X,Y, Color),
   playPiece(Board, X, Y, Color,TmpBoard),
   countCellNeighbors(TmpBoard,X,Y,Color,NrNeighbors), 
   getCurrentPlayer(Player),
@@ -117,8 +93,8 @@ move(X, Y, Board, NewBoard) :-
   updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
   printPlay(ValidPlay).
 
-move(X, Y,Board, NewBoard) :-
-  getCurrentPlayerCurrentColor(Color),
+move(Move,Board, NewBoard) :-
+  read_move(Move, X,Y, Color),
   \+ playPiece(Board, X, Y, Color,TmpBoard),
   NewBoard = Board,
   ValidPlay = -1,
@@ -189,14 +165,14 @@ check_game_neighbors_value(Board,[cell(X,Y,Color)| T], Player_Color,Value, Cells
   check_game_neighbors_value(Board,T,Player_Color, Value, Cells, C).
 
 game_over(Board,Winner) :-
-  getPlayer(Player1,_,_,_,Value1,_),
+  getPlayer(Player1,_,_,Value1,_),
   Value1 = -2,
-  getPlayer(Player2,_,_,_,Value2,_),
+  getPlayer(Player2,_,_,Value2,_),
   Value2 = -2,
   Winner = -1.
 
 game_over(Board, Winner) :-
-  getPlayer(PlayerId, Color, 1, _,Value,_),
+  getPlayer(PlayerId, Color, 1,Value,_),
   Value = 2,
   check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
   length(WinnerList,N),
@@ -204,7 +180,7 @@ game_over(Board, Winner) :-
   Winner = PlayerId.
 
 game_over(Board, Winner) :-
-  getPlayer(PlayerId, Color, 1, _,Value,_),
+  getPlayer(PlayerId, Color, 1,Value,_),
   Value = 2,
   check_game_neighbors_value(Board, Board, Color, 3, [], LoserList),
   length(LoserList,N),
@@ -213,7 +189,6 @@ game_over(Board, Winner) :-
   
 game_over(Board, Winner) :-
   Winner = 0.
-
 
 getInfo(Board, X,Y,Color) :-
   getCurrentPlayerBot(Bot),
@@ -231,19 +206,29 @@ play_game_loop(Board,Winner) :-
   countValidMoves(Board, Player, Count),
   Count = 0,
   setPlayerValue(Player, -2),
-  printIsImpossiblePlay,
   switchCurrentPlayer,
+  printIsImpossiblePlay,
   play_game_loop(Board, Winner).
 
 play_game_loop(Board,Winner) :-
  getCurrentPlayer(Player),
  display_game(Board,Player), !,
  getInfo(Board, X,Y,Color),
- setCurrentColor(Player, Color),
- move(X,Y, Board,NewBoard),
+ create_move(X,Y,Color, Move),
+ move(Move, Board,NewBoard), %retornar value e usar no switchCurrentPlayer como estava anteriormente
  game_over(NewBoard, New_Winner),
- switchCurrentPlayer,
+ switchCurrentPlayer, 
  play_game_loop(NewBoard, New_Winner).
+
+
+create_move(X,Y,Color, Move) :-
+  Move = [X,Y,Color].
+
+read_move([X,Y,Color], RX, RY, RColor) :-
+  RX = X,
+  RY = Y,
+  RColor = Color.
+
 
 
 %%%%%%%%%%%%%
@@ -264,3 +249,4 @@ play_game_CvC :-
   initial_board(Board),
   assertPlayers_CvC, %initializes the players
   play_game_loop(Board,0). %passar o lvl aqui
+

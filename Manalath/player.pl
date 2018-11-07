@@ -1,66 +1,66 @@
-:-dynamic player/6.
+:-dynamic player/5.
 
-%player(PlayerId, PlayerColor, CurrentlyPlaying, CurrentColor, Value, Bot)
-player(1,blackPiece,1, blackPiece,0,0).
-player(2,whitePiece,0, whitePiece,0,0).
+%player(PlayerId, PlayerColor, CurrentlyPlaying, Value, Bot)
+player(1,blackPiece,1,0,0).
+player(2,whitePiece,0,0,0).
 
 
 assertPlayers_PvP :-
-    retractall(player(_,_,_,_,_,_)),
-    asserta(player(1, blackPiece,1,blackPiece,0,0)),
-    asserta(player(2, whitePiece,0, whitePiece,0,0)).
+    retractall(player(_,_,_,_,_)),
+    asserta(player(1, blackPiece,1,0,0)),
+    asserta(player(2, whitePiece,0,0,0)).
 
 assertPlayers_PvC :-
-    retractall(player(_,_,_,_,_,_)),
-    asserta(player(1, blackPiece,1,blackPiece,0,0)),
-    asserta(player(2, whitePiece,0, whitePiece,0,1)). %player 2 is a bot
+    retractall(player(_,_,_,_,_)),
+    asserta(player(1, blackPiece,1,0,0)),
+    asserta(player(2, whitePiece,0,0,1)). %player 2 is a bot
 
 assertPlayers_CvC :-
-    retractall(player(_,_,_,_,_,_)),
-    asserta(player(1, blackPiece,1,blackPiece,0,1)), %player 1 is a bot
-    asserta(player(2, whitePiece,0, whitePiece,0,1)). %player 2 is a bot
+    retractall(player(_,_,_,_,_)),
+    asserta(player(1, blackPiece,1,0,1)), %player 1 is a bot
+    asserta(player(2, whitePiece,0,0,1)). %player 2 is a bot
 
-getPlayer(PlayerId,Color, Current,CurrentColor,Value, Bot) :-
-    player(PlayerId, Color,Current, CurrentColor, Value, Bot).
+getPlayer(PlayerId,Color, Current,Value, Bot) :-
+    player(PlayerId, Color,Current, Value, Bot).
 
 getCurrentPlayer(Player) :-
-    getPlayer(Player,_,1,_,_,_).
+    getPlayer(Player,_,1,_,_).
 
 getCurrentPlayerColor(Color) :-
-    getPlayer(_,Color,1,_,_,_).
+    getPlayer(_,Color,1,_,_).
 
 getCurrentPlayerBot(Bot) :-
-    getPlayer(_,_,1,_,_,Bot).
+    getPlayer(_,_,1,_,Bot).
 
-checkCurrentColorPlayer(PlayerId):-
-    getPlayer(PlayerId,PlayerColor,_C,CurrentColor,_,_),
-    CurrentColor = PlayerColor.
+%checkCurrentColorPlayer(PlayerId):-
+%    getPlayer(PlayerId,PlayerColor,_C,CurrentColor,_,_),
+%    CurrentColor = PlayerColor.
 
-getCurrentPlayerCurrentColor(CurrentColor):-
-    getPlayer(_,_,1,CurrentColor,_,_).
+%getCurrentPlayerCurrentColor(CurrentColor):-
+%    getPlayer(_,_,1,CurrentColor,_,_).
 
 getCurrentPlayerValue(Value):-
-    getPlayer(_,_,1,_,Value,_).
+    getPlayer(_,_,1,Value,_).
 
-setCurrentColor(Player, CurrentColor) :-
-    getPlayer(Player, Color,Current, _,Value,Bot),
-    retract(player(Player,Color,Current, _,Value,Bot)),
-    asserta(player(Player, Color,Current, CurrentColor,Value,Bot)).
+%setCurrentColor(Player, CurrentColor) :-
+%    getPlayer(Player, Color,Current, _,Value,Bot),
+%    retract(player(Player,Color,Current, _,Value,Bot)),
+%    asserta(player(Player, Color,Current, CurrentColor,Value,Bot)).
 
 setPlayerValue(Player, Value) :-
-    getPlayer(Player, Color,Current, CurrentColor,_,Bot),
-    retract(player(Player,Color,Current,CurrentColor,_,Bot)),
-    asserta(player(Player, Color,Current, CurrentColor,Value,Bot)).
+    getPlayer(Player, Color,Current,_,Bot),
+    retract(player(Player,Color,Current,_,Bot)),
+    asserta(player(Player, Color,Current,Value,Bot)).
 
 setCurrentPlayer(Player) :-
-    getPlayer(Player, Color,_, CurrentColor, Value,Bot),
-    retract(player(Player,Color,0, CurrentColor, Value,Bot)),
-    asserta(player(Player, Color,1, CurrentColor, Value,Bot)).
+    getPlayer(Player, Color,_, Value,Bot),
+    retract(player(Player,Color,0, Value,Bot)),
+    asserta(player(Player, Color,1, Value,Bot)).
 
 removeCurrentPlayer(Player) :-
-    getPlayer(Player, Color,_,CurrentColor, Value,Bot),
-    retract(player(Player,Color,1,CurrentColor, Value,Bot)),
-    asserta(player(Player, Color,0, CurrentColor, Value,Bot)).
+    getPlayer(Player, Color,_, Value,Bot),
+    retract(player(Player,Color,1, Value,Bot)),
+    asserta(player(Player, Color,0, Value,Bot)).
 
 getNewCurrentPlayer(CurrentPlayer, NewCurrentPlayer) :-
     CurrentPlayer = 1,
