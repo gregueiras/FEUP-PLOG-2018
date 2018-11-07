@@ -2,6 +2,7 @@
 :- use_module(library(random)).
 :- use_module(library(system)).
 
+%mudar para nao ficar exatamente igual ao de certa pessoa
 initializeRandomSeed:-
 	now(Usec), Seed is Usec mod 30269,
 	getrand(random(X, Y, Z, _)),

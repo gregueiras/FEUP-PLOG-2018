@@ -32,20 +32,8 @@ getCurrentPlayerColor(Color) :-
 getCurrentPlayerBot(Bot) :-
     getPlayer(_,_,1,_,Bot).
 
-%checkCurrentColorPlayer(PlayerId):-
-%    getPlayer(PlayerId,PlayerColor,_C,CurrentColor,_,_),
-%    CurrentColor = PlayerColor.
-
-%getCurrentPlayerCurrentColor(CurrentColor):-
-%    getPlayer(_,_,1,CurrentColor,_,_).
-
 getCurrentPlayerValue(Value):-
     getPlayer(_,_,1,Value,_).
-
-%setCurrentColor(Player, CurrentColor) :-
-%    getPlayer(Player, Color,Current, _,Value,Bot),
-%    retract(player(Player,Color,Current, _,Value,Bot)),
-%    asserta(player(Player, Color,Current, CurrentColor,Value,Bot)).
 
 setPlayerValue(Player, Value) :-
     getPlayer(Player, Color,Current,_,Bot),
@@ -57,9 +45,9 @@ setCurrentPlayer(Player) :-
     retract(player(Player,Color,0, Value,Bot)),
     asserta(player(Player, Color,1, Value,Bot)).
 
-removeCurrentPlayer(Player) :-
-    getPlayer(Player, Color,_, Value,Bot),
-    retract(player(Player,Color,1, Value,Bot)),
+removeCurrentPlayer(Player, Value) :-
+    getPlayer(Player, Color,_,_,Bot),
+    retract(player(Player,Color,1,_,Bot)),
     asserta(player(Player, Color,0, Value,Bot)).
 
 getNewCurrentPlayer(CurrentPlayer, NewCurrentPlayer) :-
@@ -70,26 +58,25 @@ getNewCurrentPlayer(CurrentPlayer, NewCurrentPlayer) :-
     CurrentPlayer = 2,
     NewCurrentPlayer = 1.  
 
-switchPlayer :-
+switchPlayer(Value) :-
     getCurrentPlayer(CurrentPlayer),
     getNewCurrentPlayer(CurrentPlayer, NewCurrentPlayer),
-    removeCurrentPlayer(CurrentPlayer),
+    removeCurrentPlayer(CurrentPlayer, Value),
     setCurrentPlayer(NewCurrentPlayer).
-
-switchCurrentPlayer :-
-    getCurrentPlayerValue(ValidPlay),
-    switchCurrentPlayer(ValidPlay).
 
 switchCurrentPlayer(ValidPlay) :-
     ValidPlay = 2, %if it is a valid play the current player switches
-    switchPlayer.
+    switchPlayer(ValidPlay).
 
 switchCurrentPlayer(ValidPlay) :-
-    ValidPlay = -1. %if it is not a valid play the current player stays the same
+    ValidPlay = -1, %if it is not a valid play the current player stays the same
+    getCurrentPlayer(Player),
+    setPlayerValue(Player, ValidPlay).
+    
 
 switchCurrentPlayer(ValidPlay) :-
     ValidPlay = -2,  
-    switchPlayer.
+    switchPlayer(ValidPlay).
 
 getOppositePlayer(PlayerId, OpPlayerId) :-
     PlayerId = 1 -> OpPlayerId = 2;

@@ -83,22 +83,20 @@ value(Player, Count, Value) :-
   checkPlay(Player,Count,VP),
   Value = VP.
 
-move(Move, Board, NewBoard) :-
+move(Move, Board, NewBoard, ValidPlay) :-
   read_move(Move, X,Y, Color),
   playPiece(Board, X, Y, Color,TmpBoard),
   countCellNeighbors(TmpBoard,X,Y,Color,NrNeighbors), 
   getCurrentPlayer(Player),
   value(Player,NrNeighbors,ValidPlay),
-  setPlayerValue(Player,ValidPlay),
   updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
   printPlay(ValidPlay).
 
-move(Move,Board, NewBoard) :-
+move(Move,Board, NewBoard, ValidPlay) :-
   read_move(Move, X,Y, Color),
   \+ playPiece(Board, X, Y, Color,TmpBoard),
   NewBoard = Board,
   ValidPlay = -1,
-  setPlayerValue(Player,ValidPlay),
   printInvalidPlay.
 
 %to be improved
@@ -205,8 +203,8 @@ play_game_loop(Board,Winner) :-
   getCurrentPlayer(Player),
   countValidMoves(Board, Player, Count),
   Count = 0,
-  setPlayerValue(Player, -2),
-  switchCurrentPlayer,
+  ValidPlay = -2,
+  switchCurrentPlayer(ValidPlay),
   printIsImpossiblePlay,
   play_game_loop(Board, Winner).
 
@@ -215,9 +213,9 @@ play_game_loop(Board,Winner) :-
  display_game(Board,Player), !,
  getInfo(Board, X,Y,Color),
  create_move(X,Y,Color, Move),
- move(Move, Board,NewBoard), %retornar value e usar no switchCurrentPlayer como estava anteriormente
+ move(Move, Board,NewBoard, ValidPlay), 
  game_over(NewBoard, New_Winner),
- switchCurrentPlayer, 
+ switchCurrentPlayer(ValidPlay), 
  play_game_loop(NewBoard, New_Winner).
 
 
