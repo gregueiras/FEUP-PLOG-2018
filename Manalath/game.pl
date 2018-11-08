@@ -25,7 +25,7 @@ printInvalidInformation :-
   write('Invalid information! Please try again...'), nl.
 
 printWinner(Winner) :-
-  Winner = -1.
+  Winner = -1,
   write('the game ended in draw').
 
 printWinner(Winner) :-
@@ -56,7 +56,7 @@ countValidPlays(Board,Color,NrValidPlays) :-
   getValidPlays(Board,Color,VP),
   length(VP, NrValidPlays).
 
-valid_moves(Board,Player,ListOfMoves) :-
+valid_moves(Board,_,ListOfMoves) :-
   getValidPlays(Board, blackPiece, VP_BP),
   getValidPlays(Board,whitePiece,VP_WP),
   append(VP_BP,VP_WP,ListOfMoves).
@@ -71,11 +71,11 @@ playPiece(Board, X, Y, Color, NewBoard) :-
   setPiece(Board, X, Y, Color, NewBoard). 
 
 
-checkPlay(Player,Count, ValidPlay) :-
+checkPlay(_,Count, ValidPlay) :-
   Count >= 5,
   ValidPlay = -1. %jogada invalida, arranjar uma cena mais bonitinha maybe
 
-checkPlay(Player,Count, ValidPlay) :-
+checkPlay(_,Count, ValidPlay) :-
   %Count < 3,
   ValidPlay = 2. %jogada valida, arranjar uma cena mais bonitinha maybe
 
@@ -95,10 +95,10 @@ move(Move, Board, NewBoard) :-
 
 move(Move,Board, NewBoard) :-
   read_move(Move, X,Y, Color),
-  \+ playPiece(Board, X, Y, Color,TmpBoard),
+  \+ playPiece(Board, X, Y, Color,_),
   NewBoard = Board,
   ValidPlay = -1,
-  setPlayerValue(Player,ValidPlay),
+  setPlayerValue(_,ValidPlay),
   printInvalidPlay.
 
 %to be improved
@@ -119,7 +119,7 @@ validate_info_coords(Board,X,Y, Valid) :-
   getPiece(Board,X,Y,_C),
   Valid = 1. %is valid
 
-validate_info_coords(Board,X,Y, Valid) :-
+validate_info_coords(_,_,_, Valid) :-
   Valid = 0. %is not valid
 
 validate_info(Board,X,Y,Color) :-
@@ -154,7 +154,6 @@ check_game_neighbors_value(Board,L,Player_Color,Value ,Cells, C) :-
   length(L,N),
   N == 0,
   C = [], !.
-
 
 check_game_neighbors_value(Board,[cell(X,Y,Color)| T],Player_Color, Value, Cells, C) :- 
   Color = Player_Color,
@@ -193,7 +192,7 @@ game_over(Board, Winner) :-
 getInfo(Board, X,Y,Color) :-
   getCurrentPlayerBot(Bot),
   Bot = 0 -> read_validate_info(Board,X,Y,Color);
-  Bot = 1 -> choose_move(Board, 1, X, Y, Color).
+  Bot = 1 -> choose_move(Board, 2, X, Y, Color).
 
 
 play_game_loop(Board,Winner) :-
@@ -209,6 +208,17 @@ play_game_loop(Board,Winner) :-
   switchCurrentPlayer,
   printIsImpossiblePlay,
   play_game_loop(Board, Winner).
+
+play_game_loop(Board,Winner) :-
+ getCurrentPlayer(Player),
+ display_game(Board,Player), !,
+ getCurrentPlayerBot(Bot),
+ Bot = 1, 
+ minimaxBoard(Board, NewBoard), %retornar value e usar no switchCurrentPlayer como estava anteriormente
+ game_over(NewBoard, New_Winner),
+ setPlayerValue(Player, 2),
+ switchCurrentPlayer, 
+ play_game_loop(NewBoard, New_Winner).
 
 play_game_loop(Board,Winner) :-
  getCurrentPlayer(Player),

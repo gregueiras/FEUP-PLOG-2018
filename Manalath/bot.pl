@@ -5,33 +5,33 @@
 %se jogar aqui perco? -> conta os vizinhos da minha cor, se forem 3 nao jogo
 %se nao jogar aqui ele ganha? ->conta os vizinhos da cor do outro se forem 4 jogo
 
-can_player_win(Board,Player_Color,(X,Y,Color), Res) :-
+can_player_win(Board,Player_Color,(X,Y,_), Res) :-
     countCellNeighbors(Board,X,Y,Player_Color,Count),
     Count = 4 -> Res = 1;
     Res = 0.
     
-can_op_player_win(Board,Player_Color,(X,Y,Color),Res) :-
+can_op_player_win(Board,Player_Color,(X,Y,_),Res) :-
     getOppositeColor(Player_Color, OpColor),
     countCellNeighbors(Board,X,Y,OpColor,Count),
     Count = 4 -> Res = 1;
     Res = 0.
 
-can_player_loose(Board,Player_Color,(X,Y,Color),Res) :-
+can_player_loose(Board,Player_Color,(X,Y,_),Res) :-
     countCellNeighbors(Board,X,Y,Player_Color,Count),
     Count = 3 -> Res = 1;
     Res = 0.
 
-choose_from_validMoves(Board,Player_Color,List,Tmp,Cells) :-
+choose_from_validMoves(_,_,List,Tmp,Cells) :-
     length(List, N),
     N == 0,
     Cells = Tmp.
 
-choose_from_validMoves(Board,Player_Color,[(X,Y,Color)|T],Tmp,Cells) :-
+choose_from_validMoves(Board,Player_Color,[(X,Y,Color)|_],_,Cells) :-
     can_player_win(Board,Player_Color,(X,Y,Color),Res),
     Res = 1, 
     append([],[(X,Y,Player_Color)], Cells).
 
-choose_from_validMoves(Board,Player_Color,[(X,Y,Color)|T],Tmp,Cells) :-
+choose_from_validMoves(Board,Player_Color,[(X,Y,Color)|_],_,Cells) :-
     can_op_player_win(Board,Player_Color,(X,Y,Color),Res),
     Res = 1,
     append([],[(X,Y,Player_Color)], Cells).
@@ -59,7 +59,28 @@ getMove((X,Y, Color),RX,RY,RColor) :-
     RColor = Color.
 
 %TODO
-choose_move_Lvl2(Board,X,Y,Color).
+choose_move_Lvl2(Board,X,Y,Color) :-
+    getCurrentPlayer(Player),
+    getOppositePlayer(Player, OpPlayer),
+    assert((max(Player))),
+    assert((min(OpPlayer))),
+    nl, write('MINIMAX'), nl,
+    minimax([Player, play, Board], BN, Val),
+    nl, write('MINIMAX Complete'), nl,
+    retract((max(Player))),
+    retract((min(OpPlayer))),
+    getMove(NextMove, X, Y, Color).
+
+minimaxBoard(Board, NewBoard):-
+    getCurrentPlayer(Player),
+    getOppositePlayer(Player, OpPlayer),
+    assert((max(Player))),
+    assert((min(OpPlayer))),
+    nl, write('MINIMAX'), nl,
+    minimax([Player, play, Board], [OpPlayer, _, NewBoard], _),
+    retract((max(Player))),
+    retract((min(OpPlayer))),
+    nl, write('MINIMAX Complete'), nl.
 
 %TODO
 choose_move_Lvl3(Board,X,Y,Color).

@@ -48,7 +48,7 @@ findFirstNeighbors(Board,X,Y,_P,Color,Processed,ToProcess) :-
   ToProcess).
 
 %quando ja nao ha mais celulas para processar termina
-findAllNeighbors(Board,Color,ToProcess,ProcessedCells,Res) :-
+findAllNeighbors(_,_,ToProcess,ProcessedCells,Res) :-
   length(ToProcess,N),
   N == 0, !,
   Res = ProcessedCells.

@@ -8,5 +8,5 @@ initializeRandomSeed:-
 	setrand(random(Seed, X, Y, Z)), !.
 
 play :-
-  initializeRandomSeed,
+ % initializeRandomSeed,
   firstMenu.

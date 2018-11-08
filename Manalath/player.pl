@@ -23,6 +23,9 @@ assertPlayers_CvC :-
 getPlayer(PlayerId,Color, Current,Value, Bot) :-
     player(PlayerId, Color,Current, Value, Bot).
 
+getPlayerColor(PlayerId, Color) :-
+    player(Player, Color, _, _, _).
+    
 getCurrentPlayer(Player) :-
     getPlayer(Player,_,1,_,_).
 
