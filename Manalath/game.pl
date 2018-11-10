@@ -146,22 +146,20 @@ checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
   Res = [].
 
 check_game_neighbors_value(Board,L,Player_Color,Value ,Cells, C) :-
-  length(Cells,N),
+  length(Cells,N), %tambem deve dar para simplificar isto, parecido com o de baixo
   N == 1,
   C = Cells, !.
 
-check_game_neighbors_value(Board,L,Player_Color,Value ,Cells, C) :-
-  length(L,N),
-  N == 0,
-  C = [], !.
+check_game_neighbors_value(Board,[],Player_Color,Value ,Cells, []) :-
+	!, fail.
 
 check_game_neighbors_value(Board,[cell(X,Y,Color)| T],Player_Color, Value, Cells, C) :- 
   Color = Player_Color,
   checkCellNeighborsCount(Board,X,Y,Color,Value,Res),
-  check_game_neighbors_value(Board,T, Player_Color,Value, Res, C).
+  !, check_game_neighbors_value(Board,T, Player_Color,Value, Res, C).
 
 check_game_neighbors_value(Board,[cell(X,Y,Color)| T], Player_Color,Value, Cells, C) :- 
-  check_game_neighbors_value(Board,T,Player_Color, Value, Cells, C).
+  !, check_game_neighbors_value(Board,T,Player_Color, Value, Cells, C).
 
 game_over(Board,Winner) :-
   getPlayer(Player1,_,_,Value1,_),
@@ -211,9 +209,9 @@ play_game_loop(Board,Winner) :-
 
 play_game_loop(Board,Winner) :-
  getCurrentPlayer(Player),
- display_game(Board,Player), !,
  getCurrentPlayerBot(Bot),
- Bot = 1, 
+ Bot = 1, !,
+ display_game(Board,Player), 
  minimaxBoard(Board, NewBoard), %retornar value e usar no switchCurrentPlayer como estava anteriormente
  game_over(NewBoard, New_Winner),
  setPlayerValue(Player, 2),

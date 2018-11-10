@@ -1,64 +1,35 @@
 :- ensure_loaded(includes).
 
-% min is player 2
-% max is player 1
-
 nextPlayer(1, 2).
 nextPlayer(2, 1).
 
 won(PlayerColor, Board) :-
-  %aux_won(PlayerColor, Board, Board),
-  check_game_neighbors_value(Board, Board, PlayerColor, 4, [], WinnerList),
-  length(WinnerList, N),
-  N = 1,
-  nl,
-  print(PlayerColor), nl.
- % print_board(Board), nl.
+  check_game_neighbors_value(Board, Board, PlayerColor, 3, [], _), % 4 of your color -> Lose
+  !, fail.
   %write('WON').
 
 won(PlayerColor, Board) :-
-  %aux_won(PlayerColor, Board, Board),
-  getOppositeColor(PlayerColor, OpColor),
-  check_game_neighbors_value(Board, Board, OpColor, 5, [], WinnerList),
-  length(WinnerList, N),
-  N = 1,
+  check_game_neighbors_value(Board, Board, PlayerColor, 4, [], _), % 5 of your color -> Win
   nl,
   print(PlayerColor), nl,
-  print_board(Board), nl.
+  %print_board(Board), nl.
+  write('WON').
+
+%won(PlayerColor, Board) :-
+%  getOppositeColor(PlayerColor, OpColor),
+%  check_game_neighbors_value(Board, Board, OpColor, 4, [], WinnerList), % 5 of opponent's color -> Win
+%  length(WinnerList, N),
+%  N = 1,
+%  nl,
+%  print(PlayerColor), nl,
+%  print_board(Board), nl.
   %write('WON').
-  
-aux_won(_, _, []) :-
-  fail.
-
-aux_won(PlayerColor, Board, [cell(_X, _Y, PlayerColor) | T]) :-
-  countCellNeighbors(Board, _X, _Y, PlayerColor, Count),
-  Count = 5,
-  fail, !.
-
-aux_won(PlayerColor, Board, [cell(_X, _Y, PlayerColor) | T]) :-
-  countCellNeighbors(Board, _X, _Y, PlayerColor, Count),
-  Count = 4.
-
-aux_won(PlayerColor, Board, [cell(_X, _Y, OtherColor) | T]) :-
-  getOppositeColor(PlayerColor, OtherColor),
-  countCellNeighbors(Board, _X, _Y, OtherColor, Count),
-  Count = 4,
-  fail,
-  !.
-
-aux_won(PlayerColor, Board, [cell(_X, _Y, OtherColor) | T]) :-
-  getOppositeColor(PlayerColor, OtherColor),
-  countCellNeighbors(Board, _X, _Y, OtherColor, Count),
-  Count = 5.
-
-aux_won(PlayerColor, Board, [cell(_X, _Y, _) | T]) :-
-  aux_won(PlayerColor, Board, T).
-
 
 move([X1, play, Board], [X2, win, NextBoard]) :-
     nextPlayer(X1, X2),
     valid_moves(Board, X1, MovesList),
     move_aux(Board, MovesList, NextBoard),
+    \+  check_game_neighbors_value(Board, Board, _, 5, [], _), % 6 of your color -> Lose
     getPlayerColor(X1, Color),
     won(Color, NextBoard), !.
 
@@ -73,18 +44,21 @@ move([X1, play, Board], [X2, draw, NextBoard]) :-
 move([X1, play, Board], [X2, play, NextBoard]) :-
     nextPlayer(X1, X2),
     valid_moves(Board, X1, MovesList),
-    move_aux(Board, MovesList, NextBoard).
-
-% Board, Valid_moves, NextBoardf
-move_aux(Board, [(X, Y, P) | _], NB) :-
-  setPiece(Board, X, Y, P, NB).
+    move_aux(Board, MovesList, NextBoard),
+    \+ check_game_neighbors_value(Board, Board, _, 5, [], _). % 6 of your color -> Lose
 
 
+move_aux([cell(X , Y, emptyCell) | Bs], ValidMoves, [cell(X, Y, R) | Bs]) :-
+	member((X, Y, R), ValidMoves).
+
+move_aux([B | Bs], ValidMoves, [B | B2s]) :-
+	move_aux(Bs, ValidMoves, B2s).
+	
 min_to_move([P, _, _]):-
   min(P).
 
 max_to_move([P, _, _]):-
-  max(P);
+  max(P).
 
 % utility(+Pos, -Val) :-
 % True if Val the the result of the evaluation function at Pos.
@@ -100,7 +74,8 @@ utility([P, win, _], -1) :-
 utility([_, play, _], 0).
 
 minimax(Pos, BestNextPos, Val) :-                     % Pos has successors
-    bagof(NextPos, move(Pos, NextPos), NextPosList), %trace,
+    %trace,
+	bagof(NextPos, move(Pos, NextPos), NextPosList),
     best(NextPosList, BestNextPos, Val), !.
 
 minimax(Pos, _, Val) :-                     % Pos has no successors
