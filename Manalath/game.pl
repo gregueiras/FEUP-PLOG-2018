@@ -1,5 +1,4 @@
 :- ensure_loaded(includes).
-:- ensure_loaded(bot).
 
 display_game(Board, Player) :-
     print_player(Player),

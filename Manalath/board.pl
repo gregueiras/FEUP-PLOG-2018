@@ -112,6 +112,7 @@ numLines(Board, NumLines) :-
 
 print_board(Board) :-
   numLines(Board, NL),
+  BufSize is NL / 2.0,
   print_lines(Board, 0, NL).
 
 print_lines(_, LineNum, NL) :-
@@ -122,26 +123,29 @@ print_lines(Board, LineNum, NL) :-
   length(Line, LineLength),
   BufSize is NL - LineLength,
   print_buffer(BufSize),
+  print_coordsBegin(Line), write(' '),
   print_line(Line), 
-  write('|'), nl,
-  print_buffer(BufSize), 
-  write('|'),
-  print_coords(Line),  nl,
+  write('| '), print_coordsEnd(Line),
+  nl,
+  %print_buffer(BufSize), 
+  %write('|'),
+  %print_coords(Line),  nl,
   L is LineNum + 1,
   print_lines(Board, L, NL).
 
-print_buffer(0.0).
-print_buffer(-1.0).
 print_buffer(N) :-
-  write('    '),
+  round(N) =:= 0.
+
+print_buffer(N) :-
+  write(' '),
   L is N - 1,
   print_buffer(L).
 
 print_line([]).
 print_line([L | T]) :-
-  write('|   '),
+  write('|'),
   print_cell(L),
-  write('   '),
+  write(''),
   print_line(T).
 
 print_top([]).
@@ -150,23 +154,44 @@ print_top([_ | T]) :-
   write(' '),
   print_top(T).
 
-print_coords([]).
-print_coords([ cell(X, Y, _) | T]) :-
-  write_coord(X),
-  write(' -'),
-  write_coord(Y),
-  write(' |'),
-  print_coords(T).
+convertCoord(NumLines, Letter, Number, X, Y) :-
+  char_code(Letter, CodeLetter),
+  char_code(a, CodeA),
+  NumLetter is CodeLetter - CodeA,
+  Half is NumLines / 2,
+  NumLetter > Half,
+  Tmp is NumLetter - Half,
+  X1 is round(2 * (Tmp + Number) + 1),
+  X = X1,
+  Y = NumLetter,
+  write(X), write('  '), write(Y), nl.
 
-write_coord(X) :-
-  X < 10, 
-  format(' ~d', [X]).
-write_coord(X) :-
-  X >= 10,
-  format('~d', [X]).
+convertCoord(_, Letter, Number, X, Y) :-
+  char_code(Letter, CodeLetter),
+  char_code(a, CodeA),
+  NumLetter is CodeLetter - CodeA,
+  X1 is Number * 2,
+  X = X1,
+  Y = NumLetter,
+  write(X), write('  '), write(Y), nl.
+
+print_coordsBegin([ cell(_, Y, _) | _]) :-
+  char_code(a, CodeA),
+  CodeLetter is CodeA + Y,
+  char_code(Letter, CodeLetter),
+  write(Letter),
+  write(0).
+
+print_coordsEnd([ cell(_, Y, _) | T]) :-
+  char_code(a, CodeA),
+  CodeLetter is CodeA + Y,
+  char_code(Letter, CodeLetter),
+  write(Letter),
+  length(T, X1),
+  write(X1).
 
 write_unicode(p1) :- char_code(_Char,9899), write(_Char).
-write_unicode(p2) :- char_code(_Char,9632), write(_Char).
+write_unicode(p2) :- char_code(_Char,9711), write(_Char).
 
 
 print_cell(cell(_, _, blackPiece)) :-
