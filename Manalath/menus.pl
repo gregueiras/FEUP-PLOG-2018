@@ -33,7 +33,7 @@ playMenu :-
         Option = 1 -> play_game_PvP;
         Option = 2 -> playPvCMenu;
         Option = 3 -> playCvPMenu;
-        Option = 4 -> play_game_CvC(2);
+        Option = 4 -> playCvCMenu;
         Option = 5 ->firstMenu;
         print_InvalidOption
     ). 
@@ -65,7 +65,7 @@ playPvCMenu :-
 
 
 playCvPMenu :-
-    print_playPvCMenu,
+    print_playCvPMenu,
     read(Option),
     (
         Option = 1 -> play_game_CvP(1);
@@ -74,10 +74,46 @@ playCvPMenu :-
         print_InvalidOption
     ). 
 
+playCvCMenu :-
+    print_playCvCMenu,
+    read(Option),
+    (
+        Option = 1 -> play_game_CvC(1);
+        Option = 2 -> play_game_CvC(2);
+        Option = 3 -> playMenu;
+        print_InvalidOption
+    ). 
+
 print_playPvCMenu :-
     nl,
     write('******************************'),nl,
     write('**     PLAYER VS COMPUTER   **'),nl,
+    write('******************************'),nl,
+    write('**                          **'),nl,
+    write('** 1- EASY                  **'),nl,
+    write('** 2- HARD                  **'),nl,
+    write('** 3- GO BACK               **'),nl,
+    write('**                          **'),nl,
+    write('******************************'),nl,
+    write('Choose : '), nl.
+
+print_playCvPMenu :-
+    nl,
+    write('******************************'),nl,
+    write('**     COMPUTER VS PLAYER   **'),nl,
+    write('******************************'),nl,
+    write('**                          **'),nl,
+    write('** 1- EASY                  **'),nl,
+    write('** 2- HARD                  **'),nl,
+    write('** 3- GO BACK               **'),nl,
+    write('**                          **'),nl,
+    write('******************************'),nl,
+    write('Choose : '), nl.
+
+print_playCvCMenu :-
+    nl,
+    write('******************************'),nl,
+    write('**   COMPUTER VS COMPUTER   **'),nl,
     write('******************************'),nl,
     write('**                          **'),nl,
     write('** 1- EASY                  **'),nl,
