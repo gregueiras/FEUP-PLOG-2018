@@ -106,7 +106,12 @@ read_info(X,Y, Color) :-
   write('y-coordinate: '),
   read(Y),
   write('color: '),
-  read(Color).
+  read(TmpColor), 
+  translate(TmpColor, Color).
+
+translate(b, blackPiece).
+translate(w, whitePiece).
+translate(_, _).
 
 validate_info_Color(Color,Valid) :-
   Color = blackPiece -> Valid = 1;
