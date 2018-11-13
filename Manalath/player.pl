@@ -99,9 +99,8 @@ getPlayerColorById(Player,Color) :-
     Player = 2 -> Color = whitePiece.
 
 print_player(Player) :-
-    getPlayerColor(PlayerId, Color),
+    getPlayerColor(Player, Color),
     nl, nl,
-    write('Your turn!!!'), nl,
     write('Player : '),
     write(Player), nl,
     write('color : '), 

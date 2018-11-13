@@ -5,23 +5,23 @@
 %se jogar aqui perco? -> conta os vizinhos da minha cor, se forem 3 nao jogo
 %se nao jogar aqui ele ganha? ->conta os vizinhos da cor do outro se forem 4 jogo
 
-can_player_win(Board,Player_Color,(X,Y,Color), Res) :-
+can_player_win(Board,Player_Color,(X,Y,_Color), Res) :-
     countCellNeighbors(Board,X,Y,Player_Color,Count),
     Count = 4 -> Res = 1;
     Res = 0.
     
-can_op_player_win(Board,Player_Color,(X,Y,Color),Res) :-
+can_op_player_win(Board,Player_Color,(X,Y,_Color),Res) :-
     getOppositeColor(Player_Color, OpColor),
     countCellNeighbors(Board,X,Y,OpColor,Count),
     Count = 4 -> Res = 1;
     Res = 0.
 
-can_player_loose(Board,Player_Color,(X,Y,Color),Res) :-
+can_player_loose(Board,Player_Color,(X,Y,_Color),Res) :-
     countCellNeighbors(Board,X,Y,Player_Color,Count),
     Count = 3 -> Res = 1;
     Res = 0.
 
-analyse_validMoves(Board,Player_Color,List,Tmp,Cells) :-
+analyse_validMoves(_Board,_Player_Color,List,Tmp,Cells) :-
     length(List,N),
     N = 0,
     Cells = Tmp , !.
@@ -44,7 +44,7 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],Tmp,Cells) :-
     append(Tmp,[[500,Move]], NewTmp),
     analyse_validMoves(Board, Player_Color,T,NewTmp, Cells), !.
 
-analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],Tmp,Cells) :-
+analyse_validMoves(Board,Player_Color,[(X,Y,_Color)|T],Tmp,Cells) :-
     getOppositeColor(Player_Color,OpColor),
     findAllNeighbors(Board,OpColor,[(X,Y)],[],Neighbors),
     length(Neighbors,N),
@@ -115,14 +115,14 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],Tmp,Cells) :-
     analyse_validMoves(Board, Player_Color,T,NewTmp,Cells) , !.
 
 
-findFirstValidNeighbor(Board,[],Color,0,Move).
+findFirstValidNeighbor(_Board,[],_Color,0,_Move).
 
-findFirstValidNeighbor(Board,[(X,Y)|T],Color, MoveFlag, Move) :-
+findFirstValidNeighbor(Board,[(X,Y)|_T],Color, MoveFlag, Move) :-
     isValidPlay(Board,X,Y,Color),
     create_move(X,Y,Color,Move),
     MoveFlag = 1.
 
-findFirstValidNeighbor(Board,[(X,Y)|T],Color,MoveFlag, Move) :-
+findFirstValidNeighbor(Board,[(_X,_Y)|T],Color,MoveFlag, Move) :-
     findFirstValidNeighbor(Board,T,Color,MoveFlag, Move).
 
 
@@ -145,29 +145,28 @@ select_lvl1_move(Cells,X,Y,Color) :-
     read_move(WinnerMove,X,Y,Color).
 
 select_lvl1_move(Cells,X,Y,Color) :-
-    checkForWinnerPlay(Cells,WinnerMove,WinnerFlag),
+    checkForWinnerPlay(Cells,_WinnerMove,WinnerFlag),
     WinnerFlag = 0,
     getRandomNotLoserMove(Cells,X,Y,Color).
 
 
 getRandomNotLoserMove(Cells, X,Y,Color) :-
-    random_member([Value,Move],Cells),
+    random_member([Value,_Move],Cells),
     length(Cells,N),
     N > 1,
     Value == 500,
     getRandomNotLoserMove(Cells,X,Y,Color).
 
 getRandomNotLoserMove(Cells, X,Y,Color) :-
-    random_member([Value,Move],Cells),
+    random_member([_Value,Move],Cells),
     read_move(Move,X,Y,Color).
    
-checkForWinnerPlay([[Value,Move]|T], WinnerMove, WinnerFlag) :-
+checkForWinnerPlay([[Value,Move]|_T], WinnerMove, WinnerFlag) :-
     Value = -500,
     WinnerMove = Move,
     WinnerFlag = 1.
 
-checkForWinnerPlay([[Value,Move]|T], WinnerMove, WinnerFlag) :-
-    WinnerFlag = 0.
+checkForWinnerPlay([[_Value,_Move]|_T], _WinnerMove, 0).
 
 choose_move_Lvl2(Board,X,Y,Color) :-
     get_validMoves(Board,ListOfMoves),
@@ -200,7 +199,7 @@ getBestMove([[Value,Move]|T], BestMove) :-
     append(TmpMoves,[Move], NewMoves),
     random_member(BestMove,NewMoves).
 
-getBestMove([[Value,Move]|T], BestMove) :-
+getBestMove([[_Value,Move]|_T], BestMove) :-
     BestMove = Move.
 
 
@@ -234,7 +233,7 @@ remove_duplicates(OldList, NewList) :-
     
 
 remove_duplicates([], Res, Res).
-remove_duplicates([[Value, Move] | Tail], Tmp, Res):-
+remove_duplicates([[_Value, Move] | Tail], Tmp, Res):-
     member([_,Move],Tail),
     remove_duplicates(Tail, Tmp, Res).
 

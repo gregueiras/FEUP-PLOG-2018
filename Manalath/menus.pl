@@ -33,7 +33,7 @@ playMenu :-
         Option = 2 -> playPvCMenu;
         Option = 3 -> playCvPMenu;
         Option = 4 -> playCvCMenu;
-        Option = 5 ->firstMenu;
+        Option = 5;
         print_InvalidOption
     ). 
 
