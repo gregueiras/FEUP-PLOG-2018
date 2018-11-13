@@ -24,24 +24,25 @@ printIsImpossiblePlay :-
 printInvalidInformation :-
   write('Invalid information! Please try again...'), nl.
 
-printWinner(Winner) :-
-  Winner = -1.
+printWinner(-1) :-
   write('the game ended in draw').
 
 printWinner(Winner) :-
   write('Winner : '),
   print_player(Winner), nl.
 
-printPlay(Play) :-
-  Play = -2 ->printIsImpossiblePlay;
-  Play = -1 -> printInvalidPlay;
-  Play =  2.
+printPlay(-2) :-
+  printIsImpossiblePlay.
+
+printPlay(-1) :-
+  printInvalidPlay.
+
+printPlay(2).
 
 isValidPlay(Board,X,Y,Color) :-
-  getPiece(Board,X,Y,_S),
-  _S = emptyCell,
+  getPiece(Board,X,Y,emptyCell),
   countCellNeighbors(Board,X,Y,Color,Count),
-  Count < 5. %nao sei se e 4 5 ou 6
+  Count < 5. 
 
 %podemos usar na parte da AI
 getValidPlays(Board,Color,ValidPlays) :-
@@ -66,20 +67,18 @@ countValidMoves(Board, Player, Count) :-
   length(ListOfMoves, Count).
 
 playPiece(Board, X, Y, Color, NewBoard) :-
-  getPiece(Board,X,Y,_S),
-  _S = emptyCell,
+  getPiece(Board,X,Y,emptyCell),
   setPiece(Board, X, Y, Color, NewBoard). 
 
 
-checkPlay(Player,Count, ValidPlay) :-
-  Count >= 5,
-  ValidPlay = -1. %jogada invalida, arranjar uma cena mais bonitinha maybe
+checkPlay(Player,Count, -1) :-
+  Count >= 5. %jogada invalida, arranjar uma cena mais bonitinha maybe
 
-checkPlay(Player,Count, ValidPlay) :-
+checkPlay(Player,Count, 2).
   %Count < 3,
-  ValidPlay = 2. %jogada valida, arranjar uma cena mais bonitinha maybe
+ %jogada valida, arranjar uma cena mais bonitinha maybe
 
-value(Player, Count, Value) :-
+value(Player, Count, VP) :-
   checkPlay(Player,Count,VP),
   Value = VP.
 
@@ -92,11 +91,10 @@ move(Move, Board, NewBoard, ValidPlay) :-
   updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
   printPlay(ValidPlay).
 
-move(Move,Board, NewBoard, ValidPlay) :-
+move(Move,Board, NewBoard, -1) :-
   read_move(Move, X,Y, Color),
   \+ playPiece(Board, X, Y, Color,TmpBoard),
   NewBoard = Board,
-  ValidPlay = -1,
   printInvalidPlay.
 
 %to be improved
@@ -111,33 +109,26 @@ read_info(X,Y, Color) :-
 
 translate(b, blackPiece).
 translate(w, whitePiece).
-translate(_, _).
+translate(_C, _C).
 
-validate_info_Color(Color,Valid) :-
-  Color = blackPiece -> Valid = 1;
-  Color = whitePiece -> Valid = 1;
-  Valid = 0.
+validate_info_Color(blackPiece).
+validate_info_Color(whitePiece).
 
-validate_info_coords(Board,X,Y, Valid) :-
-  getPiece(Board,X,Y,_C),
-  Valid = 1. %is valid
-
-validate_info_coords(Board,X,Y, Valid) :-
-  Valid = 0. %is not valid
+validate_info_coords(Board,X,Y) :-
+  getPiece(Board,X,Y,_). %is valid
 
 validate_info(Board,X,Y,Color) :-
-  validate_info_coords(Board,X,Y,Vcoor),
-  validate_info_Color(Color,Vcol),
-  Vcoor = 1,
-  Vcol = 1.
+  validate_info_coords(Board,X,Y),
+  validate_info_Color(Color).
 
 read_validate_info(Board,X,Y,Color) :-
-  read_info(X_tmp,Y_tmp,Color_tmp),
-  (
-    (validate_info(Board,X_tmp,Y_tmp,Color_tmp)) ->
-      (X = X_tmp, Y = Y_tmp, Color = Color_tmp);
-      (printInvalidInformation, read_validate_info(Board,X,Y,Color))  
-  ).
+  read_info(X,Y,Color),
+  validate_info(Board,X,Y,Color).
+
+
+read_validate_info(Board,X,Y,Color) :-
+  printInvalidInformation,
+  read_validate_info(Board,X,Y,Color).
 
 
 checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
@@ -148,15 +139,10 @@ checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
 checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
   Res = [].
 
-check_game_neighbors_value(Board,L,Player_Color,Value ,Cells, C) :-
-  length(Cells,N),
-  N == 1,
-  C = Cells, !.
+check_game_neighbors_value(Board,L,Player_Color,Value ,Cells, Cells) :-
+  length(Cells,1), !.
 
-check_game_neighbors_value(Board,L,Player_Color,Value ,Cells, C) :-
-  length(L,N),
-  N == 0,
-  C = [], !.
+check_game_neighbors_value(Board,[],Player_Color,Value ,Cells, []) :- !.
 
 
 check_game_neighbors_value(Board,[cell(X,Y,Color)| T],Player_Color, Value, Cells, C) :- 
@@ -167,56 +153,51 @@ check_game_neighbors_value(Board,[cell(X,Y,Color)| T],Player_Color, Value, Cells
 check_game_neighbors_value(Board,[cell(X,Y,Color)| T], Player_Color,Value, Cells, C) :- 
   check_game_neighbors_value(Board,T,Player_Color, Value, Cells, C).
 
-game_over(Board,Winner) :-
-  getPlayer(Player1,_,_,Value1,_),
-  Value1 = -2,
-  getPlayer(Player2,_,_,Value2,_),
-  Value2 = -2,
-  Winner = -1.
+game_over(Board,-1) :-
+  getPlayer(Player1,_,_,-2,_),
+  getPlayer(Player2,_,_,-2,_).
 
 game_over(Board, Winner) :-
-  getPlayer(PlayerId, Color, 1,Value,_),
-  Value = 2,
+  getPlayer(Winner, Color, 1,2,_),
   check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
-  length(WinnerList,N),
-  N == 1,
-  Winner = PlayerId.
+  length(WinnerList,1).
 
 game_over(Board, Winner) :-
-  getPlayer(PlayerId, Color, 1,Value,_),
-  Value = 2,
+  getPlayer(PlayerId, Color, 1,2,_),
   check_game_neighbors_value(Board, Board, Color, 3, [], LoserList),
-  length(LoserList,N),
-  N == 1,
+  length(LoserList,1),
   getOppositePlayer(PlayerId,Winner).
 
 game_over(Board, Winner) :-
-  getPlayer(PlayerId, Color, 0,Value,_),
+  getPlayer(Winner, Color, 0,Value,_),
   check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
-  length(WinnerList,N),
-  N == 1,
-  Winner = PlayerId.
+  length(WinnerList,1).
   
-game_over(Board, Winner) :-
-  Winner = 0.
+game_over(Board, 0).
 
 getInfo(Board,Lvl, X,Y,Color) :-
-  getCurrentPlayerBot(Bot),
-  Bot = 0 -> read_validate_info(Board,X,Y,Color);
-  Bot = 1 -> choose_move(Board, Lvl, X, Y, Color).
+  getCurrentPlayerBot(0),
+  read_validate_info(Board,X,Y,Color).
+
+getInfo(Board,Lvl, X,Y,Color) :-
+  getCurrentPlayerBot(1),
+  choose_move(Board, Lvl, X, Y, Color).
 
 
-play_game_loop(Board,Lvl,Winner) :-
-  (Winner = 1; Winner = 2; Winner = -1),
-  display_game_winner(Board,Winner), !.
+play_game_loop(Board,Lvl, 1) :-
+  display_game_winner(Board, 1), !.
+
+play_game_loop(Board,Lvl, 2) :-
+  display_game_winner(Board, 2), !.
+
+play_game_loop(Board,Lvl, -1) :-
+  display_game_winner(Board, -1), !.
 
 %needs testing
 play_game_loop(Board,Lvl,Winner) :-
   getCurrentPlayer(Player),
-  countValidMoves(Board, Player, Count),
-  Count = 0,
-  ValidPlay = -2,
-  switchCurrentPlayer(ValidPlay),
+  countValidMoves(Board, Player, 0),
+  switchCurrentPlayer(-2),
   printIsImpossiblePlay,
   play_game_loop(Board, Lvl,Winner).
 
@@ -232,13 +213,9 @@ play_game_loop(Board,Lvl,Winner) :-
  play_game_loop(NewBoard, Lvl, New_Winner).
 
 
-create_move(X,Y,Color, Move) :-
-  Move = [X,Y,Color].
+create_move(X,Y,Color, [X,Y,Color]).
 
-read_move([X,Y,Color], RX, RY, RColor) :-
-  RX = X,
-  RY = Y,
-  RColor = Color.
+read_move([X,Y,Color], X, Y, Color).
 
 
 
@@ -290,10 +267,7 @@ findFirstEmptyCellNeighbors(Board,X,Y,Res) :-
   findFirstNeighbors(Board,X,Y,_P,emptyCell,[],Res).
 
 %finds a list of  cells first neighbors that are empty
-findFirstEmptyCellNeighborsList(Board,List,TmpRes,Res) :-
-  length(List,N),
-  N == 0,
-  Res = TmpRes.
+findFirstEmptyCellNeighborsList(Board,[],TmpRes,TmpRes).
 
 %finds a list of  cells first neighbors that are empty
 findFirstEmptyCellNeighborsList(Board,[(X,Y)|T],TmpRes,Res) :-
@@ -309,10 +283,7 @@ findDoubleEmptyCellNeigbors(Board,X,Y, Res) :-
 
 
 %finds a list of  cells first neighbors that are empty
-findDoubleEmptyCellNeigborsList(Board,List,TmpRes,Res) :-
-  length(List,N),
-  N == 0,
-  Res = TmpRes.
+findDoubleEmptyCellNeigborsList(Board,[],TmpRes,TmpRes).
 
 %finds a list of  cells first neighbors that are empty
 findDoubleEmptyCellNeigborsList(Board,[(X,Y)|T],TmpRes,Res) :-
@@ -336,10 +307,7 @@ findAllOcpCellsEmptyValidNeighbors(Board,Color, Res) :-
   findFirstEmptyCellNeighborsList(Board,OcpCells, [],DECN),
   findAllOcpCellsEmptyValidNeighborsList(Board,Color,DECN,[],Res).
 
-findAllOcpCellsEmptyValidNeighborsList(Board,Color,List,TmpRes,Res) :-
-  length(List,N),
-  N == 0,
-  Res = TmpRes, !.
+findAllOcpCellsEmptyValidNeighborsList(Board,Color,[],TmpRes,TmpRes) :- !.
 
 %findAllOcpCellsEmptyValidNeighborsList(Board,[(X,Y)|T],TmpRes,Res) :-
 %  isValidPlay(Board,X,Y,blackPiece),
