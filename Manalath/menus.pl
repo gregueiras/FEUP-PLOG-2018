@@ -8,11 +8,10 @@ firstMenu :-
     print_FirstMenu,
     read(Option),
     (
-        Option = 1 -> playMenu;
+        Option = 1 -> (playMenu, firstMenu);
         Option = 2;
         print_InvalidOption
-    ),
-    firstMenu.
+    ). 
 
 print_FirstMenu :-
     nl,
