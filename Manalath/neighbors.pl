@@ -82,3 +82,10 @@ countCellNeighbors(Board,X,Y,Color,Count):-
   findAllNeighbors(Board,Color,[(X,Y)],[],Neighbors),
   length(Neighbors,C),
   Count is C -1.
+
+
+
+    
+
+
+ 

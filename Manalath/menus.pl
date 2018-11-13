@@ -31,7 +31,7 @@ playMenu :-
     (
         Option = 1 -> play_game_PvP;
         Option = 2 -> playPvCMenu;
-        Option = 3 -> play_game_CvC;
+        Option = 3 -> play_game_CvC(2);
         Option = 4 ->firstMenu;
         print_InvalidOption
     ).
@@ -54,8 +54,8 @@ playPvCMenu :-
     print_playPvCMenu,
     read(Option),
     (
-        Option = 1 -> play_game_PvC;
-        Option = 2 ;
+        Option = 1 -> play_game_PvC(1);
+        Option = 2 -> play_game_PvC(2);
         Option = 3;
         Option = 4 -> playMenu;
         print_InvalidOption

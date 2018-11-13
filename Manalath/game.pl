@@ -41,7 +41,7 @@ isValidPlay(Board,X,Y,Color) :-
   getPiece(Board,X,Y,_S),
   _S = emptyCell,
   countCellNeighbors(Board,X,Y,Color,Count),
-  Count < 6.
+  Count < 5. %nao sei se e 4 5 ou 6
 
 %podemos usar na parte da AI
 getValidPlays(Board,Color,ValidPlays) :-
@@ -184,39 +184,46 @@ game_over(Board, Winner) :-
   length(LoserList,N),
   N == 1,
   getOppositePlayer(PlayerId,Winner).
+
+game_over(Board, Winner) :-
+  getPlayer(PlayerId, Color, 0,Value,_),
+  check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
+  length(WinnerList,N),
+  N == 1,
+  Winner = PlayerId.
   
 game_over(Board, Winner) :-
   Winner = 0.
 
-getInfo(Board, X,Y,Color) :-
+getInfo(Board,Lvl, X,Y,Color) :-
   getCurrentPlayerBot(Bot),
   Bot = 0 -> read_validate_info(Board,X,Y,Color);
-  Bot = 1 -> choose_move(Board, 1, X, Y, Color).
+  Bot = 1 -> choose_move(Board, Lvl, X, Y, Color).
 
 
-play_game_loop(Board,Winner) :-
+play_game_loop(Board,Lvl,Winner) :-
   (Winner = 1; Winner = 2; Winner = -1),
   display_game_winner(Board,Winner), !.
 
 %needs testing
-play_game_loop(Board,Winner) :-
+play_game_loop(Board,Lvl,Winner) :-
   getCurrentPlayer(Player),
   countValidMoves(Board, Player, Count),
   Count = 0,
   ValidPlay = -2,
   switchCurrentPlayer(ValidPlay),
   printIsImpossiblePlay,
-  play_game_loop(Board, Winner).
+  play_game_loop(Board, Lvl,Winner).
 
-play_game_loop(Board,Winner) :-
+play_game_loop(Board,Lvl,Winner) :-
  getCurrentPlayer(Player),
  display_game(Board,Player), !,
- getInfo(Board, X,Y,Color),
+ getInfo(Board,Lvl, X,Y,Color),
  create_move(X,Y,Color, Move),
  move(Move, Board,NewBoard, ValidPlay), 
  game_over(NewBoard, New_Winner),
  switchCurrentPlayer(ValidPlay), 
- play_game_loop(NewBoard, New_Winner).
+ play_game_loop(NewBoard, Lvl, New_Winner).
 
 
 create_move(X,Y,Color, Move) :-
@@ -234,17 +241,113 @@ read_move([X,Y,Color], RX, RY, RColor) :-
 play_game_PvP :-
   initial_board(Board),
   assertPlayers_PvP, %initializes the players
-  play_game_loop(Board,0).
+  play_game_loop(Board,1,0).
 
   
-play_game_PvC :-
+play_game_PvC(Lvl) :-
   initial_board(Board),
   assertPlayers_PvC, %initializes the players
-  play_game_loop(Board,0). %passar o lvl aqui
+  play_game_loop(Board,Lvl,0). %passar o lvl aqui
 
 
-play_game_CvC :-
+play_game_CvC(Lvl) :-
   initial_board(Board),
   assertPlayers_CvC, %initializes the players
-  play_game_loop(Board,0). %passar o lvl aqui
+  play_game_loop(Board,Lvl,0). %passar o lvl aqui
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%finds all the occupied cells of a given color
+findAllColorOcpCells(Board, Color, Res) :-
+  findall((FX,FY),
+  (
+  member(cell(FX,FY,Color), Board)
+  ),
+  Res).
+
+%finds all the occupied cells 
+findAllOcpCells(Board, Res) :-
+  findAllColorOcpCells(Board, blackPiece, BP),
+  findAllColorOcpCells(Board, whitePiece, WP),
+  append(BP,WP,Res).
+
+%finds a cell first neighbors that are empty
+findFirstEmptyCellNeighbors(Board,X,Y,Res) :-
+  %findAllNeighbors(Board,emptyCell,[(X,Y)],[],Neighbors).
+  findFirstNeighbors(Board,X,Y,_P,emptyCell,[],Res).
+
+%finds a list of  cells first neighbors that are empty
+findFirstEmptyCellNeighborsList(Board,List,TmpRes,Res) :-
+  length(List,N),
+  N == 0,
+  Res = TmpRes.
+
+%finds a list of  cells first neighbors that are empty
+findFirstEmptyCellNeighborsList(Board,[(X,Y)|T],TmpRes,Res) :-
+  findFirstEmptyCellNeighbors(Board,X,Y,EmpN),
+  append(TmpRes,EmpN,NewTmpRes),
+  sort(NewTmpRes,NTR),
+  findFirstEmptyCellNeighborsList(Board,T,NTR,Res).
+
+%finds a list of  cells first and second neighbors that are empty
+findDoubleEmptyCellNeigbors(Board,X,Y, Res) :-
+    findFirstEmptyCellNeighbors(Board,X,Y,Tmp),
+    findFirstEmptyCellNeighborsList(Board,Tmp,Tmp,Res).
+
+
+%finds a list of  cells first neighbors that are empty
+findDoubleEmptyCellNeigborsList(Board,List,TmpRes,Res) :-
+  length(List,N),
+  N == 0,
+  Res = TmpRes.
+
+%finds a list of  cells first neighbors that are empty
+findDoubleEmptyCellNeigborsList(Board,[(X,Y)|T],TmpRes,Res) :-
+  findDoubleEmptyCellNeigbors(Board,X,Y,EmpN),
+  append(TmpRes,EmpN,NewTmpRes),
+  sort(NewTmpRes,NTR),
+  findDoubleEmptyCellNeigborsList(Board,T,NTR,Res).
+
+%finds a list of occupied cells first and second neighbors that are empty and valid
+findAllOcpCellsColorEmptyValidNeighbors(Board,Color, Res) :-
+  findAllOcpCells(Board, OcpCells),
+  findDoubleEmptyCellNeigborsList(Board,OcpCells, [],DECN),
+  %findFirstEmptyCellNeighborsList(Board,OcpCells, [],DECN),
+  findAllOcpCellsEmptyValidNeighborsList(Board,DECN,[],Res).
+
+
+%finds a list of occupied cells first and second neighbors that are empty and valid
+findAllOcpCellsEmptyValidNeighbors(Board,Color, Res) :-
+  findAllOcpCells(Board, OcpCells),
+  %findDoubleEmptyCellNeigborsList(Board,OcpCells, [],DECN),
+  findFirstEmptyCellNeighborsList(Board,OcpCells, [],DECN),
+  findAllOcpCellsEmptyValidNeighborsList(Board,Color,DECN,[],Res).
+
+findAllOcpCellsEmptyValidNeighborsList(Board,Color,List,TmpRes,Res) :-
+  length(List,N),
+  N == 0,
+  Res = TmpRes, !.
+
+%findAllOcpCellsEmptyValidNeighborsList(Board,[(X,Y)|T],TmpRes,Res) :-
+%  isValidPlay(Board,X,Y,blackPiece),
+%  isValidPlay(Board,X,Y,whitePiece),
+%  append(TmpRes,[(X,Y,blackPiece)], NTR),
+%  append(NTR,[(X,Y,whitePiece)], NNTR),
+%  findAllOcpCellsEmptyValidNeighborsList(Board,T,NNTR,Res), !.
+
+findAllOcpCellsEmptyValidNeighborsList(Board,Color,[(X,Y)|T],TmpRes,Res) :-
+  isValidPlay(Board,X,Y,Color),
+  append(TmpRes,[(X,Y,Color)], NTR),
+  findAllOcpCellsEmptyValidNeighborsList(Board,Color,T,NTR,Res), !.
+
+findAllOcpCellsEmptyValidNeighborsList(Board,Color,[(X,Y)|T],TmpRes,Res) :-
+  findAllOcpCellsEmptyValidNeighborsList(Board,Color,T,TmpRes,Res), !.
+
+%findAllOcpCellsEmptyValidNeighborsList(Board,[(X,Y)|T],TmpRes,Res) :-
+ % isValidPlay(Board,X,Y,whitePiece),
+ % append(TmpRes,[(X,Y,whitePiece)], NTR),
+ % findAllOcpCellsEmptyValidNeighborsList(Board,T,NTR,Res), !.
+  
 

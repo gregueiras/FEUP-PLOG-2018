@@ -23,6 +23,9 @@ assertPlayers_CvC :-
 getPlayer(PlayerId,Color, Current,Value, Bot) :-
     player(PlayerId, Color,Current, Value, Bot).
 
+getPlayerColor(PlayerId, Color) :-
+    getPlayer(PlayerId, Color, _, _, _).
+
 getCurrentPlayer(Player) :-
     getPlayer(Player,_,1,_,_).
 
@@ -82,9 +85,13 @@ getOppositePlayer(PlayerId, OpPlayerId) :-
     PlayerId = 1 -> OpPlayerId = 2;
     PlayerId = 2 -> OpPlayerId = 1.
 
-getOppositeColor(Color, OpColor) :-
-    Color = whitePiece -> OpColor = blackPiece;
-    Color = blackPiece -> OpColor = whitePiece.
+getOppositeColor(whitePiece, blackPiece).
+
+getOppositeColor(blackPiece, whitePiece).
+
+getPlayerColorById(Player,Color) :-
+    Player = 1 -> Color = blackPiece;
+    Player = 2 -> Color = whitePiece.
 
 print_player(Player) :-
     write('Player : '),
