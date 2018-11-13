@@ -11,7 +11,8 @@ firstMenu :-
         Option = 1 -> playMenu;
         Option = 2;
         print_InvalidOption
-    ).
+    ),
+    firstMenu.
 
 print_FirstMenu :-
     nl,
@@ -31,10 +32,11 @@ playMenu :-
     (
         Option = 1 -> play_game_PvP;
         Option = 2 -> playPvCMenu;
-        Option = 3 -> play_game_CvC(2);
-        Option = 4 ->firstMenu;
+        Option = 3 -> playCvPMenu;
+        Option = 4 -> play_game_CvC(2);
+        Option = 5 ->firstMenu;
         print_InvalidOption
-    ).
+    ). 
 
 print_playMenu :-
     nl,
@@ -44,8 +46,9 @@ print_playMenu :-
     write('**                          **'),nl,
     write('** 1- PLAYER VS PLAYER      **'),nl,
     write('** 2- PLAYER VS COMPUTER    **'),nl,
-    write('** 3- COMPUTER VS COMPUTER  **'),nl,
-    write('** 4- GO BACK               **'),nl,
+    write('** 3- COMPUTER VS PLAYER    **'),nl,
+    write('** 4- COMPUTER VS COMPUTER  **'),nl,
+    write('** 5- GO BACK               **'),nl,
     write('**                          **'),nl,
     write('******************************'),nl,
     write('Choose : '), nl.
@@ -56,10 +59,20 @@ playPvCMenu :-
     (
         Option = 1 -> play_game_PvC(1);
         Option = 2 -> play_game_PvC(2);
-        Option = 3;
-        Option = 4 -> playMenu;
+        Option = 3 -> playMenu;
         print_InvalidOption
-    ).
+    ). 
+
+
+playCvPMenu :-
+    print_playPvCMenu,
+    read(Option),
+    (
+        Option = 1 -> play_game_CvP(1);
+        Option = 2 -> play_game_CvP(2);
+        Option = 3 -> playMenu;
+        print_InvalidOption
+    ). 
 
 print_playPvCMenu :-
     nl,
@@ -68,9 +81,8 @@ print_playPvCMenu :-
     write('******************************'),nl,
     write('**                          **'),nl,
     write('** 1- EASY                  **'),nl,
-    write('** 2- MEDIUM                **'),nl,
-    write('** 3- HARD                  **'),nl,
-    write('** 4- GO BACK               **'),nl,
+    write('** 2- HARD                  **'),nl,
+    write('** 3- GO BACK               **'),nl,
     write('**                          **'),nl,
     write('******************************'),nl,
     write('Choose : '), nl.

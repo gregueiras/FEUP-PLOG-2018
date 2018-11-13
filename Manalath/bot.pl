@@ -92,7 +92,7 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],Tmp,Cells) :-
     analyse_validMoves(Board, Player_Color,T,NewTmp, Cells) , !.
 
 
-analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],Tmp,Cells) :_
+analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],Tmp,Cells) :-
     Color = Player_Color,
     countCellNeighbors(Board,X,Y,Player_Color, Count),
     Count > 1,
@@ -123,7 +123,6 @@ findFirstValidNeighbor(Board,[(X,Y)|T],Color, MoveFlag, Move) :-
     MoveFlag = 1.
 
 findFirstValidNeighbor(Board,[(X,Y)|T],Color,MoveFlag, Move) :-
-    write('t14'), nl,
     findFirstValidNeighbor(Board,T,Color,MoveFlag, Move).
 
 
@@ -175,20 +174,40 @@ choose_move_Lvl2(Board,X,Y,Color) :-
     getCurrentPlayerColor(Player_Color),
     analyse_validMoves(Board,Player_Color,ListOfMoves,[],Cells),
     sort(Cells, SortedCells),
-    write(SortedCells), nl,
-    getBestMove(SortedCells,Move),
+    remove_duplicates(SortedCells, FinalCells),
+    getBestMove(FinalCells,Move),
     read_move(Move,X,Y,Color).
+
+
+
+getBestMove(ListOfMoves,BestMove) :-
+    length(ListOfMoves,Len),
+    findall(0,
+    (
+        member([0,_], ListOfMoves);
+        member([-5,_], ListOfMoves)
+    ),
+    TmpValues),
+    length(TmpValues,Len),
+    random_member([_,BestMove],ListOfMoves).
+
+getBestMove([[Value,Move]|T], BestMove) :-
+    findall(TmpMove,
+    (
+        member([Value,TmpMove], T)
+    ),
+    TmpMoves),
+    append(TmpMoves,[Move], NewMoves),
+    random_member(BestMove,NewMoves).
 
 getBestMove([[Value,Move]|T], BestMove) :-
     BestMove = Move.
 
-%TODO
-choose_move_Lvl3(Board,X,Y,Color).
+
 
 choose_move(Board,Level,X,Y,Color) :-
     (Level = 1 -> choose_move_Lvl1(Board,X,Y,Color);
-    Level = 2 -> choose_move_Lvl2(Board,X,Y,Color);
-    Level = 3 -> choose_move_Lvl3(Board,X,Y,Color)),
+    Level = 2 -> choose_move_Lvl2(Board,X,Y,Color)),
     print_move(X,Y,Color).
 
 print_move(X,Y,Color) :-
@@ -204,11 +223,24 @@ process_neighbors(Board,Color,Neighbors,X,Y, NX,NY) :-
     select((X,Y), Neighbors, Surrounding),
     member((FX,FY), Surrounding),
     countCellNeighbors(Board,FX,FY,Color,0),
-    %trace,
     findFirstEmptyCellNeighbors(Board,FX,FY,FirstN),
-    %trace,
     member((NX,NY),FirstN),
     isValidPlay(Board,NX,NY,Color),
-    %%trace,
     \+ countCellNeighbors(Board,NX,NY,Color,4).
+
+remove_duplicates(OldList, NewList) :-
+    remove_duplicates(OldList, [], TmpList),
+    reverse(TmpList, NewList).
+    
+
+remove_duplicates([], Res, Res).
+remove_duplicates([[Value, Move] | Tail], Tmp, Res):-
+    member([_,Move],Tail),
+    remove_duplicates(Tail, Tmp, Res).
+
+remove_duplicates([[Value, Move] | Tail], Tmp, Res):-
+    remove_duplicates(Tail, [[Value, Move] | Tmp], Res).
+
+
+
 

@@ -15,6 +15,11 @@ assertPlayers_PvC :-
     asserta(player(1, blackPiece,1,0,0)),
     asserta(player(2, whitePiece,0,0,1)). %player 2 is a bot
 
+assertPlayers_CvP :-
+    retractall(player(_,_,_,_,_)),
+    asserta(player(1, blackPiece,1,0,1)), %player 1 is a bot
+    asserta(player(2, whitePiece,0,0,0)). 
+
 assertPlayers_CvC :-
     retractall(player(_,_,_,_,_)),
     asserta(player(1, blackPiece,1,0,1)), %player 1 is a bot
@@ -94,6 +99,11 @@ getPlayerColorById(Player,Color) :-
     Player = 2 -> Color = whitePiece.
 
 print_player(Player) :-
+    getPlayerColor(PlayerId, Color),
+    nl, nl,
+    write('Your turn!!!'), nl,
     write('Player : '),
-    write(Player),
+    write(Player), nl,
+    write('color : '), 
+    write(Color),
     nl.

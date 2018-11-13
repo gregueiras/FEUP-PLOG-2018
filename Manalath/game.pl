@@ -218,6 +218,7 @@ play_game_loop(Board,Lvl,Winner) :-
 play_game_loop(Board,Lvl,Winner) :-
  getCurrentPlayer(Player),
  display_game(Board,Player), !,
+ %write('\33\[2J'),
  getInfo(Board,Lvl, X,Y,Color),
  create_move(X,Y,Color, Move),
  move(Move, Board,NewBoard, ValidPlay), 
@@ -247,6 +248,11 @@ play_game_PvP :-
 play_game_PvC(Lvl) :-
   initial_board(Board),
   assertPlayers_PvC, %initializes the players
+  play_game_loop(Board,Lvl,0). %passar o lvl aqui
+
+play_game_CvP(Lvl) :-
+  initial_board(Board),
+  assertPlayers_CvP, %initializes the players
   play_game_loop(Board,Lvl,0). %passar o lvl aqui
 
 
