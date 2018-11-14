@@ -2,8 +2,8 @@
 :- ensure_loaded(bot).
 
 display_game(Board, Player) :-
-    print_player(Player),
-    print_board(Board).
+  print_player(Player),
+  print_board(Board).
   
 display_game_winner(Board,Winner) :-
   printWinner(Winner),
@@ -97,17 +97,44 @@ move(Move,Board, NewBoard, -1) :-
   printInvalidPlay.
 
 %to be improved
-read_info(X,Y, Color) :-
-  write('x-coordinate: '),
-  read(X),
-  write('y-coordinate: '),
-  read(Y),
+read_info(Letter, Number, Color) :-
+  write('LetterNumber: '),
+  new_read(Play),
+  atom_chars(Play, Option),
+  parseOption(Option, Letter, Number),
   write('color: '),
-  read(TmpColor), 
+  new_read(TmpColor), 
   translate(TmpColor, Color).
+
+parseOption(List, L, N) :-
+  length(List, 2),
+  nth0(0, List, L),
+  atom(L),
+  nth0(1, List, TmpAtom),
+  atom(TmpAtom),
+  atom_chars(TmpAtom, TmpChar),
+  number_chars(N, TmpChar),
+  number(N).
+
+new_read(Color) :-
+  new_read('', Color), !.
+
+new_read(Acc, Color) :-
+  get_char(Char),
+  processChar(Char, Acc, Color).
+  
+processChar('\n', Acc, Acc).
+processChar(Char, Acc, Color) :-
+  atom_concat(Acc, Char, Res),
+  new_read(Res, Color).
+
 
 translate(b, blackPiece).
 translate(w, whitePiece).
+translate(b, black).
+translate(w, white).
+translate(black, blackPiece).
+translate(white, whitePiece).
 translate(_C, _C).
 
 validate_info_Color(blackPiece).
@@ -122,8 +149,7 @@ validate_info(Board,X,Y,Color) :-
 
 read_validate_info(Board,X,Y,Color) :-
   read_info(Letter,Number,Color),
-  numLines(Board,NumLines),
-  userToCoords(NumLines, Letter, Number, X, Y),
+  userToCoords(Board, Letter, Number, X, Y),
   validate_info(Board,X,Y,Color).
 
 

@@ -3,16 +3,21 @@
 print_InvalidOption :-
     write('Invalid option! Please try again...').
 
-
 firstMenu :-
     print_FirstMenu,
-    read(Option),
-    (
-        Option = 1 -> (playMenu, firstMenu);
-        Option = 2;
-        print_InvalidOption
-    ). 
+    new_read(Option),
+    firstMenu(Option).
 
+firstMenu('1') :-
+    playMenu,
+    firstMenu.
+
+firstMenu('2').
+
+firstMenu(_) :-
+    print_InvalidOption,
+    firstMenu.
+ 
 print_FirstMenu :-
     nl,
     write('******************************'),nl,
@@ -27,13 +32,13 @@ print_FirstMenu :-
 
 playMenu :-
     print_playMenu,
-    read(Option),
+    new_read(Option),
     (
-        Option = 1 -> play_game_PvP;
-        Option = 2 -> playPvCMenu;
-        Option = 3 -> playCvPMenu;
-        Option = 4 -> playCvCMenu;
-        Option = 5;
+        Option = '1' -> play_game_PvP;
+        Option = '2' -> playPvCMenu;
+        Option = '3' -> playCvPMenu;
+        Option = '4' -> playCvCMenu;
+        Option = '5';
         print_InvalidOption
     ). 
 
@@ -54,32 +59,32 @@ print_playMenu :-
 
 playPvCMenu :-
     print_playPvCMenu,
-    read(Option),
+    new_read(Option),
     (
-        Option = 1 -> play_game_PvC(1);
-        Option = 2 -> play_game_PvC(2);
-        Option = 3 -> playMenu;
+        Option = '1' -> play_game_PvC(1);
+        Option = '2' -> play_game_PvC(2);
+        Option = '3' -> playMenu;
         print_InvalidOption
     ). 
 
 
 playCvPMenu :-
     print_playCvPMenu,
-    read(Option),
+    new_read(Option),
     (
-        Option = 1 -> play_game_CvP(1);
-        Option = 2 -> play_game_CvP(2);
-        Option = 3 -> playMenu;
+        Option = '1' -> play_game_CvP(1);
+        Option = '2' -> play_game_CvP(2);
+        Option = '3' -> playMenu;
         print_InvalidOption
     ). 
 
 playCvCMenu :-
     print_playCvCMenu,
-    read(Option),
+    new_read(Option),
     (
-        Option = 1 -> play_game_CvC(1);
-        Option = 2 -> play_game_CvC(2);
-        Option = 3 -> playMenu;
+        Option = '1' -> play_game_CvC(1);
+        Option = '2' -> play_game_CvC(2);
+        Option = '3' -> playMenu;
         print_InvalidOption
     ). 
 
