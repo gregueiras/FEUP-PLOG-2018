@@ -1,4 +1,5 @@
 :- ensure_loaded(includes).
+:- ensure_loaded(bot).
 
 display_game(Board, Player) :-
     print_player(Player),
@@ -120,7 +121,9 @@ validate_info(Board,X,Y,Color) :-
   validate_info_Color(Color).
 
 read_validate_info(Board,X,Y,Color) :-
-  read_info(X,Y,Color),
+  read_info(Letter,Number,Color),
+  numLines(Board,NumLines),
+  convertCoord(NumLines, Letter, Number, X, Y),
   validate_info(Board,X,Y,Color).
 
 
