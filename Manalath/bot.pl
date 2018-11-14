@@ -205,14 +205,12 @@ getBestMove([[_Value,Move]|_T], BestMove) :-
 choose_move(Board,Level,X,Y,Color) :-
     (Level = 1 -> choose_move_Lvl1(Board,X,Y,Color);
     Level = 2 -> choose_move_Lvl2(Board,X,Y,Color)),
-    print_move(X,Y,Color).
+    print_move(Board, X,Y,Color).
 
-print_move(X,Y,Color) :-
-    %converter as coordenadas ao contrario
-    write('x-coordinate: '),
-    write(X), nl,
-    write('y-coordinate: '),
-    write(Y), nl,
+print_move(Board, X,Y,Color) :-
+    coordsToUser(Board, X, Y, Letter, Number),
+    write('Played on: '),
+    write(Letter), write(Number), nl,
     write('color: '),
     write(Color), nl.
 

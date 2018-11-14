@@ -112,7 +112,6 @@ numLines(Board, NumLines) :-
 
 print_board(Board) :-
   numLines(Board, NL),
-  BufSize is NL / 2.0,
   print_lines(Board, 0, NL).
 
 print_lines(_, LineNum, NL) :-
@@ -154,7 +153,25 @@ print_top([_ | T]) :-
   write(' '),
   print_top(T).
 
-convertCoord(NumLines, Letter, Number, X, Y) :-
+coordsToUser(Board, X, Y, Letter, Number) :-
+  numLines(Board, NumLines),
+  char_code(a, CodeA),
+  CodeLetter is CodeA + Y,
+  char_code(Letter, CodeLetter),
+  Half is NumLines / 2,
+  Y > Half,
+  Tmp is Y - Half,
+  X1 is round(X / 2 - Tmp - 1),
+  Number = X1.
+
+coordsToUser(_,X, Y, Letter, Number) :-
+  char_code(a, CodeA),
+  CodeLetter is CodeA + Y,
+  char_code(Letter, CodeLetter),
+  Number is round(X / 2).
+
+userToCoords(Board, Letter, Number, X, Y) :-
+  numLines(Board, NumLines),
   char_code(Letter, CodeLetter),
   char_code(a, CodeA),
   NumLetter is CodeLetter - CodeA,
@@ -163,17 +180,15 @@ convertCoord(NumLines, Letter, Number, X, Y) :-
   Tmp is NumLetter - Half,
   X1 is round(2 * (Tmp + Number) + 1),
   X = X1,
-  Y = NumLetter,
-  write(X), write('  '), write(Y), nl.
+  Y = NumLetter.
 
-convertCoord(_, Letter, Number, X, Y) :-
+userToCoords(_, Letter, Number, X, Y) :-
   char_code(Letter, CodeLetter),
   char_code(a, CodeA),
   NumLetter is CodeLetter - CodeA,
   X1 is Number * 2,
   X = X1,
-  Y = NumLetter,
-  write(X), write('  '), write(Y), nl.
+  Y = NumLetter.
 
 print_coordsBegin([ cell(_, Y, _) | _]) :-
   char_code(a, CodeA),

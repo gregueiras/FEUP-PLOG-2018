@@ -123,7 +123,7 @@ validate_info(Board,X,Y,Color) :-
 read_validate_info(Board,X,Y,Color) :-
   read_info(Letter,Number,Color),
   numLines(Board,NumLines),
-  convertCoord(NumLines, Letter, Number, X, Y),
+  userToCoords(NumLines, Letter, Number, X, Y),
   validate_info(Board,X,Y,Color).
 
 
