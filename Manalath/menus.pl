@@ -33,14 +33,25 @@ print_FirstMenu :-
 playMenu :-
     print_playMenu,
     new_read(Option),
-    (
-        Option = '1' -> play_game_PvP;
-        Option = '2' -> playPvCMenu;
-        Option = '3' -> playCvPMenu;
-        Option = '4' -> playCvCMenu;
-        Option = '5';
-        print_InvalidOption
-    ). 
+    playMenu(Option).
+
+playMenu('1') :-
+    play_game_PvP,
+    playMenu.
+
+playMenu('2') :-
+    playPvCMenu,
+    playMenu.
+playMenu('3') :-
+    playCvPMenu,
+    playMenu.
+playMenu('4') :-
+    playCvCMenu,
+    playMenu.
+playMenu('5').
+playMenu(_) :-
+    print_InvalidOption,
+    playMenu.
 
 print_playMenu :-
     nl,
@@ -60,33 +71,46 @@ print_playMenu :-
 playPvCMenu :-
     print_playPvCMenu,
     new_read(Option),
-    (
-        Option = '1' -> play_game_PvC(1);
-        Option = '2' -> play_game_PvC(2);
-        Option = '3' -> playMenu;
-        print_InvalidOption
-    ). 
+    playPvCMenu(Option).
 
+playPvCMenu('1') :-
+    play_game_PvC(1).
+playPvCMenu('2') :-
+    play_game_PvC(2).
+playPvCMenu('3').
+playPvCMenu(_) :-
+    print_InvalidOption,
+    playPvCMenu.
 
 playCvPMenu :-
     print_playCvPMenu,
     new_read(Option),
-    (
-        Option = '1' -> play_game_CvP(1);
-        Option = '2' -> play_game_CvP(2);
-        Option = '3' -> playMenu;
-        print_InvalidOption
-    ). 
+    playCvPMenu(Option).
+
+playCvPMenu('1') :-
+    play_game_CvP(1).
+playCvPMenu('2') :-
+    play_game_CvP(2).
+playCvPMenu('3').
+playCvPMenu(_) :-
+    print_InvalidOption,
+    playCvPMenu.
 
 playCvCMenu :-
     print_playCvCMenu,
     new_read(Option),
-    (
-        Option = '1' -> play_game_CvC(1);
-        Option = '2' -> play_game_CvC(2);
-        Option = '3' -> playMenu;
-        print_InvalidOption
-    ). 
+    playCvCMenu(Option).
+
+playCvCMenu('1') :-
+    play_game_CvC(1).
+
+playCvCMenu('2') :-
+    play_game_CvC(2).
+
+playCvCMenu('3').
+playCvCMenu(_) :-
+    print_InvalidOption,
+    playCvCMenu.
 
 print_playPvCMenu :-
     nl,
