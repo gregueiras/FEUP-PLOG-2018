@@ -94,7 +94,7 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells
 % stays to be analysed
 analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],SkipStep,Tmp,Cells) :-
     SkipStep = 0,
-    findFirstNeighbors(Board,X,Y,_S,Color,[],FN),
+    findFirstNeighbors(Board,X,Y,Color,[],FN),
     length(FN,2),
     findFirstEmptyCellNeighbors(Board,X,Y,EmptyNeighbors),
     findFirstValidNeighbor(Board,EmptyNeighbors,Player_Color,1,Move),
