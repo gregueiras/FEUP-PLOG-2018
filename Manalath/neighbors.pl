@@ -48,10 +48,7 @@ findFirstNeighbors(Board,X,Y,_P,Color,Processed,ToProcess) :-
   ToProcess).
 
 %quando ja nao ha mais celulas para processar termina
-findAllNeighbors(_Board,_Color,ToProcess,ProcessedCells,Res) :-
-  length(ToProcess,N),
-  N == 0, !,
-  Res = ProcessedCells.
+findAllNeighbors(_Board,_Color,[],ProcessedCells,ProcessedCells) :- !.
 
 %processa o primeiro elemento da lista ToProcess ((SX,SY))
 %guarda (SX,SY) nos Processed
@@ -68,9 +65,7 @@ findCellNeighbors(Board,X,Y,Color) :-
   findAllNeighbors(Board,Color,[(X,Y)],[],Neighbors),
   printLongList(Neighbors).
 
-printLongList(List) :-
-  length(List,N),
-  N == 0.
+printLongList([]).
 printLongList([L|T]) :-
   write('('),
   write(L),
@@ -82,10 +77,3 @@ countCellNeighbors(Board,X,Y,Color,Count):-
   findAllNeighbors(Board,Color,[(X,Y)],[],Neighbors),
   length(Neighbors,C),
   Count is C -1.
-
-
-
-    
-
-
- 
