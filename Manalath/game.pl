@@ -158,10 +158,8 @@ read_validate_info(Board,X,Y,Color) :-
   read_validate_info(Board,X,Y,Color).
 
 
-checkCellNeighborsCount(Board,X,Y,Color, Value,Res) :-
-  countCellNeighbors(Board,X,Y,Color,Count),
-  Count == Value,
-  Res = [(X,Y, Color)], !.
+checkCellNeighborsCount(Board,X,Y,Color, Value,[(X,Y, Color)]) :-
+  countCellNeighbors(Board,X,Y,Color,Value), !.
 
 checkCellNeighborsCount(_Board,_X,_Y,_Color,_Value,[]).
 
@@ -171,9 +169,8 @@ check_game_neighbors_value(_Board,_L,_Player_Color,_Value ,Cells, Cells) :-
 check_game_neighbors_value(_Board,[],_Player_Color,_Value ,_Cells, []) :- !.
 
 
-check_game_neighbors_value(Board,[cell(X,Y,Color)| T],Player_Color, Value, _Cells, C) :- 
-  Color = Player_Color,
-  checkCellNeighborsCount(Board,X,Y,Color,Value,Res),
+check_game_neighbors_value(Board,[cell(X,Y,Player_Color)| T],Player_Color, Value, _Cells, C) :- 
+  checkCellNeighborsCount(Board,X,Y,Player_Color,Value,Res),
   check_game_neighbors_value(Board,T, Player_Color,Value, Res, C).
 
 check_game_neighbors_value(Board,[cell(_X,_Y,_Color)| T], Player_Color,Value, Cells, C) :- 
@@ -229,7 +226,6 @@ play_game_loop(Board,Lvl,Winner) :-
 play_game_loop(Board,Lvl,_Winner) :-
  getCurrentPlayer(Player),
  display_game(Board,Player), !,
- %write('\33\[2J'),
  getInfo(Board,Lvl, X,Y,Color),
  create_move(X,Y,Color, Move),
  move(Move, Board,NewBoard, ValidPlay), 
