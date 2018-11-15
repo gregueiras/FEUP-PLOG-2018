@@ -203,7 +203,7 @@ print_coordsEnd([ cell(_, Y, _) | T]) :-
   write(X1).
 
 write_unicode(p1) :- char_code(_Char,9899), write(_Char).
-write_unicode(p2) :- char_code(_Char,9711), write(_Char).
+write_unicode(p2) :- char_code(_Char,9898), write(_Char).
 
 
 print_cell(cell(_, _, blackPiece)) :-
