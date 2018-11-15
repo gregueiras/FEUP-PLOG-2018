@@ -126,9 +126,6 @@ print_lines(Board, LineNum, NL) :-
   print_line(Line), 
   write('| '), print_coordsEnd(Line),
   nl,
-  %print_buffer(BufSize), 
-  %write('|'),
-  %print_coords(Line),  nl,
   L is LineNum + 1,
   print_lines(Board, L, NL).
 
@@ -218,16 +215,10 @@ print_cell(cell(_, _, whitePiece)) :-
 print_cell(cell(_, _, emptyCell)) :-
     write(' ').
 
-updateBoard(_Board,OldBoard,ValidPlay,NewBoard) :-
-  ValidPlay = -1, %jogada invalida, arranjar uma cena mais bonitinha maybe
-  NewBoard = OldBoard. %if the play is not a valid one then the board is not updated
+updateBoard(_Board,OldBoard,-1,OldBoard). %if the play is not a valid one then the board is not updated
 
-updateBoard(_Board,OldBoard,ValidPlay,NewBoard) :-
-  ValidPlay = -2, 
-  NewBoard = OldBoard. 
+updateBoard(_Board,OldBoard,-2,OldBoard). 
 
-updateBoard(Board,_OldBoard,ValidPlay,NewBoard) :-
-  ValidPlay = 2, %jogada valida, arranjar uma cena mais bonitinha maybe
-  NewBoard = Board.  %updates the board
+updateBoard(Board,_OldBoard,2,Board).  % valid play, updates the board
 
 
