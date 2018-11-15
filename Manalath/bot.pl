@@ -1,4 +1,3 @@
-
 :- ensure_loaded(includes).
 
 
@@ -67,9 +66,6 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],SkipStep,Tmp,Cells) :-
     create_move(NX,NY,OpColor,Move),
     analyse_validMoves(Board, Player_Color,[(X,Y,Color)|T],1, [[-450, Move] | Tmp], Cells) , !.
 
-    %vou buscar os vizinhos
-    %vejo qual e o grupo de 1
-    %jogo num vizinho valido e que nao faca o outro ganhar do g1
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
 % checks if the move being analised allows the other player to win
