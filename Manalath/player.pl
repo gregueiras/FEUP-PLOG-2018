@@ -58,13 +58,8 @@ removeCurrentPlayer(Player, Value) :-
     retract(player(Player,Color,1,_,Bot)),
     asserta(player(Player, Color,0, Value,Bot)).
 
-getNewCurrentPlayer(CurrentPlayer, NewCurrentPlayer) :-
-    CurrentPlayer = 1,
-    NewCurrentPlayer = 2.
-
-getNewCurrentPlayer(CurrentPlayer, NewCurrentPlayer) :-
-    CurrentPlayer = 2,
-    NewCurrentPlayer = 1.  
+getNewCurrentPlayer(1, 2).
+getNewCurrentPlayer(2, 1).
 
 switchPlayer(Value) :-
     getCurrentPlayer(CurrentPlayer),
@@ -72,35 +67,29 @@ switchPlayer(Value) :-
     removeCurrentPlayer(CurrentPlayer, Value),
     setCurrentPlayer(NewCurrentPlayer).
 
-switchCurrentPlayer(ValidPlay) :-
-    ValidPlay = 2, %if it is a valid play the current player switches
-    switchPlayer(ValidPlay).
+% if it is a valid play the current player switches
+switchCurrentPlayer(2) :-   
+    switchPlayer(2).
 
-switchCurrentPlayer(ValidPlay) :-
-    ValidPlay = -1, %if it is not a valid play the current player stays the same
+% if it is not a valid play the current player stays the same
+switchCurrentPlayer(-1) :-
     getCurrentPlayer(Player),
-    setPlayerValue(Player, ValidPlay).
+    setPlayerValue(Player, -1).
     
+switchCurrentPlayer(-2) :- 
+    switchPlayer(-2).
 
-switchCurrentPlayer(ValidPlay) :-
-    ValidPlay = -2,  
-    switchPlayer(ValidPlay).
-
-getOppositePlayer(PlayerId, OpPlayerId) :-
-    PlayerId = 1 -> OpPlayerId = 2;
-    PlayerId = 2 -> OpPlayerId = 1.
+getOppositePlayer(1, 2).
+getOppositePlayer(2, 1).
 
 getOppositeColor(whitePiece, blackPiece).
-
 getOppositeColor(blackPiece, whitePiece).
 
-getPlayerColorById(Player,Color) :-
-    Player = 1 -> Color = blackPiece;
-    Player = 2 -> Color = whitePiece.
+getPlayerColorById(Id, Color) :-
+    player(Id, Color, _, _, _).
 
 print_player(Player) :-
     getPlayerColor(Player, Color),
-    nl, nl,
     write('Player : '),
     write(Player), nl,
     write('color : '), 
