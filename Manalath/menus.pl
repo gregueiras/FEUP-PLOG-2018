@@ -1,8 +1,12 @@
 :- ensure_loaded(game).
 
+% print_InvalidOption
+% Prints error message when an invalid option has been chosen
 print_InvalidOption :-
     write('Invalid option! Please try again...').
 
+% firstMenu
+% Prints the initial menu and reads the user input
 firstMenu :-
     print_FirstMenu,
     new_read(Option),
@@ -17,7 +21,9 @@ firstMenu('2').
 firstMenu(_) :-
     print_InvalidOption,
     firstMenu.
- 
+
+% print_FirstMenu
+% 
 print_FirstMenu :-
     nl,
     write('******************************'),nl,
