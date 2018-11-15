@@ -31,7 +31,7 @@ can_player_loose(Board,Player_Color,(X,Y,_Color),1) :-
 can_player_loose(_,_,(_,_,_),0).
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
-% analyses a list of possible moves, ranking them from best to worst by assigning each move an appropriate value
+% analyse a list of possible moves, ranking them from best to worst by assigning each move an appropriate value
 % In the end, Cells contains the valued moves
 analyse_validMoves(_Board,_Player_Color,[],_SkipStep,Cells,Cells) :- !.
 
@@ -44,7 +44,7 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells
     analyse_validMoves(Board, Player_Color, T,0, [[-500, Move] | Tmp], Cells) , !.
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
-% checks if the move being analised makes the player loose
+% check if the move being analised makes the player loose
 % if the player looses, the value of the move is 500
 analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
     can_player_loose(Board,Player_Color,(X,Y,Player_Color),1),
@@ -68,7 +68,7 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],SkipStep,Tmp,Cells) :-
 
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
-% checks if the move being analised allows the other player to win
+% check if the move being analised allows the other player to win
 % if the other player wins, the value of the move is -500
 analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
     can_op_player_win(Board,Player_Color,(X,Y,Player_Color),1),
@@ -76,7 +76,7 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells
     analyse_validMoves(Board, Player_Color, T, 0,[[-500, Move] | Tmp], Cells) , !.
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
-% checks if the analysed move has more than one neighbor with the opponents color
+% check if the analysed move has more than one neighbor with the opponents color
 % if it does, the value of the move is the number of neighbors multiplied by -20
 % this means that the priority of a move is proportional to the number of neighbors
 analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
@@ -88,7 +88,7 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells
     analyse_validMoves(Board, Player_Color, T,0, [[Value, Move] | Tmp], Cells) , !.
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep, +Tmp, -Cells)
-% checks if the move to analyse has more than 2 neighbors of the specified color
+% check if the move to analyse has more than 2 neighbors of the specified color
 % if so, finds the cell's first empty and valid neighbor and creates a move for that neighbor with value -30
 % only happens if SkipStep is 0 since the move itself was not analyse but one of the neighbors, the cell
 % stays to be analysed

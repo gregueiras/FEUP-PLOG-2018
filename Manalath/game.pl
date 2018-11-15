@@ -147,16 +147,22 @@ parseOption(List, L, N) :-
   number_chars(N, TmpChar),
   number(N).
 
-% TODO
+% new_read(-Color)
+% reads one character at the time 
+% ends when a newline is found returning the whole word in Color
 new_read(Color) :-
   new_read('', Color), !.
 
-% TODO
+% new_read(+Acc, -Color)
+% reads one character at the time 
+% ends when a newline is found
 new_read(Acc, Color) :-
   get_char(Char),
   processChar(Char, Acc, Color).
 
-% TODO 
+% processChar(+Char, -Acc, -Color)
+% reads one character at the time and adds it to Acc
+% ends when a newline is found
 processChar('\n', Acc, Acc).
 processChar(Char, Acc, Color) :-
   atom_concat(Acc, Char, Res),
