@@ -18,71 +18,77 @@ can_op_player_win(_,_,(_,_,_),0).
 can_player_loose(Board,Player_Color,(X,Y,_Color),1) :-
     countCellNeighbors(Board,X,Y,Player_Color,3).
 
+can_player_loose(Board,Player_Color,(X,Y,_Color),1) :-
+    getOppositeColor(Player_Color, OpColor),
+    countCellNeighbors(Board,X,Y,OpColor,3),
+
 can_player_loose(_,_,(_,_,_),0).
 
-analyse_validMoves(_Board,_Player_Color,[],Cells,Cells) :- !.
+analyse_validMoves(_Board,_Player_Color,[],_SkipStep,Cells,Cells) :- !.
 
 %verifies if the player wins, if so the value of the play is -500
-analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],Tmp,Cells) :-
+analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
     can_player_win(Board,Player_Color,(X,Y,Player_Color),1),
     create_move(X,Y,Player_Color,Move),
-    analyse_validMoves(Board, Player_Color, T, [[-500, Move] | Tmp], Cells) , !.
+    analyse_validMoves(Board, Player_Color, T,0, [[-500, Move] | Tmp], Cells) , !.
 
 %verifies if the player loses, if so the value of the play is 500
-analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],Tmp,Cells) :-
+analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
     can_player_loose(Board,Player_Color,(X,Y,Player_Color),1),
     create_move(X,Y,Player_Color,Move),
-    analyse_validMoves(Board, Player_Color, T, [[500, Move] | Tmp], Cells) , !.
+    analyse_validMoves(Board, Player_Color, T,0, [[500, Move] | Tmp], Cells) , !.
 
-analyse_validMoves(Board,Player_Color,[(X,Y,_)|T],Tmp,Cells) :-
+analyse_validMoves(Board,Player_Color,[(X,Y,_)|T],SkipStep,Tmp,Cells) :-
+    SkipStep = 0,
     getOppositeColor(Player_Color,OpColor),
     findAllNeighbors(Board,OpColor,[(X,Y)],[],Neighbors),
     length(Neighbors,5),
     process_neighbors(Board,OpColor,Neighbors,X,Y,NX,NY),
     create_move(NX,NY,OpColor,Move),
-    analyse_validMoves(Board, Player_Color, T, [[-600, Move] | Tmp], Cells) , !.
+    analyse_validMoves(Board, Player_Color, T,1, [[-450, Move] | Tmp], Cells) , !.
 
     %vou buscar os vizinhos
     %vejo qual e o grupo de 1
     %jogo num vizinho valido e que nao faca o outro ganhar do g1
 
 %verifies if the other player wins, if so the value of the play is -500
-analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],Tmp,Cells) :-
+analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
     can_op_player_win(Board,Player_Color,(X,Y,Player_Color),1),
     create_move(X,Y,Player_Color,Move),
-    analyse_validMoves(Board, Player_Color, T, [[-500, Move] | Tmp], Cells) , !.
+    analyse_validMoves(Board, Player_Color, T, 0,[[-500, Move] | Tmp], Cells) , !.
 
 % se uma celula tiver 1 ou mais vizinhos da cor do adversario jogo nessa
-analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],Tmp,Cells) :-
+analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
     getOppositeColor(Player_Color,OpColor),
     countCellNeighbors(Board,X,Y,OpColor, Count),
     Count >= 1,
     Value is Count * (-20),
     create_move(X,Y,Player_Color,Move),
-    analyse_validMoves(Board, Player_Color, T, [[Value, Move] | Tmp], Cells) , !.
+    analyse_validMoves(Board, Player_Color, T,0, [[Value, Move] | Tmp], Cells) , !.
 
-analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],Tmp,Cells) :-
+analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],SkipStep,Tmp,Cells) :-
+    SkipStep = 0,
     findFirstNeighbors(Board,X,Y,_S,Color,[],FN),
     length(FN,N),
     N >= 2,
     findFirstEmptyCellNeighbors(Board,X,Y,EmptyNeighbors),
     findFirstValidNeighbor(Board,EmptyNeighbors,Player_Color,1,Move),
-    analyse_validMoves(Board, Player_Color, T, [[-30, Move] | Tmp], Cells) , !.
+    analyse_validMoves(Board, Player_Color, T, 1,[[-30, Move] | Tmp], Cells) , !.
 
-analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],Tmp,Cells) :-
+analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
     countCellNeighbors(Board,X,Y,Player_Color, Count),
     Count > 1,
     create_move(X,Y,Player_Color,Move),
-    analyse_validMoves(Board, Player_Color, T, [[-20, Move] | Tmp], Cells) , !.
+    analyse_validMoves(Board, Player_Color, T,0, [[-20, Move] | Tmp], Cells) , !.
 
 %prioritizes? the use of its color over the op player color
-analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],Tmp,Cells) :-
+analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep, Tmp,Cells) :-
     create_move(X,Y,Player_Color,Move),
-    analyse_validMoves(Board, Player_Color, T, [[-5, Move] | Tmp], Cells) , !.
+    analyse_validMoves(Board, Player_Color, T, 0,[[-5, Move] | Tmp], Cells) , !.
 
-analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],Tmp,Cells) :-
+analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],_SkipStep,Tmp,Cells) :-
     create_move(X,Y,Color,Move),
-    analyse_validMoves(Board, Player_Color, T, [[0, Move] | Tmp], Cells) , !.
+    analyse_validMoves(Board, Player_Color, T, 0, [[0, Move] | Tmp], Cells) , !.
 
 findFirstValidNeighbor(_Board,[],_Color,0,_Move).
 
@@ -100,7 +106,7 @@ get_validMoves(Board,ListOfMoves) :-
 choose_move_Lvl1(Board,X,Y,Color) :-
     get_validMoves(Board,ListOfMoves),
     getCurrentPlayerColor(Player_Color),
-    analyse_validMoves(Board,Player_Color,ListOfMoves,[],Cells),
+    analyse_validMoves(Board,Player_Color,ListOfMoves,0,[],Cells),
     sort(Cells, SortedCells),
     select_lvl1_move(SortedCells,X,Y,Color).
 
@@ -129,7 +135,7 @@ checkForWinnerPlay([[_Value,_Move]|_T], _WinnerMove, 0).
 choose_move_Lvl2(Board,X,Y,Color) :-
     get_validMoves(Board,ListOfMoves),
     getCurrentPlayerColor(Player_Color),
-    analyse_validMoves(Board,Player_Color,ListOfMoves,[],Cells),
+    analyse_validMoves(Board,Player_Color,ListOfMoves,0,[],Cells),
     sort(Cells, SortedCells),
     remove_duplicates(SortedCells, FinalCells),
     getBestMove(FinalCells,Move),
@@ -188,10 +194,11 @@ remove_duplicates(OldList, NewList) :-
     remove_duplicates(OldList, [], TmpList),
     reverse(TmpList, NewList).
     
-
 remove_duplicates([], Res, Res).
+
 remove_duplicates([[_Value, Move] | Tail], Tmp, Res):-
-    member([_,Move],Tail),
+    member([V1,Move],Tail),
+    V1 == 500,
     remove_duplicates(Tail, Tmp, Res).
 
 remove_duplicates([[Value, Move] | Tail], Tmp, Res):-
