@@ -1,29 +1,35 @@
 :- ensure_loaded(includes).
 :- ensure_loaded(bot).
 
+% display_game(+Board, +Player)
+% displays the given board and the given player
 display_game(Board, Player) :-
   print_player(Player),
   print_board(Board).
   
+% display_game(+Board, +Winner)
+% displays the given board and the given winner
 display_game_winner(Board,Winner) :-
   printWinner(Winner),
   print_board(Board).
-  
+
+% printInvalidPlay
+% prints in a user friendly way that the play was invalid
 printInvalidPlay :-
   write('Invalid Play!!!'),nl.
 
-printWinnerPlay :-
-  write('Winner Play!!!'),nl.
-
-printLoserPlay :-
-  write('Loser Play!!!'),nl.
-
+% printIsImpossiblePlay
+% prints in a user friendly way that the player can not play
 printIsImpossiblePlay :-
   write('It is impossible for you to play, you must pass your turn....'), nl.
 
+% printInvalidInformation
+% prints in a user friendly way that the information received was invalid
 printInvalidInformation :-
   write('Invalid information! Please try again...'), nl.
 
+% printWinner
+% prints in a user friendly the status of the game's end
 printWinner(-1) :-
   write('the game ended in draw').
 
@@ -31,6 +37,9 @@ printWinner(Winner) :-
   write('Winner: '),
   print_player(Winner), nl.
 
+% printPlay(+Value)
+% prints information in a user friendly way according the Value received
+% Value represents the value of a play
 printPlay(-2) :-
   printIsImpossiblePlay.
 
@@ -39,12 +48,17 @@ printPlay(-1) :-
 
 printPlay(2).
 
+% isValidPlay(+Board, +X, +Y, +Color)
+% checks if a play (X,Y and Color) is valid
+% a play is valid if it is an empty cell in the specified board and it does not have more than 5 neighbors
 isValidPlay(Board,X,Y,Color) :-
   getPiece(Board,X,Y,emptyCell),
   countCellNeighbors(Board,X,Y,Color,Count),
   Count < 5. 
 
-%podemos usar na parte da AI
+% getValidPlays(+Board, +Color, -ValidPlays)
+% retrieves a list (ValidPlays) with all the valid plays in the specified board for the given color
+% the plays are in the format (X,Y,Color)
 getValidPlays(Board,Color,ValidPlays) :-
   findall((FX,FY, Color),
   (
@@ -53,34 +67,49 @@ getValidPlays(Board,Color,ValidPlays) :-
   ),
   ValidPlays).
 
+% countValidPlays(+Board, +Color, -NrValidPlays)
+% retrieves the number of valid plays for the specified color
 countValidPlays(Board,Color,NrValidPlays) :-
   getValidPlays(Board,Color,VP),
   length(VP, NrValidPlays).
 
+% valid_moves(+Board,+Player, -ListOfMoves)
+% retrieves a list (ValidPlays) with all the valid plays in the specified board 
+% the plays are in the format (X,Y,Color)
 valid_moves(Board,_Player,ListOfMoves) :-
   getValidPlays(Board, blackPiece, VP_BP),
   getValidPlays(Board,whitePiece,VP_WP),
   append(VP_BP,VP_WP,ListOfMoves).
 
+% countValidMoves(+Board, +Player, -NrValidPlays)
+% retrieves the number of valid plays
 countValidMoves(Board, Player, Count) :-
   valid_moves(Board, Player, ListOfMoves),
   length(ListOfMoves, Count).
 
+% playPiece(+Board, +X, +Y, +Color, -NewBoard)
+% plays the in X and Y the Color in the given board returning the resulting board (NewBoard)
 playPiece(Board, X, Y, Color, NewBoard) :-
   getPiece(Board,X,Y,emptyCell),
   setPiece(Board, X, Y, Color, NewBoard). 
 
-
+% checkPlay(+Player,+Count, -Res)
+% checks if a play is valid or not by evaluating the Count value received
+% if Count is equal or above 5 then the play is not valid and Res is set to -1
+% otherwise the play is valid and Res is set to 2
 checkPlay(_Player,Count, -1) :-
-  Count >= 5. %jogada invalida, arranjar uma cena mais bonitinha maybe
+  Count >= 5. 
 
 checkPlay(_Player,_Count, 2).
-  %Count < 3,
- %jogada valida, arranjar uma cena mais bonitinha maybe
 
+% value(+Player, +Count, -VP)
+% calls checkPlay to validate the play
 value(Player, Count, VP) :-
   checkPlay(Player,Count,VP).
 
+% move(+Move, +Board, -NewBoard, -ValidPlay) 
+% makes the specified move in the specified board returning the resulting board (NewBoard)
+% and the value of the play (ValidPlay)
 move(Move, Board, NewBoard, ValidPlay) :-
   read_move(Move, X,Y, Color),
   playPiece(Board, X, Y, Color,TmpBoard),
@@ -96,7 +125,8 @@ move(Move,Board, NewBoard, -1) :-
   NewBoard = Board,
   printInvalidPlay.
 
-%to be improved
+% read_info(-Letter, -Number, -Color)
+% retrieves/reads the Letter, Number and Color information from the user's input
 read_info(Letter, Number, Color) :-
   write('LetterNumber: '),
   new_read(Play),
@@ -106,6 +136,7 @@ read_info(Letter, Number, Color) :-
   new_read(TmpColor), 
   translate(TmpColor, Color).
 
+% TODO
 parseOption(List, L, N) :-
   length(List, 2),
   nth0(0, List, L),
@@ -116,19 +147,24 @@ parseOption(List, L, N) :-
   number_chars(N, TmpChar),
   number(N).
 
+% TODO
 new_read(Color) :-
   new_read('', Color), !.
 
+% TODO
 new_read(Acc, Color) :-
   get_char(Char),
   processChar(Char, Acc, Color).
-  
+
+% TODO 
 processChar('\n', Acc, Acc).
 processChar(Char, Acc, Color) :-
   atom_concat(Acc, Char, Res),
   new_read(Res, Color).
 
-
+% translate (+ToTranslate, -Translated)
+% obtains the accurate correspondent of ToTranslate
+% used to facilitate the user's input for the color
 translate(b, blackPiece).
 translate(w, whitePiece).
 translate(b, black).
@@ -137,37 +173,50 @@ translate(black, blackPiece).
 translate(white, whitePiece).
 translate(_C, _C).
 
+% validate_info_Color(+Color)
+% validates the specified color
+% is true if the color is blackPiece or whitePiece
 validate_info_Color(blackPiece).
 validate_info_Color(whitePiece).
 
+% validate_info_coords(+Board, +X, +Y)
+% validates X and Y is the given Board
+% is true if there ia a cell with coordinates X and Y
 validate_info_coords(Board,X,Y) :-
   getPiece(Board,X,Y,_). %is valid
 
+% validate_info(+Board, +X, +Y, +Color)
+% validates the received X, Y and Color
 validate_info(Board,X,Y,Color) :-
   validate_info_coords(Board,X,Y),
   validate_info_Color(Color).
 
+% read_validate_info(+Board,-X, -Y, -Color)
+% reads the information from the user in the format LetterNumber and Color,
+% converts the information to the coordinates used and validates them and the color
 read_validate_info(Board,X,Y,Color) :-
   read_info(Letter,Number,Color),
   userToCoords(Board, Letter, Number, X, Y),
   validate_info(Board,X,Y,Color).
 
-
 read_validate_info(Board,X,Y,Color) :-
   printInvalidInformation,
   read_validate_info(Board,X,Y,Color).
 
-
+% checkCellNeighborsCount(+Board, +X, +Y, +Color, +Value, +[(X,Y, Color)])
+% checks if the specified cell (represented by X,Y and Color) has Value number of neighbors of the color Color
 checkCellNeighborsCount(Board,X,Y,Color, Value,[(X,Y, Color)]) :-
   countCellNeighbors(Board,X,Y,Color,Value), !.
 
 checkCellNeighborsCount(_Board,_X,_Y,_Color,_Value,[]).
 
+% check_game_neighbors_value(+Board,+ListOfCells,+Player_Color, +Value, +Cells, -C) 
+% checks for the ListOfCells list (in format [cell(X,Y,Player_Color)| T]), if there is any cell with
+% Value number of neighbors
 check_game_neighbors_value(_Board,_L,_Player_Color,_Value ,Cells, Cells) :-
   length(Cells,1), !.
 
 check_game_neighbors_value(_Board,[],_Player_Color,_Value ,_Cells, []) :- !.
-
 
 check_game_neighbors_value(Board,[cell(X,Y,Player_Color)| T],Player_Color, Value, _Cells, C) :- 
   checkCellNeighborsCount(Board,X,Y,Player_Color,Value,Res),
@@ -176,6 +225,11 @@ check_game_neighbors_value(Board,[cell(X,Y,Player_Color)| T],Player_Color, Value
 check_game_neighbors_value(Board,[cell(_X,_Y,_Color)| T], Player_Color,Value, Cells, C) :- 
   check_game_neighbors_value(Board,T,Player_Color, Value, Cells, C).
 
+% game_over(+Board, -Winner)
+% checks if the game is over
+% if one of the players wins the game then the Winner value is that player's id 
+% if the game ends in a draw then the Winner value is -1
+% if the game has not ended yet, Winner is 0
 game_over(_Board,-1) :-
   player(_Player1,_,_,-2,_),
   player(_Player2,_,_,-2,_).
@@ -198,6 +252,8 @@ game_over(Board, Winner) :-
   
 game_over(_Board, 0).
 
+% getInfo(+Board,+Lvl, -X, -Y, -Color) 
+% gets the X,Y and Color values according to the current player bot value
 getInfo(Board,_Lvl, X,Y,Color) :-
   getCurrentPlayerBot(0),
   read_validate_info(Board,X,Y,Color).
@@ -206,6 +262,9 @@ getInfo(Board,Lvl, X,Y,Color) :-
   getCurrentPlayerBot(1),
   choose_move(Board, Lvl, X, Y, Color).
 
+% play_game_loop(+Board, +Lvl, +Winner)
+% implements the game loop
+% the game loop ends where one of the players wins or a draw occurs
 play_game_loop(Board,_Lvl, 1) :-
   display_game_winner(Board, 1), !.
 
@@ -215,7 +274,6 @@ play_game_loop(Board,_Lvl, 2) :-
 play_game_loop(Board,_Lvl, -1) :-
   display_game_winner(Board, -1), !.
 
-%needs testing
 play_game_loop(Board,Lvl,Winner) :-
   getCurrentPlayer(Player),
   countValidMoves(Board, Player, 0),
@@ -233,39 +291,50 @@ play_game_loop(Board,Lvl,_Winner) :-
  switchCurrentPlayer(ValidPlay), 
  play_game_loop(NewBoard, Lvl, New_Winner).
 
-
+% create_move(X,Y,Color, Move)
+% creates a move (list [X,Y,Color]) with the X,Y and Color values received
 create_move(X,Y,Color, [X,Y,Color]).
 
+% read_move(Move, X, Y, Color)
+% retrieves the X,Y,and Color values from the move (list [X,Y,Color]) received 
 read_move([X,Y,Color], X, Y, Color).
 
 
-
-%%%%%%%%%%%%%
-
+% play_game_PvP
+% plays the game in the 'Player vs Player' mode
+% both players are initalized as humans (not bots)
 play_game_PvP :-
   initial_board(Board),
   assertPlayers_PvP, %initializes the players
   play_game_loop(Board,1,0).
 
-  
+% play_game_PvC
+% plays the game in the 'Player vs Computer' mode
+% the first player is initalizesd as a human (not bot) and the second player is initalized as a bot
 play_game_PvC(Lvl) :-
   initial_board(Board),
   assertPlayers_PvC, %initializes the players
-  play_game_loop(Board,Lvl,0). %passar o lvl aqui
+  play_game_loop(Board,Lvl,0).
 
+% play_game_CvP
+% plays the game in the 'Computer vs Player' mode
+% the first player is initalizes as bot and the second player is initalized as a human (not bot)
 play_game_CvP(Lvl) :-
   initial_board(Board),
   assertPlayers_CvP, %initializes the players
-  play_game_loop(Board,Lvl,0). %passar o lvl aqui
+  play_game_loop(Board,Lvl,0).
 
-
+% play_game_CvC
+% plays the game in the 'Computer vs Computer'
+% both players are initalized as bots
 play_game_CvC(Lvl) :-
   initial_board(Board),
   assertPlayers_CvC, %initializes the players
-  play_game_loop(Board,Lvl,0). %passar o lvl aqui
+  play_game_loop(Board,Lvl,0). 
 
 
-%finds all the occupied cells of a given color
+% findAllColorOcpCells(+Board, +Color, -Res)
+% finds all the occupied cells of a given color in the specified board
 findAllColorOcpCells(Board, Color, Res) :-
   findall((FX,FY),
   (
@@ -273,23 +342,23 @@ findAllColorOcpCells(Board, Color, Res) :-
   ),
   Res).
 
-%NAO SEI ONDE POR ISTO :(
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%finds all the occupied cells 
+% findAllOcpCells(+Board,-Res)
+% finds all the occupied cells in the specified board
 findAllOcpCells(Board, Res) :-
   findAllColorOcpCells(Board, blackPiece, BP),
   findAllColorOcpCells(Board, whitePiece, WP),
   append(BP,WP,Res).
 
-%finds a cell first neighbors that are empty
+% findFirstEmptyCellNeighbors(+Board,+X,+Y,-Res)
+% finds a cell first empty neighbors 
 findFirstEmptyCellNeighbors(Board,X,Y,Res) :-
   findFirstNeighbors(Board,X,Y,_P,emptyCell,[],Res).
 
-%finds a list of  cells first neighbors that are empty
+% findFirstEmptyCellNeighborsList(+Board,+ListOfCells,+TmpRes,-Res)
+% finds a list of cells first neighbors that are empty
+% the list of cells comes in the format [(X,Y)|T], being X and Y the cell coordinates
 findFirstEmptyCellNeighborsList(_Board,[],TmpRes,TmpRes).
 
-%finds a list of  cells first neighbors that are empty
 findFirstEmptyCellNeighborsList(Board,[(X,Y)|T],TmpRes,Res) :-
   findFirstEmptyCellNeighbors(Board,X,Y,EmpN),
   append(TmpRes,EmpN,NewTmpRes),
