@@ -2,9 +2,9 @@
 :- use_module(library(random)).
 :- use_module(library(system)).
 
-%mudar para nao ficar exatamente igual ao de certa pessoa
 initializeRandomSeed:-
-	now(Usec), Seed is Usec mod 30269,
+	now(Time),
+	Seed is Time mod 30269, % https://sicstus.sics.se/sicstus/docs/3.7.1/html/sicstus_23.html
 	getrand(random(X, Y, Z, _)),
 	setrand(random(Seed, X, Y, Z)), !.
 
