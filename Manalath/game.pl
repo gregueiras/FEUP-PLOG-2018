@@ -28,7 +28,7 @@ printWinner(-1) :-
   write('the game ended in draw').
 
 printWinner(Winner) :-
-  write('Winner : '),
+  write('Winner: '),
   print_player(Winner), nl.
 
 printPlay(-2) :-

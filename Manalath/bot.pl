@@ -169,10 +169,10 @@ choose_move(Board,2,X,Y,Color) :-
 
 print_move(Board, X,Y,Color) :-
     coordsToUser(Board, X, Y, Letter, Number),
-    write('Played on: '),
-    write(Letter), write(Number), nl,
-    write('color: '),
-    write(Color), nl.
+    nl, nl,
+    write(Color),
+    write(' played on: '),
+    write(Letter), write(Number), nl, nl.
 
 
 process_neighbors(Board,Color,Neighbors,X,Y, NX,NY) :-
