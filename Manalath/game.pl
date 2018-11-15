@@ -284,7 +284,7 @@ findAllOcpCells(Board, Res) :-
 
 %finds a cell first neighbors that are empty
 findFirstEmptyCellNeighbors(Board,X,Y,Res) :-
-  findFirstNeighbors(Board,X,Y,_P,emptyCell,[],Res).
+  findFirstNeighbors(Board,X,Y,emptyCell,[],Res).
 
 %finds a list of  cells first neighbors that are empty
 findFirstEmptyCellNeighborsList(_Board,[],TmpRes,TmpRes).
