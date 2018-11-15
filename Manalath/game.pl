@@ -177,22 +177,22 @@ check_game_neighbors_value(Board,[cell(_X,_Y,_Color)| T], Player_Color,Value, Ce
   check_game_neighbors_value(Board,T,Player_Color, Value, Cells, C).
 
 game_over(_Board,-1) :-
-  getPlayer(_Player1,_,_,-2,_),
-  getPlayer(_Player2,_,_,-2,_).
+  player(_Player1,_,_,-2,_),
+  player(_Player2,_,_,-2,_).
 
 game_over(Board, Winner) :-
-  getPlayer(Winner, Color, 1,2,_),
+  player(Winner, Color, 1,2,_),
   check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
   length(WinnerList,1).
 
 game_over(Board, Winner) :-
-  getPlayer(PlayerId, Color, 1,2,_),
+  player(PlayerId, Color, 1,2,_),
   check_game_neighbors_value(Board, Board, Color, 3, [], LoserList),
   length(LoserList,1),
   getOppositePlayer(PlayerId,Winner).
 
 game_over(Board, Winner) :-
-  getPlayer(Winner, Color, 0,_Value,_),
+  player(Winner, Color, 0,_Value,_),
   check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
   length(WinnerList,1).
   
