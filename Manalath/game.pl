@@ -136,7 +136,9 @@ read_info(Letter, Number, Color) :-
   new_read(TmpColor), 
   translate(TmpColor, Color).
 
-% TODO
+% parseOption(+List, -L, -N)
+% reads a play in the format LetterNumber from the user
+% checks if Letter is a letter and Number is a number
 parseOption(List, L, N) :-
   length(List, 2),
   nth0(0, List, L),
