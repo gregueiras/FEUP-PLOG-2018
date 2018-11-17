@@ -136,12 +136,16 @@ print_lines(Board, LineNum, NL) :-
   L is LineNum + 1,
   print_lines(Board, L, NL).
 
+% print_top_half(+LineNumber, +NumberOfLines, +CharsToPrint)
+% Writes CharsToPrint to the buffer, if it is a line in the top half of the board
 print_top_half(LineNum, NL, Chars) :-
   LineNum * 2 < NL,
   write(Chars).
 
 print_top_half(_, _, _).
 
+% print_bottom_half(+LineNumber, +NumberOfLines, +CharsToPrint)
+% Writes CharsToPrint to the buffer, if it is a line in the bottom half of the board
 print_bottom_half(LineNum, NL, Chars) :-
   LineNum * 2 > NL,
   write(Chars).
@@ -252,7 +256,3 @@ print_cell(cell(_, _, Piece)) :-
 updateBoard(_Board,OldBoard,-1,OldBoard). % if the play is not a valid one then the board is not updated
 updateBoard(_Board,OldBoard,-2,OldBoard). 
 updateBoard(Board,_OldBoard,2,Board).  % valid play, updates the board
-
-
-    
-    
