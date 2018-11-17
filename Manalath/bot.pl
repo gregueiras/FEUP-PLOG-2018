@@ -18,17 +18,17 @@ can_op_player_win(Board,Player_Color,(X,Y,_Color),1) :-
 
 can_op_player_win(_,_,(_,_,_),0).
 
-% can_player_loose(+Board, +Player_Color, +(X,Y,Color), -Res)
-% check if the player whose color is Player_Color looses if he plays in the X and Y position of the Board with is color
-% Res is 1 if the player looses and 0 otherwise
-can_player_loose(Board,Player_Color,(X,Y,_Color),1) :-
+% can_player_lose(+Board, +Player_Color, +(X,Y,Color), -Res)
+% check if the player whose color is Player_Color loses if he plays in the X and Y position of the Board with is color
+% Res is 1 if the player loses and 0 otherwise
+can_player_lose(Board,Player_Color,(X,Y,_Color),1) :-
     countCellNeighbors(Board,X,Y,Player_Color,3).
 
-can_player_loose(Board,Player_Color,(X,Y,_Color),1) :-
+can_player_lose(Board,Player_Color,(X,Y,_Color),1) :-
     getOppositeColor(Player_Color, OpColor),
     countCellNeighbors(Board,X,Y,OpColor,3).
 
-can_player_loose(_,_,(_,_,_),0).
+can_player_lose(_,_,(_,_,_),0).
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
 % analyse a list of possible moves, ranking them from best to worst by assigning each move an appropriate value
@@ -44,27 +44,28 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells
     analyse_validMoves(Board, Player_Color, T,0, [[-500, Move] | Tmp], Cells) , !.
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
-% check if the move being analised makes the player loose
-% if the player looses, the value of the move is 500
+% check if the move being analised makes the player lose
+% if the player loses, the value of the move is 500
 analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
-    can_player_loose(Board,Player_Color,(X,Y,Player_Color),1),
+    can_player_lose(Board,Player_Color,(X,Y,Player_Color),1),
     create_move(X,Y,Player_Color,Move),
     analyse_validMoves(Board, Player_Color, T,0, [[500, Move] | Tmp], Cells) , !.
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep, +Tmp, -Cells)
 % processes the neighbors for the move being analysed
 % if one of the neighbors has one or less neighbors with the color specified 
-% creates a move for its first neighbor that is empty, valid and does not have 4 neighbors with the value -450
+% creates a move for its first neighbor that is empty, valid and does not have 4 neighbors with the value -550
 % only happens if SkipStep is 0 since the move itself was not analyse but one of the neighbors, the cell
 % stays to be analysed
 analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],SkipStep,Tmp,Cells) :-
     SkipStep = 0,
+    getPiece(Board, X, Y, emptyCell),
     getOppositeColor(Player_Color,OpColor),
     findAllNeighbors(Board,OpColor,[(X,Y)],[],Neighbors),
     length(Neighbors,5),
     process_neighbors(Board,OpColor,Neighbors,X,Y,NX,NY),
     create_move(NX,NY,OpColor,Move),
-    analyse_validMoves(Board, Player_Color,[(X,Y,Color)|T],1, [[-450, Move] | Tmp], Cells) , !.
+    analyse_validMoves(Board, Player_Color,[(X,Y,Color)|T],1, [[-550, Move] | Tmp], Cells) , !.
 
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
@@ -192,6 +193,7 @@ choose_move_Lvl2(Board,X,Y,Color) :-
     analyse_validMoves(Board,Player_Color,ListOfMoves,0,[],Cells),
     sort(Cells, SortedCells),
     remove_duplicates(SortedCells, FinalCells),
+    write(FinalCells),nl,
     getBestMove(FinalCells,Move),
     read_move(Move,X,Y,Color).
 

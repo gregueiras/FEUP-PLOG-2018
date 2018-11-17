@@ -251,9 +251,3 @@ print_cell(cell(_, _, emptyCell)) :-
 print_cell(cell(_, _, Piece)) :-
   write_unicode(Piece), write(' ').
 
-
-% updateBoard(+ModifiedBoard, +OldBoard, +ValidPlay, -ResultingBoard)
-% If ValidPlay is valid (value of 2), ResultingBoard is the ModifiedBoard, else ResultingBoard is OldBoard
-updateBoard(_Board,OldBoard,-1,OldBoard). % if the play is not a valid one then the board is not updated
-updateBoard(_Board,OldBoard,-2,OldBoard). 
-updateBoard(Board,_OldBoard,2,Board).  % valid play, updates the board

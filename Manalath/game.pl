@@ -37,16 +37,6 @@ printWinner(Winner) :-
   write('Winner: '),
   print_player(Winner), nl.
 
-% printPlay(+Value)
-% prints information in a user friendly way according the Value received
-% Value represents the value of a play
-printPlay(-2) :-
-  printIsImpossiblePlay.
-
-printPlay(-1) :-
-  printInvalidPlay.
-
-printPlay(2).
 
 % isValidPlay(+Board, +X, +Y, +Color)
 % checks if a play (X,Y and Color) is valid
@@ -93,37 +83,12 @@ playPiece(Board, X, Y, Color, NewBoard) :-
   getPiece(Board,X,Y,emptyCell),
   setPiece(Board, X, Y, Color, NewBoard). 
 
-% checkPlay(+Player,+Count, -Res)
-% checks if a play is valid or not by evaluating the Count value received
-% if Count is equal or above 5 then the play is not valid and Res is set to -1
-% otherwise the play is valid and Res is set to 2
-checkPlay(_Player,Count, -1) :-
-  Count >= 5. 
 
-checkPlay(_Player,_Count, 2).
-
-% value(+Player, +Count, -VP)
-% calls checkPlay to validate the play
-value(Player, Count, VP) :-
-  checkPlay(Player,Count,VP).
-
-% move(+Move, +Board, -NewBoard, -ValidPlay) 
+% move(+Move, +Board, -NewBoard) 
 % makes the specified move in the specified board returning the resulting board (NewBoard)
-% and the value of the play (ValidPlay)
-move(Move, Board, NewBoard, ValidPlay) :-
+move(Move, Board, NewBoard) :-
   read_move(Move, X,Y, Color),
-  playPiece(Board, X, Y, Color,TmpBoard),
-  countCellNeighbors(TmpBoard,X,Y,Color,NrNeighbors), 
-  getCurrentPlayer(Player),
-  value(Player,NrNeighbors,ValidPlay),
-  updateBoard(TmpBoard,Board,ValidPlay,NewBoard),
-  printPlay(ValidPlay).
-
-move(Move,Board, NewBoard, -1) :-
-  read_move(Move, X,Y, Color),
-  \+ playPiece(Board, X, Y, Color,_TmpBoard),
-  NewBoard = Board,
-  printInvalidPlay.
+  playPiece(Board, X, Y, Color,NewBoard).
 
 % read_info(-Letter, -Number, -Color)
 % retrieves/reads the Letter, Number and Color information from the user's input
@@ -238,23 +203,22 @@ check_game_neighbors_value(Board,[cell(_X,_Y,_Color)| T], Player_Color,Value, Ce
 % if one of the players wins the game then the Winner value is that player's id 
 % if the game ends in a draw then the Winner value is -1
 % if the game has not ended yet, Winner is 0
-game_over(_Board,-1) :-
-  player(_Player1,_,_,-2,_),
-  player(_Player2,_,_,-2,_).
+game_over(Board,-1) :-
+  countValidMoves(Board,0).
 
 game_over(Board, Winner) :-
-  player(Winner, Color, 1,2,_),
+  player(Winner, Color, 1,_),
   check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
   length(WinnerList,1).
 
 game_over(Board, Winner) :-
-  player(PlayerId, Color, 1,2,_),
+  player(PlayerId, Color, 1,_),
   check_game_neighbors_value(Board, Board, Color, 3, [], LoserList),
   length(LoserList,1),
   getOppositePlayer(PlayerId,Winner).
 
 game_over(Board, Winner) :-
-  player(Winner, Color, 0,_Value,_),
+  player(Winner, Color, 0,_),
   check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
   length(WinnerList,1).
   
@@ -284,19 +248,31 @@ play_game_loop(Board,_Lvl, -1) :-
 
 play_game_loop(Board,Lvl,Winner) :-
   countValidMoves(Board, 0),
-  switchCurrentPlayer(-2),
+  switchCurrentPlayer,
   printIsImpossiblePlay,
   play_game_loop(Board, Lvl,Winner).
 
 play_game_loop(Board,Lvl,_Winner) :-
- getCurrentPlayer(Player),
- display_game(Board,Player), !,
- getInfo(Board,Lvl, X,Y,Color),
+  getCurrentPlayer(Player),
+  display_game(Board,Player), !,
+  getInfo(Board,Lvl, X,Y,Color),
+  play(Board,X,Y,Color,NewBoard,NewWinner),
+  play_game_loop(NewBoard,Lvl,NewWinner).
+
+% play(+Board,+X,+Y,+Color,-NewBoard,-Winner) 
+% executes a play if possible
+play(Board,X,Y,Color,NewBoard,Winner) :-
+ valid_moves(Board,ListOfMoves),
+ member((X,Y,Color), ListOfMoves),
  create_move(X,Y,Color, Move),
- move(Move, Board,NewBoard, ValidPlay), 
- game_over(NewBoard, New_Winner),
- switchCurrentPlayer(ValidPlay), 
- play_game_loop(NewBoard, Lvl, New_Winner).
+ move(Move, Board,NewBoard), 
+ game_over(NewBoard, Winner),
+ switchCurrentPlayer.
+
+play(Board,_,_,_,NewBoard,Winner) :-
+  printInvalidPlay,
+  NewBoard = Board,
+  Winner = 0.
 
 % create_move(X,Y,Color, Move)
 % creates a move (list [X,Y,Color]) with the X,Y and Color values received
