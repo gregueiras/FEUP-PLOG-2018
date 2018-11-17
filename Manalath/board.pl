@@ -108,7 +108,13 @@ numLines(Board, NumLines) :-
 % Prints the Board in the layout suggested in Manalath website (https://spielstein.com/games/manalath/rules)
 print_board(Board) :-
   numLines(Board, NL),
+  print_buffer(NL + 2, ' '),
+  print_buffer(NL / 2, '___  '), nl,
   print_lines(Board, 0, NL).
+
+t :-
+  inter_board(_B),
+  print_board(_B).
 
 % print_lines(+Board, +TotalNumberLines, +CurrentLineNumber)
 % Prints all lines of the Board
@@ -118,32 +124,52 @@ print_lines(_, LineNum, NL) :-
 print_lines(Board, LineNum, NL) :- 
   getLine(Board, LineNum, Line),
   length(Line, LineLength),
-  BufSize is NL - LineLength,
-  print_buffer(BufSize),
-  print_coordsBegin(Line), write(' '),
-  print_line(Line), 
-  write('| '), print_coordsEnd(Line),
+  BufSize is NL - LineLength + 2,
+  print_buffer(BufSize - 1, '  '),
+  print_line(Line), nl,
+  print_buffer(BufSize - 2, '  '),
+  print_bottom_half(LineNum + 1, NL, '  '),
+  print_top_half(LineNum + 1, NL, ' _'),
+  print_buffer(LineLength, '\\___/'),
+  print_top_half(LineNum + 1, NL, '__'),
   nl,
   L is LineNum + 1,
   print_lines(Board, L, NL).
 
-% print_buffer(+BufferSize)
-% Prints BufferSize white spaces, useful for formatting the board
-print_buffer(N) :-
+print_top_half(LineNum, NL, Chars) :-
+  LineNum * 2 < NL,
+  write(Chars).
+
+print_top_half(_, _, _).
+
+print_bottom_half(LineNum, NL, Chars) :-
+  LineNum * 2 > NL,
+  write(Chars).
+
+print_bottom_half(_, _, _).
+
+
+% print_buffer(+BufferSize, +Character)
+% Prints BufferSize Characters, useful for formatting the board
+print_buffer(N, _) :-
   round(N) =:= 0.
 
-print_buffer(N) :-
-  write(' '),
+print_buffer(N, _) :-
+  round(N) < 0.
+
+print_buffer(N, Character) :-
+  write(Character),
   L is N - 1,
-  print_buffer(L).
+  print_buffer(L, Character).
 
 % print_line(+Line)
 % Prints a Line of the board
 print_line([]).
 print_line([L | T]) :-
-  write('|'),
+  write('/ '),
   print_cell(L),
-  write(''),
+  %write('  )('),
+  write(' \\'),
   print_line(T).
 
 % coordsToUser(+Board, +X, +Y, -Letter, -Number)
@@ -228,3 +254,5 @@ updateBoard(_Board,OldBoard,-2,OldBoard).
 updateBoard(Board,_OldBoard,2,Board).  % valid play, updates the board
 
 
+    
+    
