@@ -24,7 +24,7 @@ can_op_player_win(_,_,(_,_,_),0).
 can_player_lose(Board,Player_Color,(X,Y,_Color),1) :-
     countCellNeighbors(Board,X,Y,Player_Color,3).
 
-can_player_lose(Board,Player_Color,(X,Y,_Color),1) :-
+can_player_lose(Board,Player_Color,(X,Y,Player_Color),1) :-
     getOppositeColor(Player_Color, OpColor),
     countCellNeighbors(Board,X,Y,OpColor,3).
 
@@ -37,11 +37,11 @@ analyse_validMoves(_Board,_Player_Color,[],_SkipStep,Cells,Cells) :- !.
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
 % checks if the move being analised allows the player to win
-% if the player wins, the value of the move is -500
+% if the player wins, the value of the move is -600
 analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
     can_player_win(Board,Player_Color,(X,Y,Player_Color),1),
     create_move(X,Y,Player_Color,Move),
-    analyse_validMoves(Board, Player_Color, T,0, [[-500, Move] | Tmp], Cells) , !.
+    analyse_validMoves(Board, Player_Color, T,0, [[-600, Move] | Tmp], Cells) , !.
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
 % check if the move being analised makes the player lose
@@ -196,6 +196,8 @@ choose_move_Lvl2(Board,X,Y,Color) :-
     getBestMove(FinalCells,Move),
     read_move(Move,X,Y,Color).
 
+
+  
 % getBestMove(+ListOfMoves, -BestMove)
 % retrieves the best move from a list of moves
 % if all the values from the moves in the list of moves received are 0 and/or -5 the best move is chosen randomly
