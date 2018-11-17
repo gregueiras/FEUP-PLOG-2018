@@ -140,8 +140,7 @@ findFirstValidNeighbor(Board,[(_X,_Y)|T],Color,MoveFlag, Move) :-
 % get_validMoves(+Board, -ListOfMoves)
 % retrieves the current player's list of valid moves in the specified Board
 get_validMoves(Board,ListOfMoves) :-
-    getCurrentPlayer(Player),
-    valid_moves(Board,Player,ListOfMoves).
+    valid_moves(Board,ListOfMoves).
 
 % choose_move_Lvl1(+Board, -X,-Y, -Color)
 % chooses the move (X,Y,Color) for the current player (bot) in the first level

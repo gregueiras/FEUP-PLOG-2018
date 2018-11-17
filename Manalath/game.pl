@@ -73,18 +73,18 @@ countValidPlays(Board,Color,NrValidPlays) :-
   getValidPlays(Board,Color,VP),
   length(VP, NrValidPlays).
 
-% valid_moves(+Board,+Player, -ListOfMoves)
+% valid_moves(+Board, -ListOfMoves)
 % retrieves a list (ValidPlays) with all the valid plays in the specified board 
 % the plays are in the format (X,Y,Color)
-valid_moves(Board,_Player,ListOfMoves) :-
+valid_moves(Board,ListOfMoves) :-
   getValidPlays(Board, blackPiece, VP_BP),
   getValidPlays(Board,whitePiece,VP_WP),
   append(VP_BP,VP_WP,ListOfMoves).
 
-% countValidMoves(+Board, +Player, -NrValidPlays)
+% countValidMoves(+Board, -NrValidPlays)
 % retrieves the number of valid plays
-countValidMoves(Board, Player, Count) :-
-  valid_moves(Board, Player, ListOfMoves),
+countValidMoves(Board, Count) :-
+  valid_moves(Board, ListOfMoves),
   length(ListOfMoves, Count).
 
 % playPiece(+Board, +X, +Y, +Color, -NewBoard)
@@ -283,8 +283,7 @@ play_game_loop(Board,_Lvl, -1) :-
   display_game_winner(Board, -1), !.
 
 play_game_loop(Board,Lvl,Winner) :-
-  getCurrentPlayer(Player),
-  countValidMoves(Board, Player, 0),
+  countValidMoves(Board, 0),
   switchCurrentPlayer(-2),
   printIsImpossiblePlay,
   play_game_loop(Board, Lvl,Winner).
