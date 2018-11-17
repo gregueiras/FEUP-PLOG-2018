@@ -180,8 +180,13 @@ getRandomNotLoserMove(Cells, X,Y,Color) :-
 % checks if the head of a list of moves is a winner play (the value is -500), 
 % if so the winnerMove is the one from the head of the list and Res is set to 1,
 % if not, Res is set to 0
-checkForWinnerPlay([[-500,WinnerMove]|_T], WinnerMove, 1).
-checkForWinnerPlay([[_Value,_Move]|_T], _WinnerMove, 0).
+checkForWinnerPlay(List, WinnerMove, 1) :-
+    member([-600,WinnerMove], List).
+
+checkForWinnerPlay(List, WinnerMove, 1) :-
+    member([-500,WinnerMove], List).
+
+checkForWinnerPlay(_, _, 0).
 
 % choose_move_Lvl2(+Board, -X,-Y, -Color)
 % chooses the move (X,Y,Color) for the current player (bot) in the second level
@@ -197,7 +202,6 @@ choose_move_Lvl2(Board,X,Y,Color) :-
     read_move(Move,X,Y,Color).
 
 
-  
 % getBestMove(+ListOfMoves, -BestMove)
 % retrieves the best move from a list of moves
 % if all the values from the moves in the list of moves received are 0 and/or -5 the best move is chosen randomly
