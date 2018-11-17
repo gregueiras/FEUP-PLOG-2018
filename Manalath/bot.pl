@@ -193,7 +193,6 @@ choose_move_Lvl2(Board,X,Y,Color) :-
     analyse_validMoves(Board,Player_Color,ListOfMoves,0,[],Cells),
     sort(Cells, SortedCells),
     remove_duplicates(SortedCells, FinalCells),
-    write(FinalCells),nl,
     getBestMove(FinalCells,Move),
     read_move(Move,X,Y,Color).
 

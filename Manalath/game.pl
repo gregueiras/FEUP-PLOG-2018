@@ -198,31 +198,41 @@ check_game_neighbors_value(Board,[cell(X,Y,Player_Color)| T],Player_Color, Value
 check_game_neighbors_value(Board,[cell(_X,_Y,_Color)| T], Player_Color,Value, Cells, C) :- 
   check_game_neighbors_value(Board,T,Player_Color, Value, Cells, C).
 
+
+% value(+Board,-Value)
+% evaluates the specified board state
+% if one of the players wins the game then the Value is that player's id 
+% if there are no more valid moves in the board, Value is -1
+% otherwise Value is 0
+value(Board,-1) :-
+  countValidMoves(Board,0).
+
+value(Board,Value) :-
+  player(Value, Color, 1,_),
+  check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
+  length(WinnerList,1).
+
+value(Board,Value) :-
+  player(PlayerId, Color, 1,_),
+  check_game_neighbors_value(Board, Board, Color, 3, [], LoserList),
+  length(LoserList,1),
+  getOppositePlayer(PlayerId,Value).
+
+value(Board,Value) :-
+  player(Value, Color, 0,_),
+  check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
+  length(WinnerList,1).
+
+value(_Board,0).
+
+
 % game_over(+Board, -Winner)
 % checks if the game is over
 % if one of the players wins the game then the Winner value is that player's id 
 % if the game ends in a draw then the Winner value is -1
 % if the game has not ended yet, Winner is 0
-game_over(Board,-1) :-
-  countValidMoves(Board,0).
-
-game_over(Board, Winner) :-
-  player(Winner, Color, 1,_),
-  check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
-  length(WinnerList,1).
-
-game_over(Board, Winner) :-
-  player(PlayerId, Color, 1,_),
-  check_game_neighbors_value(Board, Board, Color, 3, [], LoserList),
-  length(LoserList,1),
-  getOppositePlayer(PlayerId,Winner).
-
-game_over(Board, Winner) :-
-  player(Winner, Color, 0,_),
-  check_game_neighbors_value(Board, Board, Color, 4, [], WinnerList),
-  length(WinnerList,1).
-  
-game_over(_Board, 0).
+game_over(Board,Winner) :-
+  value(Board,Winner).
 
 % getInfo(+Board,+Lvl, -X, -Y, -Color) 
 % gets the X,Y and Color values according to the current player bot value
