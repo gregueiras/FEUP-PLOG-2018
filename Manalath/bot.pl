@@ -52,9 +52,10 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells
     analyse_validMoves(Board, Player_Color, T,0, [[500, Move] | Tmp], Cells) , !.
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep, +Tmp, -Cells)
-% processes the neighbors for the move being analysed
-% if one of the neighbors has one or less neighbors with the color specified 
-% creates a move for its first neighbor that is empty, valid and does not have 4 neighbors with the value -550
+% checks if the move as 4 neighbors of the opposite color
+% if so, processes the neighbors for the move being analysed
+% if one of the neighbors has one or less neighbors with the opposite color
+% creates a move for its first neighbor that is empty, valid and does not have 4 neighbors, with the value -550
 % only happens if SkipStep is 0 since the move itself was not analyse but one of the neighbors, the cell
 % stays to be analysed
 analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],SkipStep,Tmp,Cells) :-
@@ -138,15 +139,10 @@ findFirstValidNeighbor(Board,[(X,Y)|_T],Color, 1, Move) :-
 findFirstValidNeighbor(Board,[(_X,_Y)|T],Color,MoveFlag, Move) :-
     findFirstValidNeighbor(Board,T,Color,MoveFlag, Move).
 
-% get_validMoves(+Board, -ListOfMoves)
-% retrieves the current player's list of valid moves in the specified Board
-get_validMoves(Board,ListOfMoves) :-
-    valid_moves(Board,ListOfMoves).
-
 % choose_move_Lvl1(+Board, -X,-Y, -Color)
 % chooses the move (X,Y,Color) for the current player (bot) in the first level
 choose_move_Lvl1(Board,X,Y,Color) :-
-    get_validMoves(Board,ListOfMoves),
+    valid_moves(Board,ListOfMoves),
     getCurrentPlayerColor(Player_Color),
     analyse_validMoves(Board,Player_Color,ListOfMoves,0,[],Cells),
     sort(Cells, SortedCells),
@@ -193,7 +189,7 @@ checkForWinnerPlay(_, _, 0).
 % analyses all the possible moves and chooses the best, if there is a best, or selects randomly if the moves
 % have all the same value
 choose_move_Lvl2(Board,X,Y,Color) :-
-    get_validMoves(Board,ListOfMoves),
+    valid_moves(Board,ListOfMoves),
     getCurrentPlayerColor(Player_Color),
     analyse_validMoves(Board,Player_Color,ListOfMoves,0,[],Cells),
     sort(Cells, SortedCells),
