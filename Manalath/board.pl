@@ -80,7 +80,7 @@ setPiece(Board, X, Y, Pin, NewBoard) :-
 % indices(+List, +E, -Is)
 % Gets the indices of every element in List that matches E and stores it in Is
 indices(List, E, Is) :-
-    findall(N, nth0(N, List, E), Is).
+  findall(N, nth0(N, List, E), Is).
 
 % getIndexs(+ElemList, +IndexList, -ResultList)
 % Gets all elements from ElemList with indices in IndexList and stores it in ResultList
@@ -109,7 +109,9 @@ numLines(Board, NumLines) :-
 print_board(Board) :-
   numLines(Board, NL),
   print_buffer(NL + 2, ' '),
-  print_buffer(NL / 2, '___  '), nl,
+  print_columns(NL/2, '   '), nl,
+  print_buffer(NL + 3, ' '),
+  print_buffer(NL / 2, '__  '), nl,
   print_lines(Board, 0, NL).
 
 t :-
@@ -125,13 +127,16 @@ print_lines(Board, LineNum, NL) :-
   getLine(Board, LineNum, Line),
   length(Line, LineLength),
   BufSize is NL - LineLength + 2,
+  print_coordsBegin(Line),
   print_buffer(BufSize - 1, '  '),
-  print_line(Line), nl,
+  print_line(Line),
+  write('  '), print_top_half(LineNum + 1, NL, LineLength),  write_unicode(space), nl,
+  write(' '),
   print_buffer(BufSize - 2, '  '),
   print_bottom_half(LineNum + 1, NL, '  '),
   print_top_half(LineNum + 1, NL, ' _'),
-  print_buffer(LineLength, '\\___/'),
-  print_top_half(LineNum + 1, NL, '__'),
+  print_buffer(LineLength, '\\__/'),
+  print_top_half(LineNum + 1, NL, '_'), 
   nl,
   L is LineNum + 1,
   print_lines(Board, L, NL).
@@ -166,14 +171,30 @@ print_buffer(N, Character) :-
   L is N - 1,
   print_buffer(L, Character).
 
+% print_columns(+NumColumns, +Buffer)
+% Auxiliary method, calls print_columns with CurrentNumber as 0
+print_columns(N, Buffer) :-
+  print_columns(N, 0, Buffer).
+
+% print_columns(+NumColumns, +CurrentNumber, +Buffer)
+% Prints the column numbers, separated by Buffer, stops when CurrentNumber is Equal to NumColumns
+print_columns(N, C, _) :-
+  round(N) =:= round(C).
+
+print_columns(N, Curr, Buffer) :-
+  write(Buffer),
+  write(Curr),
+  L is Curr + 1,
+  print_columns(N, L, Buffer).
+
 % print_line(+Line)
 % Prints a Line of the board
 print_line([]).
 print_line([L | T]) :-
-  write('/ '),
+  write('/'),
   print_cell(L),
   %write('  )('),
-  write(' \\'),
+  write('\\'),
   print_line(T).
 
 % coordsToUser(+Board, +X, +Y, -Letter, -Number)
@@ -197,18 +218,6 @@ coordsToUser(_,X, Y, Letter, Number) :- % Bottom half of the board
 
 % userToCoords(+Board, +Letter, +Number, -X, -Y)
 % Converts the user-friendly Letter and number notation to the internal X and Y coordinates
-userToCoords(Board, Letter, Number, X, Y) :- % Top half of the board
-  numLines(Board, NumLines),
-  char_code(Letter, CodeLetter),
-  char_code(a, CodeA),
-  NumLetter is CodeLetter - CodeA,
-  Half is NumLines / 2,
-  NumLetter > Half,
-  Tmp is NumLetter - Half,
-  X1 is round(2 * (Tmp + Number) + 1),
-  X = X1,
-  Y = NumLetter.
-
 userToCoords(_, Letter, Number, X, Y) :- % Bottom half of the board
   char_code(Letter, CodeLetter),
   char_code(a, CodeA),
@@ -223,33 +232,25 @@ print_coordsBegin([ cell(_, Y, _) | _]) :-
   char_code(a, CodeA),
   CodeLetter is CodeA + Y,
   char_code(Letter, CodeLetter),
-  write(Letter),
-  write(0).
-
-% print_coordsEnd(+Line)
-% Prints the coordinates right of the board in LetterNumber notation
-print_coordsEnd([ cell(_, Y, _) | T]) :-
-  char_code(a, CodeA),
-  CodeLetter is CodeA + Y,
-  char_code(Letter, CodeLetter),
-  write(Letter),
-  length(T, X1),
-  write(X1).
+  write(Letter).
+  %write(0).
 
 % write_unicode(+Piece)
 % Writes a unicode character, representing a certain Piece
-write_unicode(blackPiece) :- char_code(_Char,9899), write(_Char). % Black Circle
-write_unicode(whitePiece) :- char_code(_Char,9898), write(_Char). % White Circle
+write_unicode(blackPiece) :- char_code(_Char,11044), write(_Char). % Black Circle
+write_unicode(whitePiece) :- char_code(_Char,11093), write(_Char). % White Circle
+write_unicode(space) :- char_code(_Char,8291), write(_Char). % Invisible character, fixes a bug on the last line of the board when blackCircle is the last printed piece 
 
 % print_cell(+Cell)
 % Writes the representation of a cell
 % White space for empty cells
 % Black or White circle for blackPiece and whitePiece, respectively
 print_cell(cell(_, _, emptyCell)) :-
-    write(' ').
+  write('  ').
 
 print_cell(cell(_, _, Piece)) :-
-    write_unicode(Piece).
+  write_unicode(Piece), write(' ').
+
 
 % updateBoard(+ModifiedBoard, +OldBoard, +ValidPlay, -ResultingBoard)
 % If ValidPlay is valid (value of 2), ResultingBoard is the ModifiedBoard, else ResultingBoard is OldBoard
