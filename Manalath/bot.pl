@@ -173,8 +173,8 @@ getRandomNotLoserMove(Cells, X,Y,Color) :-
     read_move(Move,X,Y,Color).
 
 % checkForWinnerPlay(ListOfMoves, WinnerMove, Res)
-% checks if the head of a list of moves is a winner play (the value is -500), 
-% if so the winnerMove is the one from the head of the list and Res is set to 1,
+% checks if there is a move in the list of moves that is a winner play (the value is -500 or -600), 
+% if so the winnerMove is one of those and Res is set to 1,
 % if not, Res is set to 0
 checkForWinnerPlay(List, WinnerMove, 1) :-
     member([-600,WinnerMove], List).
