@@ -114,7 +114,7 @@ parseOption(List, L, N) :-
   nth0(1, List, TmpAtom),
   atom(TmpAtom),
   atom_chars(TmpAtom, TmpChar),
-  number_chars(N, TmpChar),
+  catch(number_chars(N, TmpChar), _, fail),
   number(N).
 
 % new_read(-Color)
