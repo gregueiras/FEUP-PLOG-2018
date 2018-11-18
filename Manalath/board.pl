@@ -114,10 +114,6 @@ print_board(Board) :-
   print_buffer(NL / 2, '__  '), nl,
   print_lines(Board, 0, NL).
 
-t :-
-  inter_board(_B),
-  print_board(_B).
-
 % print_lines(+Board, +TotalNumberLines, +CurrentLineNumber)
 % Prints all lines of the Board
 print_lines(_, LineNum, NL) :-
@@ -199,18 +195,9 @@ print_line([L | T]) :-
 
 % coordsToUser(+Board, +X, +Y, -Letter, -Number)
 % Converts a pair of the internal X and Y coordinates to the more user-friendly Letter and Number notation
-coordsToUser(Board, X, Y, Letter, Number) :- % Top half of the board
-  numLines(Board, NumLines),
-  char_code(a, CodeA),
-  CodeLetter is CodeA + Y,
-  char_code(Letter, CodeLetter),
-  Half is NumLines / 2,
-  Y > Half,
-  Tmp is Y - Half,
-  X1 is round(X / 2 - Tmp - 1),
-  Number = X1.
-
-coordsToUser(_,X, Y, Letter, Number) :- % Bottom half of the board
+% Checks if there is a cell in board with this coordinates
+coordsToUser(Board, X, Y, Letter, Number) :- % Bottom half of the board
+  member(cell(X, Y, _), Board),
   char_code(a, CodeA),
   CodeLetter is CodeA + Y,
   char_code(Letter, CodeLetter),
@@ -218,13 +205,15 @@ coordsToUser(_,X, Y, Letter, Number) :- % Bottom half of the board
 
 % userToCoords(+Board, +Letter, +Number, -X, -Y)
 % Converts the user-friendly Letter and number notation to the internal X and Y coordinates
-userToCoords(_, Letter, Number, X, Y) :- % Bottom half of the board
+% Checks if there is a cell in board with this coordinates
+userToCoords(Board, Letter, Number, X, Y) :- % Bottom half of the board
   char_code(Letter, CodeLetter),
   char_code(a, CodeA),
   NumLetter is CodeLetter - CodeA,
   X1 is Number * 2,
   X = X1,
-  Y = NumLetter.
+  Y = NumLetter,
+  member(cell(X, Y, _), Board).
 
 % print_coordsBegin(+Line)
 % Prints the coordinates left of the board in LetterNumber notation 
