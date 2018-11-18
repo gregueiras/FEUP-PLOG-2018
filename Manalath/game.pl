@@ -44,7 +44,10 @@ printWinner(Winner) :-
 isValidPlay(Board,X,Y,Color) :-
   getPiece(Board,X,Y,emptyCell),
   countCellNeighbors(Board,X,Y,Color,Count),
-  Count < 5. 
+  Count < 5,
+  findall(TX-TY, getPiece(Board, TX, TY, Color), Colors),
+  length(Colors, NumColors),
+  30 > NumColors.
 
 % getValidPlays(+Board, +Color, -ValidPlays)
 % retrieves a list (ValidPlays) with all the valid plays in the specified board for the given color
