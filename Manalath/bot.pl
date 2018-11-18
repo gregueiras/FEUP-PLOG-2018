@@ -36,7 +36,7 @@ can_player_lose(_,_,(_,_,_),0).
 analyse_validMoves(_Board,_Player_Color,[],_SkipStep,Cells,Cells) :- !.
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
-% checks if the move being analised allows the player to win
+% checks if the move being analysed allows the player to win
 % if the player wins, the value of the move is -600
 analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
     can_player_win(Board,Player_Color,(X,Y,Player_Color),1),
@@ -44,7 +44,7 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells
     analyse_validMoves(Board, Player_Color, T,0, [[-600, Move] | Tmp], Cells) , !.
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
-% check if the move being analised makes the player lose
+% check if the move being analysed makes the player lose
 % if the player loses, the value of the move is 500
 analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
     can_player_lose(Board,Player_Color,(X,Y,Player_Color),1),
@@ -70,7 +70,7 @@ analyse_validMoves(Board,Player_Color,[(X,Y,Color)|T],SkipStep,Tmp,Cells) :-
 
 
 % analyse_validMoves(+Board, +Player_Color, +ListOfMoves, +SkipStep,+Tmp, -Cells)
-% check if the move being analised allows the other player to win
+% check if the move being analysed allows the other player to win
 % if the other player wins, the value of the move is -500
 analyse_validMoves(Board,Player_Color,[(X,Y,Player_Color)|T],_SkipStep,Tmp,Cells) :-
     can_op_player_win(Board,Player_Color,(X,Y,Player_Color),1),
