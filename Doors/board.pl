@@ -20,8 +20,8 @@ generateLine(Cur, Size, Cells, Frontiers) :-
 
 generateCells(_, Size, Size, Cells, Cells).
 generateCells(X, Cur, Size, AccCells, Cells) :-
-  Upper is Size + 1,
   NewCur is Cur + 1,
+  Upper is round(Size * 1.5) + 2,
   random(0, Upper, Value),
   append(AccCells, [cell(X, Cur, Value)], NewAcc),
   generateCells(X, NewCur, Size, NewAcc, Cells), !.
