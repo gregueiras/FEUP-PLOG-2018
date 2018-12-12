@@ -37,8 +37,8 @@ generateFrontiers(X, Cur, Size, AccFrontiers, Frontiers) :-
 
   append(AccFrontiers, 
   [
-    frontier(X, Cur, RightX, Cur, open),
-    frontier(X, Cur, X, BottomY, open)
+    frontier(X, Cur, RightX, Cur, 0),
+    frontier(X, Cur, X, BottomY, 0)
   ],
   NewAcc),
   generateFrontiers(X, NewCur, Size, NewAcc, Frontiers), !.
@@ -51,7 +51,7 @@ generateFrontiers(X, Cur, Size, AccFrontiers, Frontiers) :-
 
   append(AccFrontiers, 
   [
-    frontier(X, Cur, X, BottomY, open)
+    frontier(X, Cur, X, BottomY, 0)
   ],
   NewAcc),
   generateFrontiers(X, NewCur, Size, NewAcc, Frontiers), !.
@@ -64,7 +64,7 @@ generateFrontiers(X, Cur, Size, AccFrontiers, Frontiers) :-
 
   append(AccFrontiers, 
   [
-    frontier(X, Cur, RightX, Cur, open)
+    frontier(X, Cur, RightX, Cur, 0)
   ],
   NewAcc),
   generateFrontiers(X, NewCur, Size, NewAcc, Frontiers), !.
