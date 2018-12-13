@@ -3,6 +3,8 @@
 
 test(X,Y,Count):-
   generateBoard(4,[Board|[Frontiers|_]]),
+  write(Frontiers), nl,
+  draw_board(Board,Frontiers,4),!,
   findAllNeighbors(Board,Frontiers,[(X,Y,'A')],[],0,Count).
 
 getPiece(Board, X, Y, Pout) :-
@@ -51,6 +53,7 @@ findAllVertical(Board,Frontiers,X,Y,Processed,Vertical) :-
   !,
   neighborVertical(Board,X,Y,FX,FY),
   \+ member(frontier(X,Y,FX,FY,1),Frontiers),
+  \+ member(frontier(FX,FY,X,Y,1),Frontiers),
   \+ member((FX,FY), Processed)
   ),
  Vertical).
@@ -62,6 +65,7 @@ findAllHorizontal(Board,Frontiers,X,Y,Processed,Horizontal) :-
   !,
   neighborHorizontal(Board,X,Y,FX,FY),
   \+ member(frontier(X,Y,FX,FY,1),Frontiers),
+  \+ member(frontier(FX,FY,X,Y,1),Frontiers),
   \+ member((FX,FY), Processed)
   ),
   Horizontal).
@@ -84,7 +88,75 @@ findAllNeighbors(Board,Frontiers,[(SX,SY,Orientation)|T],ProcessedCells,Count,Re
 
 
 
+getLinesN([],_, _, _, FinalList, FinalList) :- !.
+
+getLinesN([H|T],N, Count, TmpList, FinalList, Res) :-
+  append(TmpList,[H],NewTmpList),
+  NewCount is Count+1,
+  NewCount = N,
+  append(FinalList,[NewTmpList], NewFL),
+  getLinesN(T,N,0,[],NewFL,Res),!.
+
+getLinesN([H|T],N, Count, TmpList, FinalList, Res) :-
+  append(TmpList,[H],NewTmpList),
+  NewCount is Count+1,
+  getLinesN(T,N,NewCount,NewTmpList,FinalList,Res),!.
 
 
-  
+
+t:-
+  generateBoard(4,[B|[F|T]]),
+  draw_board(B,F,4).
+
+
+draw_board([H|T],Frontiers,N) :-
+    Count is N-1,
+    nl,
+    getLinesN([H|T],N,0,[],[],Lines),
+    drawLines(Lines, Frontiers).
+ 
+
+drawLines([], _).
+
+drawLines([H|T], Frontiers) :-
+  draw_line(H,Frontiers),
+  draw_horizontal_frontiers(H,Frontiers),
+  drawLines(T,Frontiers).
+
+draw_line([],_) :-
+      nl.
+
+draw_line([cell(X1,Y1,_)|T],Frontiers) :-
+
+     write(X1), write('-'), write(Y1),
+     Y2 is Y1 +1,
+     draw_vertical_frontier(Frontiers,X1,Y1,X1,Y2),
+     draw_line(T,Frontiers).
+
+
+draw_horizontal_frontiers([],_) :-
+       nl.
+
+
+draw_horizontal_frontiers([cell(X1,Y1,_)|T],Frontiers) :-
+     X2 is X1 +1 ,
+    draw_horizontal_frontier(Frontiers,X1,Y1,X2,Y1),
+    draw_horizontal_frontiers(T,Frontiers).
+
+
+draw_horizontal_frontier(Frontiers,X1,Y1,X2,Y2) :-
+    member(frontier(X1,Y1,X2,Y2,1),Frontiers),
+    write('---- ').
+
+draw_horizontal_frontier(_,_,_,_,_) :-
+    write('     ').
+
+draw_vertical_frontier(Frontiers,X1,Y1,X2,Y2) :-
+    member(frontier(X1,Y1,X2,Y2,1),Frontiers),
+    write(' |').
+
+draw_vertical_frontier(_,_,_,_,_) :-
+  write('  ').
+
+
   
