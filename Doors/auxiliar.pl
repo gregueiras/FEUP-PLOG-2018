@@ -45,7 +45,7 @@ hasfrontier(X1,Y1,X2,Y2,[FrontCoords|[FrontValues]]) :-
   nth0(Index, FrontCoords, frontier(X1,Y1,X2,Y2)),
   nth0(Index,FrontValues,1).
 
-hasfrontier(X1,Y1,X2,Y2,[FrontCoords|FrontValues]) :-
+hasfrontier(X1,Y1,X2,Y2,[FrontCoords|[FrontValues]]) :-
   nth0(Index, FrontCoords, frontier(X2,Y2,X1,Y1)),
   nth0(Index,FrontValues,1).
 
@@ -69,7 +69,6 @@ findAllVertical(Board,Frontiers,X,Y,Processed,Vertical) :-
   !,
   neighborVertical(Board,X,Y,FX,FY),
   \+ hasfrontier(X,Y,FX,FY,Frontiers),
-  \+ hasfrontier(FX,FY,X,Y,Frontiers),
   \+ member((FX,FY), Processed)
   ),
  Vertical).
@@ -81,7 +80,6 @@ findAllHorizontal(Board,Frontiers,X,Y,Processed,Horizontal) :-
   !,
   neighborHorizontal(Board,X,Y,FX,FY),
   \+ hasfrontier(X,Y,FX,FY,Frontiers),
-  \+ hasfrontier(FX,FY,X,Y,Frontiers),
   \+ member((FX,FY), Processed)
   ),
   Horizontal).
@@ -104,7 +102,7 @@ findAllNeighbors(Board,Frontiers,[(SX,SY,Orientation)|T],ProcessedCells,Count,Re
 
 
 t:-
-  generateBoard(4,[B|[F|T]]),
+  generateBoard(4,[B|[F|_]]),
   draw_board(B,F,4).
 
 
@@ -124,7 +122,6 @@ getLinesN([H|T],N, Count, TmpList, FinalList, Res) :-
 
 
 draw_board([H|T],Frontiers,N) :-
-    Count is N-1,
     nl,
     getLinesN([H|T],N,0,[],[],Lines),
     drawLines(Lines, Frontiers).

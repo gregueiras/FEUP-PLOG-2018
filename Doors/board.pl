@@ -67,7 +67,7 @@ generateFrontiers(X, Cur, Size, AccFrontCoords, AccFrontValues,FrontCoords, Fron
   NewAccFC),
   append(AccFrontValues, 
   [
-    1
+    0
   ],
   NewAccFV),
   generateFrontiers(X, NewCur, Size, NewAccFC, NewAccFV, FrontCoords, FrontValues), !.
