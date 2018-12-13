@@ -1,21 +1,25 @@
 :- use_module(library(random)).
 
-generateBoard(Size, Board) :-
-  generateBoard(0, Size, [], [], Board), !.
+generateBoard(Size, [Board|[C|[V]]]) :-
+  generateBoard(0, Size, [], [], [], [Board|[C|[V]]]),!.
 
-generateBoard(Size, Size, Cells, Frontiers, Board) :-
-  append([Cells], [Frontiers], Board), !.
+generateBoard(Size, Size, Cells, FrontCoords, FrontValues, Board) :-
+  append([Cells], [FrontCoords], Tmp),
+  append(Tmp, [FrontValues], Board) ,!.
 
-generateBoard(Cur, Size, AccCells, AccFrontiers, Board) :-
-  generateLine(Cur, Size, C1, F1),
+generateBoard(Cur, Size, AccCells, AccFrontCoords, AccFrontValues,Board) :-
+  generateLine(Cur, Size, C1, FC1, FV1),
   NewCur is Cur + 1,
   append(AccCells, C1, NewCells),
-  append(AccFrontiers, F1, NewFrontiers),
-  generateBoard(NewCur, Size, NewCells, NewFrontiers, Board), !.
+  append(AccFrontCoords, FC1, NewFrontCoords),
+  append(AccFrontValues, FV1, NewFrontValues),
+  generateBoard(NewCur, Size, NewCells, NewFrontCoords, NewFrontValues, Board), !.
 
-generateLine(Cur, Size, Cells, Frontiers) :-
+
+
+generateLine(Cur, Size, Cells, FrontCoords,FrontValues) :-
   generateCells(Cur, 0, Size, [], Cells),
-  generateFrontiers(Cur, 0, Size, [], Frontiers), !.
+  generateFrontiers(Cur, 0, Size, [],[], FrontCoords,FrontValues), !.
 
 
 generateCells(_, Size, Size, Cells, Cells).
@@ -26,8 +30,8 @@ generateCells(X, Cur, Size, AccCells, Cells) :-
   append(AccCells, [cell(X, Cur, Value)], NewAcc),
   generateCells(X, NewCur, Size, NewAcc, Cells), !.
   
-generateFrontiers(_, Size, Size, Frontiers, Frontiers).
-generateFrontiers(X, Cur, Size, AccFrontiers, Frontiers) :-
+generateFrontiers(_, Size, Size, FrontCoords, FrontValues, FrontCoords,FrontValues).
+generateFrontiers(X, Cur, Size, AccFrontCoords, AccFrontValues,FrontCoords, FrontValues) :-
   NewCur is Cur + 1,
   RightX is X + 1,
   BottomY is Cur + 1,
@@ -35,40 +39,60 @@ generateFrontiers(X, Cur, Size, AccFrontiers, Frontiers) :-
   RightX < Size,
   BottomY < Size,
 
-  append(AccFrontiers, 
+  append(AccFrontCoords, 
   [
-    frontier(X, Cur, RightX, Cur, 0),
-    frontier(X, Cur, X, BottomY, 0)
+    frontier(X, Cur, RightX, Cur),
+    frontier(X, Cur, X, BottomY)
   ],
-  NewAcc),
-  generateFrontiers(X, NewCur, Size, NewAcc, Frontiers), !.
+  NewAccFC),
 
-generateFrontiers(X, Cur, Size, AccFrontiers, Frontiers) :-
+  append(AccFrontValues, 
+  [
+    0,
+    0
+  ],
+  NewAccFV),
+  generateFrontiers(X, NewCur, Size, NewAccFC, NewAccFV, FrontCoords, FrontValues), !.
+
+generateFrontiers(X, Cur, Size, AccFrontCoords, AccFrontValues,FrontCoords, FrontValues) :-
   NewCur is Cur + 1,
   BottomY is Cur + 1,
 
   BottomY < Size,
 
-  append(AccFrontiers, 
+  append(AccFrontCoords, 
   [
-    frontier(X, Cur, X, BottomY, 0)
+    frontier(X, Cur, X, BottomY)
   ],
-  NewAcc),
-  generateFrontiers(X, NewCur, Size, NewAcc, Frontiers), !.
+  NewAccFC),
+  append(AccFrontValues, 
+  [
+    1
+  ],
+  NewAccFV),
+  generateFrontiers(X, NewCur, Size, NewAccFC, NewAccFV, FrontCoords, FrontValues), !.
 
-generateFrontiers(X, Cur, Size, AccFrontiers, Frontiers) :-
+generateFrontiers(X, Cur, Size, AccFrontCoords, AccFrontValues,FrontCoords, FrontValues) :-
   NewCur is Cur + 1,
   RightX is X + 1,
 
   RightX < Size,
 
-  append(AccFrontiers, 
+  append(AccFrontCoords, 
   [
-    frontier(X, Cur, RightX, Cur, 0)
+    frontier(X, Cur, RightX, Cur)
   ],
-  NewAcc),
-  generateFrontiers(X, NewCur, Size, NewAcc, Frontiers), !.
+  NewAccFC),
+  append(AccFrontValues, 
+    [
+      0
+    ],
+  NewAccFV),
+  generateFrontiers(X, NewCur, Size, NewAccFC, NewAccFV, FrontCoords, FrontValues), !.
 
-generateFrontiers(X, Cur, Size, AccFrontiers, Frontiers) :-
+generateFrontiers(X, Cur, Size, AccFrontCoords, AccFrontValues,FrontCoords, FrontValues) :-
   NewCur is Cur + 1,
-  generateFrontiers(X, NewCur, Size, AccFrontiers, Frontiers), !.
+  generateFrontiers(X, NewCur, Size, AccFrontCoords, AccFrontValues,FrontCoords, FrontValues), !.
+
+
+

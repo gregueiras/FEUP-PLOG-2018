@@ -1,8 +1,15 @@
 
 :- ensure_loaded(board).
+:- use_module(library(lists)).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                    Count visible houses                       %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 test(X,Y,Count):-
-  generateBoard(4,[Board|[Frontiers|_]]),
+  generateBoard(4,[Board|Frontiers]),
   write(Frontiers), nl,
   draw_board(Board,Frontiers,4),!,
   findAllNeighbors(Board,Frontiers,[(X,Y,'A')],[],0,Count).
@@ -34,6 +41,15 @@ neighborHorizontal(Board,X,Y,RX,RY) :-
   RY is Y-1,
   getPiece(Board,RX,RY,_).
 
+hasfrontier(X1,Y1,X2,Y2,[FrontCoords|[FrontValues]]) :-
+  nth0(Index, FrontCoords, frontier(X1,Y1,X2,Y2)),
+  nth0(Index,FrontValues,1).
+
+hasfrontier(X1,Y1,X2,Y2,[FrontCoords|FrontValues]) :-
+  nth0(Index, FrontCoords, frontier(X2,Y2,X1,Y1)),
+  nth0(Index,FrontValues,1).
+
+ 
 findFirstNeighbors(Board,Frontiers,X,Y, 'A',Processed,ToProcess) :-
   findAllVertical(Board,Frontiers,X,Y,Processed,Vertical),
   findAllHorizontal(Board,Frontiers,X,Y,Processed,Horizontal),
@@ -52,8 +68,8 @@ findAllVertical(Board,Frontiers,X,Y,Processed,Vertical) :-
   (
   !,
   neighborVertical(Board,X,Y,FX,FY),
-  \+ member(frontier(X,Y,FX,FY,1),Frontiers),
-  \+ member(frontier(FX,FY,X,Y,1),Frontiers),
+  \+ hasfrontier(X,Y,FX,FY,Frontiers),
+  \+ hasfrontier(FX,FY,X,Y,Frontiers),
   \+ member((FX,FY), Processed)
   ),
  Vertical).
@@ -64,8 +80,8 @@ findAllHorizontal(Board,Frontiers,X,Y,Processed,Horizontal) :-
   (
   !,
   neighborHorizontal(Board,X,Y,FX,FY),
-  \+ member(frontier(X,Y,FX,FY,1),Frontiers),
-  \+ member(frontier(FX,FY,X,Y,1),Frontiers),
+  \+ hasfrontier(X,Y,FX,FY,Frontiers),
+  \+ hasfrontier(FX,FY,X,Y,Frontiers),
   \+ member((FX,FY), Processed)
   ),
   Horizontal).
@@ -81,11 +97,15 @@ findAllNeighbors(Board,Frontiers,[(SX,SY,Orientation)|T],ProcessedCells,Count,Re
   New_Count is Count +1,
   findAllNeighbors(Board,Frontiers,TP, PC,New_Count,Res).
 
-/*countCellVisibleNeighbors([Board|[Frontiers|T]],X,Y,Count) :-
-  findAllNeighbors(Board,Frontiers,[(X,Y,'A')],[],Neighbors),
-  length(Neighbors,C),
-  Count is C.*/
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                         draw board                            %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+t:-
+  generateBoard(4,[B|[F|T]]),
+  draw_board(B,F,4).
 
 
 getLinesN([],_, _, _, FinalList, FinalList) :- !.
@@ -101,12 +121,6 @@ getLinesN([H|T],N, Count, TmpList, FinalList, Res) :-
   append(TmpList,[H],NewTmpList),
   NewCount is Count+1,
   getLinesN(T,N,NewCount,NewTmpList,FinalList,Res),!.
-
-
-
-t:-
-  generateBoard(4,[B|[F|T]]),
-  draw_board(B,F,4).
 
 
 draw_board([H|T],Frontiers,N) :-
@@ -145,14 +159,14 @@ draw_horizontal_frontiers([cell(X1,Y1,_)|T],Frontiers) :-
 
 
 draw_horizontal_frontier(Frontiers,X1,Y1,X2,Y2) :-
-    member(frontier(X1,Y1,X2,Y2,1),Frontiers),
+    hasfrontier(X1,Y1,X2,Y2,Frontiers),
     write('---- ').
 
 draw_horizontal_frontier(_,_,_,_,_) :-
     write('     ').
 
 draw_vertical_frontier(Frontiers,X1,Y1,X2,Y2) :-
-    member(frontier(X1,Y1,X2,Y2,1),Frontiers),
+    hasfrontier(X1,Y1,X2,Y2,Frontiers),
     write(' |').
 
 draw_vertical_frontier(_,_,_,_,_) :-
