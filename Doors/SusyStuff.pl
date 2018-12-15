@@ -1,5 +1,6 @@
 :- ensure_loaded(auxiliar).
 :- use_module(library(clpfd)).
+:- use_module(library(lists)).
 
 board([
     cell(0,0,1),cell(0,1,1),cell(0,2,1),cell(0,3,1),
@@ -39,10 +40,10 @@ frontiers([
 solver(Board,Frontiers,Values) :-
     length(Frontiers, N),
     length(Values,N),
-    %Values ins 0..1,
-    domain(Values, 0, 1),
+    Values ins 0..1,
+    %domain(Values, 0, 1),
     restrict(Board, Frontiers, Values),
-    labeling([],Values), trace.
+    labeling([],Values).
     
 restrict([], _, _).
 restrict([cell(X, Y, Value) | RemBoard], Frontiers, Values) :-
@@ -50,17 +51,20 @@ restrict([cell(X, Y, Value) | RemBoard], Frontiers, Values) :-
     getUpFrontiers([cell(X, Y, Value) | RemBoard], [cell(X,Y,_)], Frontiers, Values, [],[], UF),
     getLeftFrontiers([cell(X, Y, Value) | RemBoard], [cell(X,Y,_)], Frontiers, Values, [],[], LF),
     getRightFrontiers([cell(X, Y, Value) | RemBoard], [cell(X,Y,_)], Frontiers, Values, [],[], RF),
+    S1 #= 6,
+    S2 #= 7,
+    S3 #= 8,
     append([5], DF, Temp1),
-    append(Temp1, [6, UF], Temp2),
-    append(Temp2, [7, RF], Temp3),
-    append(Temp3, [8, LF], AllFrontiers),
+    append(Temp1, [S1 | UF], Temp2),
+    append(Temp2, [S2 | RF], Temp3),
+    append(Temp3, [S3 | LF], AllFrontiers),
     automaton(AllFrontiers, _, AllFrontiers,
-    [source(q0), sink(left)],
-    [arc(q0, 5, down), arc(down, 6, up), arc(up, 7, right), arc(right, 8, left),
-    arc(down, 0, down, [C + 1]), arc(up, 0, up, [C + 1]), arc(left, 0, left, [C + 1]), arc(right, 0, right, [C + 1])], [C], [0], [Sum]),
+    [source(q0), sink(left), sink(end)],
+    [arc(q0, 5, down), arc(down, 6, up), arc(up, 7, right), arc(right, 8, left), arc(down, 1, burn), arc(up, 1, burn), arc(right, 1, burn), arc(end, 0, end), arc(end, 1, end), arc(down, 0, down, [C + 1]), arc(up, 0, up, [C + 1]), arc(left, 0, left, [C + 1]), arc(right, 0, right, [C + 1]), arc(burn, 6, up), arc(burn, 7, right), arc(burn, 8, left), arc(burn, 0, burn), arc(burn, 1, burn), arc(left, 1, end)], [C], [1], [Sum]),
     Sum #= Value,
-    write(X-Y), nl,
+    %write(X-Y), nl,
     restrict(RemBoard, Frontiers, Values).
+
 
 te :-
     board(B),
@@ -99,7 +103,7 @@ neighborDown(Board,X,Y,RX,RY) :-
     getPiece(Board,RX,RY,_).
 
 
-getDownFrontiers(Board,[],Frontiers,Values, Processed,DF, DF).
+getDownFrontiers(_,[],_,_, _,DF, DF).
 getDownFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpDF, DownFrontiers) :-
     neighborDown(Board,X,Y,FX,FY),
     append(Processed, [cell(X,Y,_)], NewProcessed),
@@ -111,7 +115,7 @@ getDownFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpDF, DownF
 getDownFrontiers(_,_,_,_,_,DF,DF).
 
 
-getUpFrontiers(Board,[],Frontiers,Values, Processed,UF, UF).
+getUpFrontiers(_,[],_,_, _,UF, UF).
 getUpFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpUF, UpFrontiers) :-
     neighborUp(Board,X,Y,FX,FY),
     append(Processed, [cell(X,Y,_)], NewProcessed),
@@ -123,7 +127,7 @@ getUpFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpUF, UpFront
 getUpFrontiers(_,_,_,_,_,UF,UF).
     
 
-getLeftFrontiers(Board,[],Frontiers,Values, Processed,LF, LF).
+getLeftFrontiers(_,[],_,_, _,LF, LF).
 getLeftFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpLF, LeftFrontiers) :-
     neighborLeft(Board,X,Y,FX,FY),
     append(Processed, [cell(X,Y,_)], NewProcessed),
@@ -135,7 +139,7 @@ getLeftFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpLF, LeftF
 getLeftFrontiers(_,_,_,_,_,LF,LF).
 
 
-getRightFrontiers(Board,[],Frontiers,Values, Processed,RF, RF).
+getRightFrontiers(_,[],_,_, _,RF, RF).
 getRightFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpRF, RightFrontiers) :-
     neighborRight(Board,X,Y,FX,FY),
     append(Processed, [cell(X,Y,_)], NewProcessed),
@@ -145,12 +149,3 @@ getRightFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpRF, Righ
     append(TmpRF,[Frontier],RF),
     getRightFrontiers(Board,ToProcess,Frontiers,Values,NewProcessed,RF, RightFrontiers).
 getRightFrontiers(_,_,_,_,_,RF,RF).
-
-
-
-
-
-
-
-
-    
