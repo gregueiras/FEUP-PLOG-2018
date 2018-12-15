@@ -63,7 +63,7 @@ restrict([cell(X, Y, Value) | RemBoard], Frontiers, Values) :-
     restrict(RemBoard, Frontiers, Values).
 
 te :-
-    board(B),
+    board(Board),
     frontiers(F),
     length(F, N),
     length(Values,N),
