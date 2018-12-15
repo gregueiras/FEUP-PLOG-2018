@@ -70,7 +70,7 @@ te :-
     %Values ins 0..1,
     domain(Values, 0, 1),
     getUpFrontiers(B, [cell(2,2,_)], F, Values,[],[], DF),
-    %getFrontier(2, 2, 2, 3, [F, Values], DF),
+    %getFrontier(2, 3, 2, 4, [F, Values], DF),
     write(DF).
 
 
@@ -99,63 +99,55 @@ neighborDown(Board,X,Y,RX,RY) :-
     getPiece(Board,RX,RY,_).
 
 
-getDownFrontiers(Board,[],Frontiers,Values, Processed,DF, Processed).
+getDownFrontiers(Board,[],Frontiers,Values, Processed,DF, DF).
 getDownFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpDF, DownFrontiers) :-
     neighborDown(Board,X,Y,FX,FY),
     append(Processed, [cell(X,Y,_)], NewProcessed),
     append(T, [cell(FX,FY,_)], TmpProcess),
     sort(TmpProcess,ToProcess),
-    %getFrontier(X,Y,FX,FY,[Frontiers,Values], Frontier),
-    %append(TmpDF, Frontier,DF),
+    getFrontier(X,Y,FX,FY,[Frontiers,Values], Frontier),
+    append(TmpDF,[Frontier],DF),
     getDownFrontiers(Board,ToProcess,Frontiers,Values,NewProcessed,DF, DownFrontiers).
-getDownFrontiers(_,H,_,_,Processed,DF,[Processed,H]).
+getDownFrontiers(_,H,_,_,Processed,DF,DF).
 
 
-getUpFrontiers(Board,[],Frontiers,Values, Processed,DF, Processed).
-getUpFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpDF, DownFrontiers) :-
+getUpFrontiers(Board,[],Frontiers,Values, Processed,UF, UF).
+getUpFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpUF, UpFrontiers) :-
     neighborUp(Board,X,Y,FX,FY),
     append(Processed, [cell(X,Y,_)], NewProcessed),
     append(T, [cell(FX,FY,_)], TmpProcess),
     sort(TmpProcess,ToProcess),
-    %getFrontier(X,Y,FX,FY,[Frontiers,Values], Door),
-    %append(TmpDF, Door,DF),
-    getUpFrontiers(Board,ToProcess,Frontiers,Values,NewProcessed,TmpDF, DownFrontiers).
-getUpFrontiers(_,[H|T],_,_,Processed,DF,[Processed,H]).
+    getFrontier(X,Y,FX,FY,[Frontiers,Values], Frontier),
+    append(TmpUF,[Frontier],UF),
+    getUpFrontiers(Board,ToProcess,Frontiers,Values,NewProcessed,UF, UpFrontiers).
+getUpFrontiers(_,[H|T],_,_,Processed,UF,UF).
     
 
-getLeftFrontiers(Board,[],Frontiers,Values, Processed,DF, Processed).
-getLeftFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpDF, DownFrontiers) :-
+getLeftFrontiers(Board,[],Frontiers,Values, Processed,LF, LF).
+getLeftFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpLF, LeftFrontiers) :-
     neighborLeft(Board,X,Y,FX,FY),
     append(Processed, [cell(X,Y,_)], NewProcessed),
     append(T, [cell(FX,FY,_)], TmpProcess),
     sort(TmpProcess,ToProcess),
-    %getFrontier(X,Y,FX,FY,[Frontiers,Values], Frontier),
-    %append(TmpDF, Frontier,DF),
-    getLeftFrontiers(Board,ToProcess,Frontiers,Values,NewProcessed,DF, DownFrontiers).
-getLeftFrontiers(_,H,_,_,Processed,DF,[Processed,H]).
+    getFrontier(X,Y,FX,FY,[Frontiers,Values], Frontier),
+    append(TmpLF,[Frontier],LF),
+    getLeftFrontiers(Board,ToProcess,Frontiers,Values,NewProcessed,LF, LeftFrontiers).
+getLeftFrontiers(_,H,_,_,Processed,LF,LF).
 
 
-getRightFrontiers(Board,[],Frontiers,Values, Processed,DF, Processed).
-getRightFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpDF, DownFrontiers) :-
+getRightFrontiers(Board,[],Frontiers,Values, Processed,RF, RF).
+getRightFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpRF, RightFrontiers) :-
     neighborRight(Board,X,Y,FX,FY),
     append(Processed, [cell(X,Y,_)], NewProcessed),
     append(T, [cell(FX,FY,_)], TmpProcess),
     sort(TmpProcess,ToProcess),
-    %getFrontier(X,Y,FX,FY,[Frontiers,Values], Frontier),
-    %append(TmpDF, Frontier,DF),
-    getRightFrontiers(Board,ToProcess,Frontiers,Values,NewProcessed,DF, DownFrontiers).
-getRightFrontiers(_,H,_,_,Processed,DF,[Processed,H]).
+    getFrontier(X,Y,FX,FY,[Frontiers,Values], Frontier),
+    append(TmpRF,[Frontier],RF),
+    getRightFrontiers(Board,ToProcess,Frontiers,Values,NewProcessed,RF, RightFrontiers).
+getRightFrontiers(_,H,_,_,Processed,RF,RF).
 
 
 
-    
-/*getFrontier(X1, Y1, X2, Y2, [FrontCoords, FrontValues], Value) :-
-  nth1(Index, FrontCoords, frontier(X2,Y2,X1,Y1)),
-  element(Index, FrontValues, Value).
-
-getFrontier(X1, Y1, X2, Y2, [FrontCoords, FrontValues], Value) :-
-  nth1(Index, FrontCoords, frontier(X1,Y1,X2,Y2)),
-  element(Index, FrontValues, Value).*/
 
 
 
