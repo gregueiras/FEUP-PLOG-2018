@@ -41,15 +41,15 @@ neighborHorizontal(Board,X,Y,RX,RY) :-
   RY is Y-1,
   getPiece(Board,RX,RY,_).
 
-%hasfrontier(X1,Y1,X2,Y2,[FrontCoords, FrontValues], B) :-
-%  nth1(Index, FrontCoords, frontier(X1,Y1,X2,Y2)),
-%  element(Index, FrontValues, Value),
-%  Value #=  #<=> B.
+hasfrontier(X1,Y1,X2,Y2,[FrontCoords, FrontValues], B) :-
+  nth1(Index, FrontCoords, frontier(X1,Y1,X2,Y2)),
+  element(Index, FrontValues, Value),
+  Value #=1  #<=> B.
 
-%hasfrontier(X1,Y1,X2,Y2,[FrontCoords, FrontValues], B) :-
-%  nth1(Index, FrontCoords, frontier(X2,Y2,X1,Y1)),
-%  element(Index, FrontValues, Value),
-%  Value in 1..1 #<=> B.
+hasfrontier(X1,Y1,X2,Y2,[FrontCoords, FrontValues], B) :-
+  nth1(Index, FrontCoords, frontier(X2,Y2,X1,Y1)),
+  element(Index, FrontValues, Value),
+  Value #=1  #<=> B.
 
 getFrontier(X1, Y1, X2, Y2, [FrontCoords, FrontValues], Value) :-
   nth1(Index, FrontCoords, frontier(X2,Y2,X1,Y1)),

@@ -40,10 +40,11 @@ frontiers([
 solver(Board,Frontiers,Values) :-
     length(Frontiers, N),
     length(Values,N),
-    Values ins 0..1,
-    %domain(Values, 0, 1),
+    %Values ins 0..1,
+    domain(Values, 0, 1),
     restrict(Board, Frontiers, Values),
-    labeling([],Values).
+    labeling([],Values),
+    draw_board(Board,[Frontiers, Values],4).
     
 restrict([], _, _).
 restrict([cell(X, Y, Value) | RemBoard], Frontiers, Values) :-
