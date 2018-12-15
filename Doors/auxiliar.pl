@@ -41,15 +41,24 @@ neighborHorizontal(Board,X,Y,RX,RY) :-
   RY is Y-1,
   getPiece(Board,RX,RY,_).
 
-hasfrontier(X1,Y1,X2,Y2,[FrontCoords|[FrontValues]]) :-
-  nth0(Index, FrontCoords, frontier(X1,Y1,X2,Y2)),
-  nth0(Index,FrontValues,1).
+%hasfrontier(X1,Y1,X2,Y2,[FrontCoords, FrontValues], B) :-
+%  nth1(Index, FrontCoords, frontier(X1,Y1,X2,Y2)),
+%  element(Index, FrontValues, Value),
+%  Value #=  #<=> B.
 
-hasfrontier(X1,Y1,X2,Y2,[FrontCoords|[FrontValues]]) :-
-  nth0(Index, FrontCoords, frontier(X2,Y2,X1,Y1)),
-  nth0(Index,FrontValues,1).
+%hasfrontier(X1,Y1,X2,Y2,[FrontCoords, FrontValues], B) :-
+%  nth1(Index, FrontCoords, frontier(X2,Y2,X1,Y1)),
+%  element(Index, FrontValues, Value),
+%  Value in 1..1 #<=> B.
 
- 
+getFrontier(X1, Y1, X2, Y2, [FrontCoords, FrontValues], Value) :-
+  nth1(Index, FrontCoords, frontier(X2,Y2,X1,Y1)),
+  element(Index, FrontValues, Value).
+
+getFrontier(X1, Y1, X2, Y2, [FrontCoords, FrontValues], Value) :-
+  nth1(Index, FrontCoords, frontier(X1,Y1,X2,Y2)),
+  element(Index, FrontValues, Value).
+
 findFirstNeighbors(Board,Frontiers,X,Y, 'A',Processed,ToProcess) :-
   findAllVertical(Board,Frontiers,X,Y,Processed,Vertical),
   findAllHorizontal(Board,Frontiers,X,Y,Processed,Horizontal),
@@ -66,9 +75,8 @@ findFirstNeighbors(Board,Frontiers,X,Y,'V',Processed,ToProcess) :-
 findAllVertical(Board,Frontiers,X,Y,Processed,Vertical) :-
   findall((FX,FY,'V'),
   (
-  !,
   neighborVertical(Board,X,Y,FX,FY),
-  \+ hasfrontier(X,Y,FX,FY,Frontiers),
+  hasfrontier(X,Y,FX,FY,Frontiers, 1),
   \+ member((FX,FY), Processed)
   ),
  Vertical).
@@ -77,9 +85,8 @@ findAllVertical(Board,Frontiers,X,Y,Processed,Vertical) :-
 findAllHorizontal(Board,Frontiers,X,Y,Processed,Horizontal) :-
   findall((FX,FY,'H'),
   (
-  !,
   neighborHorizontal(Board,X,Y,FX,FY),
-  \+ hasfrontier(X,Y,FX,FY,Frontiers),
+  hasfrontier(X,Y,FX,FY,Frontiers, 1),
   \+ member((FX,FY), Processed)
   ),
   Horizontal).
@@ -156,14 +163,14 @@ draw_horizontal_frontiers([cell(X1,Y1,_)|T],Frontiers) :-
 
 
 draw_horizontal_frontier(Frontiers,X1,Y1,X2,Y2) :-
-    hasfrontier(X1,Y1,X2,Y2,Frontiers),
+    hasfrontier(X1,Y1,X2,Y2,Frontiers, 1),
     write('---- ').
 
 draw_horizontal_frontier(_,_,_,_,_) :-
     write('     ').
 
 draw_vertical_frontier(Frontiers,X1,Y1,X2,Y2) :-
-    hasfrontier(X1,Y1,X2,Y2,Frontiers),
+    hasfrontier(X1,Y1,X2,Y2,Frontiers, 1),
     write(' |').
 
 draw_vertical_frontier(_,_,_,_,_) :-
