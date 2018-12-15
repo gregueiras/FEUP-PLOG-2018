@@ -108,7 +108,7 @@ getDownFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpDF, DownF
     getFrontier(X,Y,FX,FY,[Frontiers,Values], Frontier),
     append(TmpDF,[Frontier],DF),
     getDownFrontiers(Board,ToProcess,Frontiers,Values,NewProcessed,DF, DownFrontiers).
-getDownFrontiers(_,H,_,_,Processed,DF,DF).
+getDownFrontiers(_,_,_,_,_,DF,DF).
 
 
 getUpFrontiers(Board,[],Frontiers,Values, Processed,UF, UF).
@@ -120,7 +120,7 @@ getUpFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpUF, UpFront
     getFrontier(X,Y,FX,FY,[Frontiers,Values], Frontier),
     append(TmpUF,[Frontier],UF),
     getUpFrontiers(Board,ToProcess,Frontiers,Values,NewProcessed,UF, UpFrontiers).
-getUpFrontiers(_,[H|T],_,_,Processed,UF,UF).
+getUpFrontiers(_,_,_,_,_,UF,UF).
     
 
 getLeftFrontiers(Board,[],Frontiers,Values, Processed,LF, LF).
@@ -132,7 +132,7 @@ getLeftFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpLF, LeftF
     getFrontier(X,Y,FX,FY,[Frontiers,Values], Frontier),
     append(TmpLF,[Frontier],LF),
     getLeftFrontiers(Board,ToProcess,Frontiers,Values,NewProcessed,LF, LeftFrontiers).
-getLeftFrontiers(_,H,_,_,Processed,LF,LF).
+getLeftFrontiers(_,_,_,_,_,LF,LF).
 
 
 getRightFrontiers(Board,[],Frontiers,Values, Processed,RF, RF).
@@ -144,7 +144,7 @@ getRightFrontiers(Board,[cell(X,Y,_)|T],Frontiers,Values, Processed, TmpRF, Righ
     getFrontier(X,Y,FX,FY,[Frontiers,Values], Frontier),
     append(TmpRF,[Frontier],RF),
     getRightFrontiers(Board,ToProcess,Frontiers,Values,NewProcessed,RF, RightFrontiers).
-getRightFrontiers(_,H,_,_,Processed,RF,RF).
+getRightFrontiers(_,_,_,_,_,RF,RF).
 
 
 
