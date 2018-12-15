@@ -46,10 +46,10 @@ solver(Board,Frontiers,Values) :-
     
 restrict([], _, _).
 restrict([cell(X, Y, Value) | RemBoard], Frontiers, Values) :-
-    getDownFrontiers(Board, X, Y, Frontiers, Values, DF),
-    getUpFrontiers(Board, X, Y, Frontiers, Values, UF),
-    getLeftFrontiers(Board, X, Y, Frontiers, Values, LF),
-    getRightFrontiers(Board, X, Y, Frontiers, Values, RF),
+    getDownFrontiers([cell(X, Y, Value) | RemBoard], [cell(X,Y,_)], Frontiers, Values, [],[], DF),
+    getUpFrontiers([cell(X, Y, Value) | RemBoard], [cell(X,Y,_)], Frontiers, Values, [],[], UF),
+    getLeftFrontiers([cell(X, Y, Value) | RemBoard], [cell(X,Y,_)], Frontiers, Values, [],[], LF),
+    getRightFrontiers([cell(X, Y, Value) | RemBoard], [cell(X,Y,_)], Frontiers, Values, [],[], RF),
     append([5], DF, Temp1),
     append(Temp1, [6, UF], Temp2),
     append(Temp2, [7, RF], Temp3),
