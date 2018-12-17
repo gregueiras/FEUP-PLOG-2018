@@ -14,8 +14,8 @@ test(X,Y,Count):-
   draw_board(Board,Frontiers,4),!,
   findAllNeighbors(Board,Frontiers,[(X,Y,'A')],[],0,Count).
 
-getPiece(Board, X, Y, Pout) :-
-  member(cell(X, Y, Pout), Board).
+getPiece(Board, X, Y, B) :-
+  member(cell(X, Y), Board).
 
 neighborVertical(Board,X,Y,RX,RY) :-
   getPiece(Board,X,Y,_),
@@ -144,7 +144,7 @@ drawLines([H|T], Frontiers) :-
 draw_line([],_) :-
       nl.
 
-draw_line([cell(X1,Y1,_)|T],Frontiers) :-
+draw_line([cell(X1,Y1)|T],Frontiers) :-
 
      write(X1), write('-'), write(Y1),
      Y2 is Y1 +1,
@@ -156,7 +156,7 @@ draw_horizontal_frontiers([],_) :-
        nl.
 
 
-draw_horizontal_frontiers([cell(X1,Y1,_)|T],Frontiers) :-
+draw_horizontal_frontiers([cell(X1,Y1)|T],Frontiers) :-
      X2 is X1 +1 ,
     draw_horizontal_frontier(Frontiers,X1,Y1,X2,Y1),
     draw_horizontal_frontiers(T,Frontiers).
