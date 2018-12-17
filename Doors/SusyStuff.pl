@@ -72,11 +72,15 @@ values([
     ]).
 
 
-
-print_long_list([]) .  
-print_long_list([H|T]) :-
-    write(H), write('  '),
-    print_long_list(T).
+generatorAndSolver(N) :-
+    generateBoard(N, [Board|[C|[V]]]),
+    length(Board,L),
+    length(CellValues,L),
+    MaxValue is N*2,
+    domain(CellValues,1,MaxValue),
+    restrict(Board,Board,CellValues,C,V),
+    labeling([],CellValues),
+    solver(Board,CellValues,C,Values,N).
 
 
 generator(N) :-
@@ -86,20 +90,18 @@ generator(N) :-
     MaxValue is N*2,
     domain(CellValues,1,MaxValue),
     restrict(Board,Board,CellValues,C,V),
-    labeling([],CellValues),
-    print_long_list(CellValues), nl,
-    draw_board(Board,[C, V],4).
+    labeling([],CellValues),!.
 
 
-solver(Board,CellValues,Frontiers,Values) :-
+
+solver(Board,CellValues,Frontiers,Values,L) :-
     length(Frontiers, N),
     length(Values,N),
     %Values ins 0..1,
     domain(Values, 0, 1),
-    restrict(Board, Board, CellValues,Frontiers, Values),
-    draw_board(Board,[Frontiers, Values],4),
+    restrict(Board, Board, CellValues,Frontiers, Values),!,
     labeling([],Values),
-    print_long_list(Values), nl.
+    draw_board(Board,CellValues,[Frontiers, Values],L), !.
 
 restrict(_,[], _,_, _).
 restrict(Board,[cell(X, Y) | RemBoard], CellValues,Frontiers, Values) :-
@@ -125,84 +127,12 @@ restrict(Board,[cell(X, Y) | RemBoard], CellValues,Frontiers, Values) :-
     Sum #= Value,
     restrict(Board,RemBoard,CellValues, Frontiers, Values).
 
-getCellValue(Board,X,Y,CellValues,Value) :-
-    nth1(Index, Board, cell(X,Y)),
-    element(Index, CellValues, Value).
 
 
 
-te :-
-    board(B),
-    frontiers(F),
-    length(F, N),
-    length(Values,N),
-    %Values ins 0..1,
-    domain(Values, 0, 1),
-    getUpFrontiers(B, [cell(2,2,_)], F, Values,[],[], DF),
-    %getFrontier(2, 3, 2, 4, [F, Values], DF),
-    write(DF).
-
-
-testDoors(N,Values):-
-    generateBoard(N,[Board|[Frontiers|_]]),
-    print_long_list(Board), nl,
-    print_long_list(Frontiers),nl,
-    solver(Board,Frontiers,Values).
-
-
-neighborDown(Board,X,Y,RX,RY) :-
-    getPiece(Board,X,Y,_),
-    RX is X+1,
-    RY is Y,
-    getPiece(Board,RX,RY,_).
-  
-  neighborUp(Board,X,Y,RX,RY) :-
-    getPiece(Board,X,Y,_),
-    RX is X-1,
-    RY is Y,
-    getPiece(Board,RX,RY,_).
-  
-  neighborRight(Board,X,Y,RX,RY) :-
-    getPiece(Board,X,Y,_),
-    RX is X,
-    RY is Y+1,
-    getPiece(Board,RX,RY,_).
-  
-  neighborLeft(Board,X,Y,RX,RY) :-
-    getPiece(Board,X,Y,_),
-    RX is X,
-    RY is Y-1,
-    getPiece(Board,RX,RY,_).
 
 
 
-getDownFrontiers(Board,X,Y,Frontiers,Values, AccDownFrontiers,DownFrontiers) :-
-    neighborDown(Board,X,Y,FX,FY),
-    getFrontierRightDown(X,Y,FX,FY,[Frontiers,Values], Frontier),
-    append(AccDownFrontiers,[Frontier],NewAccDF),
-    getDownFrontiers(Board,FX,FY,Frontiers,Values,NewAccDF,DownFrontiers),!.
-getDownFrontiers(_,_,_,_,_, AccDownFrontiers,AccDownFrontiers) :- !.
-
-getUpFrontiers(Board,X,Y,Frontiers,Values, AccUpFrontiers,UpFrontiers) :-
-    neighborUp(Board,X,Y,FX,FY),
-    getFrontierLeftUp(X,Y,FX,FY,[Frontiers,Values], Frontier),
-    append(AccUpFrontiers,[Frontier],NewAccUF),
-    getUpFrontiers(Board,FX,FY,Frontiers,Values,NewAccUF,UpFrontiers).
-getUpFrontiers(_,_,_,_,_, AccUpFrontiers,AccUpFrontiers) .
-
-getLeftFrontiers(Board,X,Y,Frontiers,Values, AccLeftFrontiers,LeftFrontiers) :-
-    neighborLeft(Board,X,Y,FX,FY),
-    getFrontierLeftUp(X,Y,FX,FY,[Frontiers,Values], Frontier),
-    append(AccLeftFrontiers,[Frontier],NewAccLF),
-    getLeftFrontiers(Board,FX,FY,Frontiers,Values,NewAccLF,LeftFrontiers),!.
-getLeftFrontiers(_,_,_,_,_, AccLeftFrontiers,AccLeftFrontiers) :- !.
-
-getRightFrontiers(Board,X,Y,Frontiers,Values, AccRightFrontiers,RightFrontiers) :-
-    neighborRight(Board,X,Y,FX,FY),
-    getFrontierRightDown(X,Y,FX,FY,[Frontiers,Values], Frontier),
-    append(AccRightFrontiers,[Frontier],NewAccRF),
-    getRightFrontiers(Board,FX,FY,Frontiers,Values,NewAccRF,RightFrontiers),!.
-getRightFrontiers(_,_,_,_,_, AccRightFrontiers,AccRightFrontiers) :- !.
 
 
 
