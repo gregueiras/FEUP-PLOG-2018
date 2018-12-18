@@ -112,12 +112,54 @@ processChar(Char, Acc, Option) :-
   atom_concat(Acc, Char, Res),
   new_read(Res, Option).
 
+getInteger([], Acc, Acc).
+getInteger([H|T], Acc, Integer) :-
+  length([H|T], L),
+  L1 is L-1,
+  char_code(H,CC),
+  CC1 is CC - 48,
+  validate_code(CC1),
+  power(10,L1, Factor),
+  Acc1 is Acc + CC1*Factor,
+  getInteger(T,Acc1,Integer).
+
+validate_code(Code) :-
+  Code = 0.
+validate_code(Code) :-
+  Code = 1.
+validate_code(Code) :-
+  Code = 2.
+validate_code(Code) :-
+  Code = 3.
+validate_code(Code) :-
+  Code = 4.
+validate_code(Code) :-
+  Code = 5.
+validate_code(Code) :-
+  Code = 6.
+validate_code(Code) :-
+  Code = 7.
+validate_code(Code) :-
+  Code = 8.
+validate_code(Code) :-
+  Code = 9.
+
+  
+power(_,0,1) :-!.
+power(B,1,B) :-!.
+power(B,P,R) :-
+  power(B,B,P,1,R), !.
+
+power(_,Bc,P,P,Bc).
+power(B,Bc,P,Acc,R) :-
+    B1 is Bc*B,
+    Acc1 is Acc+1,
+    power(B,B1,P,Acc1,R).
+
 % print_InvalidOption
 % Prints error message when an invalid option has been chosen
 print_InvalidOption :-
   write('Invalid option! Please try again...').
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                         draw board                            %%%
