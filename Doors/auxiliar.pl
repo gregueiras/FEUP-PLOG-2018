@@ -91,6 +91,33 @@ print_long_list([H|T]) :-
     write(H), write('  '),
     print_long_list(T).
 
+% new_read(-Option)
+% reads one character at the time 
+% ends when a newline is found returning the whole word in Option
+new_read(Option) :-
+  new_read('', Option), !.
+
+% new_read(+Acc, -Option)
+% reads one character at the time 
+% ends when a newline is found
+new_read(Acc, Option) :-
+  get_char(Char),
+  processChar(Char, Acc, Option).
+
+% processChar(+Char, -Acc, -Option)
+% reads one character at the time and adds it to Acc
+% ends when a newline is found
+processChar('\n', Acc, Acc).
+processChar(Char, Acc, Option) :-
+  atom_concat(Acc, Char, Res),
+  new_read(Res, Option).
+
+% print_InvalidOption
+% Prints error message when an invalid option has been chosen
+print_InvalidOption :-
+  write('Invalid option! Please try again...').
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                         draw board                            %%%
@@ -167,6 +194,3 @@ draw_vertical_frontier(Frontiers,X1,Y1,X2,Y2) :-
 
 draw_vertical_frontier(_,_,_,_,_) :-
   write('  ').
-
-
-  

@@ -82,7 +82,6 @@ generatorAndSolver(N) :-
     labeling([],CellValues),
     solver(Board,CellValues,C,_,N).
 
-
 generator(N) :-
     generateBoard(N, [Board|[C|[V]]]),
     length(Board,L),
@@ -91,8 +90,6 @@ generator(N) :-
     domain(CellValues,1,MaxValue),
     restrict(Board,Board,CellValues,C,V),
     labeling([],CellValues),!.
-
-
 
 solver(Board,CellValues,Frontiers,Values,L) :-
     length(Frontiers, N),
