@@ -56,8 +56,8 @@ t(_, _, []).
 t(N, X, [LOption | T]) :-
   number_chars(N, CAtom),
   atom_chars(NAtom, CAtom),
-  atom_concat(NAtom, '_', T1),
-  atomic_list_concat_(LOption, '_', Options),
+  atom_concat(NAtom, '-', T1),
+  atomic_list_concat_(LOption, '-', Options),
   atom_concat(T1, Options, T2),
   atom_concat(T2, '.csv', FileName),
   open(FileName, write, Stream),
