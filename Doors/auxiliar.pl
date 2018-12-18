@@ -4,13 +4,12 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                    Auxiliary functions                      %%%
+%%%                    Auxiliary functions                        %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-getPiece(Board, X, Y, B) :-
+getPiece(Board, X, Y) :-
   member(cell(X, Y), Board).
-
 
 
 getFrontier(X1, Y1, X2, Y2, [FrontCoords, FrontValues], Value) :-
@@ -31,28 +30,28 @@ getFrontierLeftUp(X1, Y1, X2, Y2, [FrontCoords, FrontValues], Value) :-
   element(Index, FrontValues, Value).
 
 neighborDown(Board,X,Y,RX,RY) :-
-  getPiece(Board,X,Y,_),
+  getPiece(Board,X,Y),
   RX is X+1,
   RY is Y,
-  getPiece(Board,RX,RY,_).
+  getPiece(Board,RX,RY).
 
 neighborUp(Board,X,Y,RX,RY) :-
-  getPiece(Board,X,Y,_),
+  getPiece(Board,X,Y),
   RX is X-1,
   RY is Y,
-  getPiece(Board,RX,RY,_).
+  getPiece(Board,RX,RY).
 
 neighborRight(Board,X,Y,RX,RY) :-
-  getPiece(Board,X,Y,_),
+  getPiece(Board,X,Y),
   RX is X,
   RY is Y+1,
-  getPiece(Board,RX,RY,_).
+  getPiece(Board,RX,RY).
 
 neighborLeft(Board,X,Y,RX,RY) :-
-  getPiece(Board,X,Y,_),
+  getPiece(Board,X,Y),
   RX is X,
   RY is Y-1,
-  getPiece(Board,RX,RY,_).
+  getPiece(Board,RX,RY).
 
 getDownFrontiers(Board,X,Y,Frontiers,Values, AccDownFrontiers,DownFrontiers) :-
   neighborDown(Board,X,Y,FX,FY),
