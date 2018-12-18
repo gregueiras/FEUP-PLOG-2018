@@ -71,7 +71,6 @@ values([
         24
     ]).
 
-
 generatorAndSolver(N) :-
     generateBoard(N, [Board|[C|[V]]]),
     length(Board,L),
@@ -120,13 +119,3 @@ restrict(Board,[cell(X, Y) | RemBoard], CellValues,Frontiers, Values) :-
     getCellValue(Board,X,Y,CellValues,Value),
     Sum #= Value,
     restrict(Board,RemBoard,CellValues, Frontiers, Values).
-
-
-
-
-
-
-
-
-
-
