@@ -80,7 +80,7 @@ generatorAndSolver(N) :-
     domain(CellValues,1,MaxValue),
     restrict(Board,Board,CellValues,C,V),
     labeling([],CellValues),
-    solver(Board,CellValues,C,Values,N).
+    solver(Board,CellValues,C,_,N).
 
 
 generator(N) :-
