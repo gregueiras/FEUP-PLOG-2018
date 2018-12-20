@@ -2,7 +2,8 @@
 :- use_module(library(clpfd)).
 :- use_module(library(lists)).
 
-
+% generatorAndSolver(+N)
+% generates and solves an instance with N size of the puzzle Doors
 generatorAndSolver(N) :-
     generateBoard(N, [Board|[C|[V]]]),
     length(Board,L),
@@ -13,6 +14,8 @@ generatorAndSolver(N) :-
     labeling([],CellValues),
     solver(Board,CellValues,C,_,N).
 
+% generator(+N)
+% generates an instance with N size of the puzzle Doors
 generator(N) :-
     generateBoard(N, [Board|[C|[V]]]),
     length(Board,L),
@@ -22,6 +25,8 @@ generator(N) :-
     restrict(Board,Board,CellValues,C,V),
     labeling([],CellValues),!.
 
+% solver(+Board,+CellValues,+Frontiers,-Values,+L)
+% solves an instance with L size of the puzzle Doors
 solver(Board,CellValues,Frontiers,Values,L) :-
     length(Frontiers, N),
     length(Values,N),
