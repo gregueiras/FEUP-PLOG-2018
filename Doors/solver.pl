@@ -36,6 +36,9 @@ solver(Board,CellValues,Frontiers,Values,L) :-
     labeling([],Values),
     draw_board(Board,CellValues,[Frontiers, Values],L), !.
 
+% restrict(+Board,+ListCells, +CellValues, +Frontiers, +Values)
+% Applies an automaton to all the cells of the board that restricts each cell's visible houses to the
+% value of that cell.
 restrict(_,[], _,_, _).
 restrict(Board,[cell(X, Y) | RemBoard], CellValues,Frontiers, Values) :-
     getDownFrontiers(Board, X,Y, Frontiers, Values, [], DF),
