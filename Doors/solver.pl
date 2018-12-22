@@ -11,7 +11,7 @@ generatorAndSolver(N) :-
     MaxValue is N*2,
     domain(CellValues,1,MaxValue),
     restrict(Board,Board,CellValues,C,V),
-    labeling([],CellValues),
+    labeling([anti_first_fail,step,up],CellValues),
     solver(Board,CellValues,C,_,N).
 
 % generator(+N)
