@@ -2,6 +2,8 @@
 :- ensure_loaded(solver).
 :- ensure_loaded(board).
 
+% All variables order labeling options
+% order_variables(-ListOfOptions)
 order_variables([
   ffc,
   first_fail,
@@ -13,6 +15,8 @@ order_variables([
   leftmost
 ]).
 
+% All values selection labeling options
+% selection(-ListOfOptions)
 selection([
   step,
   enum,
@@ -21,19 +25,15 @@ selection([
   middle
 ]).
 
+% All values order labeling options
+% order_values(-ListOfOptions)
 order_values([
   up,
   down
 ]).
 
-test :-
-  order_variables(OrdVariables),
-  selection(Selection),
-  order_values(OrdValues),
-  findall([X,Y], (member(X, OrdVariables), member(Y, Selection)), Pairs),
-  findall(Triple, (member(X, Pairs), member(Y, OrdValues), append(X, [Y], Triple)), Options),
-  write(Options).
-
+% Runs the algorithm 50 times, for boards of size 8, 16 and 24, for every combination of labeling options 
+% stats/0
 stats :-
   order_variables(OrdVariables),
   selection(Selection),
@@ -47,13 +47,17 @@ stats :-
   ).
 
 
+% Launch the statistic test for each size, the given number of times
+% stats(+SizesList, +NumberOfTimes, +LabelingOptions).
 stats([], _, _).
 stats([Size | RemSizes], NumTimes, LabelingOptions) :-
-  t(Size, NumTimes, LabelingOptions),
+  test(Size, NumTimes, LabelingOptions),
   stats(RemSizes, NumTimes, LabelingOptions).
 
-t(_, _, []).
-t(N, X, [LOption | T]) :-
+% Converts the head of the list of labeling options lists to a string, opens a file with the board size and that string and prints the running times in it
+% test(+BoardSize, +NumOfTimes, +ListOfLabelingOptionsLists).
+test(_, _, []).
+test(N, X, [LOption | T]) :-
   number_chars(N, CAtom),
   atom_chars(NAtom, CAtom),
   atom_concat(NAtom, '-', T1),
@@ -65,8 +69,10 @@ t(N, X, [LOption | T]) :-
   write(Stream, '\n'),
   run(N, X, Stream, LOption),
   close(Stream),
-  t(N, X, T).
+  test(N, X, T).
 
+% Test how much time does it take to generate and solve a puzzle with the given LabelingOptions and prints it to Stream
+% run(+BoardSize, +NumOfTimes, +OutputStream, +LabelingOptionsList).
 run(_, 0, _, _).
 run(N, X, Stream, LabelingOptions) :-
   statistics(runtime, [T0|_]),
@@ -79,6 +85,8 @@ run(N, X, Stream, LabelingOptions) :-
   NewX is X - 1,
   run(N, NewX, Stream, LabelingOptions).
 
+% Modified version of generatorAndSolver/1, to handle custom LabelingOptions
+% generatorAndSolver(+N, +LabelingOptions) :-
 generatorAndSolver(N, LabelingOptions) :-
   generateBoard(N, [Board|[C|[V]]]),
   length(Board,L),
@@ -87,9 +95,11 @@ generatorAndSolver(N, LabelingOptions) :-
   domain(CellValues,1,MaxValue),
   restrict(Board,Board,CellValues,C,V),
   labeling(LabelingOptions, CellValues),
-  solver(Board,CellValues,C,_,N, LabelingOptions).
+  solver(Board,CellValues,C, LabelingOptions).
 
-solver(Board,CellValues,Frontiers,Values, _, LabelingOptions) :-
+% Modified version of solver/5, to handle custom LabelingOptions
+% solver(+Board, +CellValues, +Frontiers, +LabelingOptions) :-
+solver(Board,CellValues,Frontiers, LabelingOptions) :-
     length(Frontiers, N),
     length(Values,N),
     %Values ins 0..1,
@@ -97,6 +107,8 @@ solver(Board,CellValues,Frontiers,Values, _, LabelingOptions) :-
     restrict(Board, Board, CellValues,Frontiers, Values),!,
     labeling(LabelingOptions,Values), !.
 
+%%%%%% NOT OUR CODE %%%%%%%
+%Code responsible from converting a list of atoms to a string, used to convert the labeling options list to a string, to be the name of a results file
 %% https://stackoverflow.com/questions/35317539/split-atom-using-sicstus-like-atomic-list-concat-3-in-swi
 atomic_list_concat_(L, Sep, Atom) :-
         ( atom(Sep), ground(L), is_list(L) )
